@@ -43,6 +43,12 @@ SysmelScanner >> skipWhite: state [
 		"Chop the leading whites"
 		[ state atEnd not and: [state peek <= Character space] ] whileTrue: [ state advance ].
 	
+		(state peek = $#) ifTrue: [
+			(state peek: 1) = $# ifTrue: [
+				state advance: 2
+			]
+		]
+	
 	] doWhileTrue: [ hasSeenComments ].
 	^ nil
 ]

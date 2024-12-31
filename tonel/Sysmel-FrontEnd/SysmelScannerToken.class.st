@@ -6,7 +6,8 @@ Class {
 	#superclass : 'Object',
 	#instVars : [
 		'kind',
-		'sourcePosition'
+		'sourcePosition',
+		'errorMessage'
 	],
 	#pools : [
 		'SysmelScannerTokens'
@@ -14,6 +15,18 @@ Class {
 	#category : 'Sysmel-FrontEnd',
 	#package : 'Sysmel-FrontEnd'
 }
+
+{ #category : 'accessing' }
+SysmelScannerToken >> errorMessage [
+
+	^ errorMessage
+]
+
+{ #category : 'accessing' }
+SysmelScannerToken >> errorMessage: anObject [
+
+	errorMessage := anObject
+]
 
 { #category : 'accessing' }
 SysmelScannerToken >> kind [
