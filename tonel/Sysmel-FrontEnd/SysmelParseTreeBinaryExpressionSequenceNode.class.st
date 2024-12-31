@@ -14,6 +14,21 @@ SysmelParseTreeBinaryExpressionSequenceNode >> accept: visitor [
 	^ visitor visitBinaryExpressionSequenceNode: self
 ]
 
+{ #category : 'converting' }
+SysmelParseTreeBinaryExpressionSequenceNode >> asMessageSendCascadeReceiverAndFirstMessage [
+	| cascaded receiver selector argument |
+	elements size ~= 3 ifTrue: [ ^ super asMessageSendCascadeReceiverAndFirstMessage ].
+	receiver := elements first.
+	selector := elements second.
+	argument := elements third.
+	cascaded := SysmelParseTreeMessageCascadeMessageNode new
+		sourcePosition: sourcePosition;
+		selector: selector;
+		arguments: {argument};
+		yourself.
+	^ { receiver . cascaded }
+]
+
 { #category : 'accessing' }
 SysmelParseTreeBinaryExpressionSequenceNode >> elements [
 

@@ -32,7 +32,7 @@ SysmelParserTest >> testApplication [
 	node := self parseSourceStringWithoutError: 'a()'.
 	self assert: node isApplicationNode.
 	self assert: node functional isIdentifierReferenceNode.
-	self assert: node functional value equals: #a.
+	self assert: node functional name equals: #a.
 ]
 
 { #category : 'tests' }
@@ -41,11 +41,11 @@ SysmelParserTest >> testApplication2 [
 	node := self parseSourceStringWithoutError: 'a(42)'.
 	self assert: node isApplicationNode.
 	self assert: node functional isIdentifierReferenceNode.
-	self assert: node functional value equals: #a.
+	self assert: node functional name equals: #a.
 	
 	self assert: node arguments size equals: 1.
 	self assert: node arguments first isLiteralIntegerNode.
-	self assert: node arguments first isLiteralIntegerNode equals: 42
+	self assert: node arguments first value equals: 42
 	
 ]
 
@@ -55,14 +55,14 @@ SysmelParserTest >> testApplication3 [
 	node := self parseSourceStringWithoutError: 'a(42. 5)'.
 	self assert: node isApplicationNode.
 	self assert: node functional isIdentifierReferenceNode.
-	self assert: node functional value equals: #a.
+	self assert: node functional name equals: #a.
 	
 	self assert: node arguments size equals: 2.
 	self assert: node arguments first isLiteralIntegerNode.
-	self assert: node arguments first isLiteralIntegerNode equals: 42.
+	self assert: node arguments first value equals: 42.
 	
 	self assert: node arguments second isLiteralIntegerNode.
-	self assert: node arguments second isLiteralIntegerNode equals: 5
+	self assert: node arguments second value equals: 5
 
 ]
 
@@ -139,6 +139,16 @@ SysmelParserTest >> testBinaryExpressionSequence2 [
 	rightOperand2 := node elements at: 5.
 	self assert: rightOperand2 isLiteralIntegerNode.
 	self assert: rightOperand2 value equals: 5
+]
+
+{ #category : 'tests' }
+SysmelParserTest >> testCascadeMessageSend [
+	| node |
+	node := self parseSourceStringWithoutError: 'a + 2; - 3; perform: #yourself'.
+	self assert: node isMessageCascadeNode.
+	self assert: node receiver isIdentifierReferenceNode.
+	self assert: node receiver name equals: #a.
+	self assert: node messages size equals: 3.
 ]
 
 { #category : 'tests' }

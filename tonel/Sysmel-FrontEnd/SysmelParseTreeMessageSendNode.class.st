@@ -28,6 +28,16 @@ SysmelParseTreeMessageSendNode >> arguments: anObject [
 	arguments := anObject
 ]
 
+{ #category : 'converting' }
+SysmelParseTreeMessageSendNode >> asMessageSendCascadeReceiverAndFirstMessage [
+	| cascaded |
+	cascaded := SysmelParseTreeMessageCascadeMessageNode new
+		sourcePosition: sourcePosition;
+		selector: selector;
+		arguments: arguments.
+	^ { receiver . cascaded }
+]
+
 { #category : 'testing' }
 SysmelParseTreeMessageSendNode >> isMessageSendNode [
 	^ true

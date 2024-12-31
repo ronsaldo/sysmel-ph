@@ -7,6 +7,12 @@ Class {
 }
 
 { #category : 'visiting' }
+SysmelParseTreeSequentialVisitor >> visitApplicationNode: node [
+	self visitNode: node functional.
+	self visitNodes: node arguments.
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSequentialVisitor >> visitAssignmentNode: node [
 	self visitNode: node store.
 	self visitNode: node value.
@@ -57,6 +63,18 @@ SysmelParseTreeSequentialVisitor >> visitLiteralStringNode: node [
 { #category : 'visiting' }
 SysmelParseTreeSequentialVisitor >> visitLiteralSymbolNode: node [
 	"Nothing is required here."
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSequentialVisitor >> visitMessageCascadeMessageNode: node [
+	self visitNode: node selector.
+	self visitNodes: node arguments.
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSequentialVisitor >> visitMessageCascadeNode: node [
+	self visitNode: node receiver.
+	self visitNodes: node messages
 ]
 
 { #category : 'visiting' }

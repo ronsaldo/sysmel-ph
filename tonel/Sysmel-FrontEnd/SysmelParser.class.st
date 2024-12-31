@@ -97,6 +97,16 @@ SysmelParser >> parseBindExpression: state [
 ]
 
 { #category : 'parsing' }
+SysmelParser >> parseBindableName: state [
+	self halt
+]
+
+{ #category : 'parsing' }
+SysmelParser >> parseBlock: state [
+	self halt.
+]
+
+{ #category : 'parsing' }
 SysmelParser >> parseCEscapeSequences: string [
 	^ ByteString streamContents: [ :out |
 		| i size |
@@ -132,6 +142,65 @@ SysmelParser >> parseCEscapeSequences: string [
 ]
 
 { #category : 'parsing' }
+SysmelParser >> parseCascadeMessage: state [
+	| startPosition token selector argument symbolValue arguments firstKeywordSourcePosition lastKeywordSourcePosition keywordToken |
+	startPosition := state position.
+	token := state peek.
+	token kind = SSTIdentifier ifTrue: [
+		state advance.
+		selector := SysmelParseTreeLiteralSymbolNode new
+			sourcePosition: token sourcePosition;
+			value: token getTextValue asSymbol;
+			yourself.
+		^ SysmelParseTreeMessageCascadeMessageNode new
+			sourcePosition: (state sourcePositionFrom: startPosition);
+			selector: selector;
+			arguments: #()
+	].
+	token kind = SSTKeyword ifTrue: [
+		symbolValue := ''.
+		arguments := OrderedCollection new.
+		firstKeywordSourcePosition := state peek sourcePosition.	
+		lastKeywordSourcePosition := firstKeywordSourcePosition.
+		[ state peekKind = SSTKeyword ] whileTrue: [
+			keywordToken := state next.
+			lastKeywordSourcePosition := keywordToken sourcePosition.
+			symbolValue := symbolValue , keywordToken getTextValue.
+		
+			argument := self parseUnaryPostfixExpression: state.
+			arguments add: argument
+		].
+	
+		selector := SysmelParseTreeLiteralSymbolNode new
+			sourcePosition: token sourcePosition;
+			value: token getTextValue asSymbol;
+			yourself.
+		^ SysmelParseTreeMessageCascadeMessageNode new
+			sourcePosition: (state sourcePositionFrom: startPosition);
+			selector: selector;
+			arguments: arguments asArray;
+			yourself
+	].
+	(self isBinaryExpressionOperator: token kind) ifTrue: [
+		state advance.
+		selector := SysmelParseTreeLiteralSymbolNode new
+			sourcePosition: token sourcePosition;
+			value: token getTextValue asSymbol;
+			yourself.
+		argument := self parseUnaryPostfixExpression: state.
+		^ SysmelParseTreeMessageCascadeMessageNode new
+			sourcePosition: (state sourcePositionFrom: startPosition);
+			selector: selector;
+			arguments: { argument };
+			yourself
+	].
+
+	^ SysmelParseTreeErrorNode new
+		sourcePosition: (state sourcePositionFrom: startPosition);
+		errorMessage: 'Expected a cascaded message.'
+]
+
+{ #category : 'parsing' }
 SysmelParser >> parseCommaExpression: state [
 	| startPosition element elements |
 	startPosition := state position.
@@ -152,6 +221,11 @@ SysmelParser >> parseCommaExpression: state [
 		sourcePosition: (state sourcePositionFrom: startPosition);
 		elements: elements asArray;
 		yourself
+]
+
+{ #category : 'parsing' }
+SysmelParser >> parseDictionary: state [
+	self halt
 ]
 
 { #category : 'parsing' }
@@ -414,13 +488,29 @@ SysmelParser >> parseLowPrecedenceExpression: state [
 
 { #category : 'parsing' }
 SysmelParser >> parseMessageCascade: state [
-	| startPosition firstMessage |
+	| startPosition firstMessage receiverAndFirstCascaded receiver firstCascaded cascaded |
 	startPosition := state position.
 	firstMessage := self parseKeywordMessageSend: state.
 	state peekKind ~= SSTSemicolon ifTrue: [
 		^ firstMessage
 	].
-	self halt
+
+	receiverAndFirstCascaded := firstMessage asMessageSendCascadeReceiverAndFirstMessage.
+	receiver := receiverAndFirstCascaded first.
+	firstCascaded := receiverAndFirstCascaded second.
+	cascaded := OrderedCollection new.
+	firstCascaded ifNotNil: [ cascaded add: firstCascaded ].
+	
+	[state peekKind = SSTSemicolon ] whileTrue: [
+		state advance.
+		cascaded add: (self parseCascadeMessage: state)
+	].
+
+	^ SysmelParseTreeMessageCascadeNode new
+		sourcePosition: (state sourcePositionFrom: startPosition);
+		receiver: receiver;
+		messages: cascaded asArray;
+		yourself
 ]
 
 { #category : 'parsing' }
@@ -559,7 +649,96 @@ SysmelParser >> parseTopLevelExpression: state [
 
 { #category : 'parsing' }
 SysmelParser >> parseUnaryPostfixExpression: state [
-	^ self parseTerm: state
+	| startPosition receiver postfixTokens token selector currentKind arguments argument |
+	startPosition := state position.
+	receiver := self parseTerm: state.
+	
+	postfixTokens := { SSTIdentifier. SSTLeftParent . SSTLeftBracket. SSTLeftCurlyBracket. SSTByteArrayStart. SSTDictionaryStart}.
+	[ postfixTokens includes: state peekKind ] whileTrue: [
+		token := state peek.
+		currentKind := token kind.
+		currentKind = SSTIdentifier ifTrue: [
+			state advance.
+			selector := SysmelParseTreeLiteralSymbolNode new
+				sourcePosition: token sourcePosition;
+				value: token getTextValue asSymbol;
+				yourself.
+			receiver := SysmelParseTreeMessageSendNode new
+				sourcePosition: (receiver sourcePosition to: selector sourcePosition);
+				receiver: receiver;
+				selector: selector;
+				arguments: #();
+				yourself
+		].
+		currentKind = SSTLeftParent ifTrue: [
+			state advance.
+			arguments := self parseExpressionListUntilEndOrDelimiter: SSTRightParent state: state.
+			state peekKind = SSTRightParent ifTrue: [
+				state advance
+			] ifFalse: [
+				arguments add: (SysmelParseTreeErrorNode new
+					sourcePosition: state currentSourcePosition;
+					errorMessage: 'Expected a right parenthesis')
+			].
+			receiver := SysmelParseTreeApplicationNode new
+				sourcePosition: (state sourcePositionFrom: startPosition);
+				functional: receiver;
+				arguments: arguments asArray;
+				yourself.
+		].
+		currentKind = SSTLeftBracket ifTrue: [
+			state advance.
+			arguments := self parseExpressionListUntilEndOrDelimiter: SSTRightBracket state: state.
+			state peekKind = SSTRightBracket ifTrue: [
+				state advance
+			] ifFalse: [
+				arguments add: (SysmelParseTreeErrorNode new
+					sourcePosition: state currentSourcePosition;
+					errorMessage: 'Expected a right parenthesis')
+			].
+			receiver := SysmelParseTreeApplicationNode new
+				sourcePosition: (state sourcePositionFrom: startPosition);
+				functional: receiver;
+				arguments: arguments asArray;
+				yourself.
+		].
+		
+		currentKind = SSTByteArrayStart ifTrue: [
+			state advance.
+			arguments := self parseExpressionListUntilEndOrDelimiter: SSTRightBracket state: state.
+			state peekKind = SSTRightBracket ifTrue: [
+				state advance
+			] ifFalse: [
+				arguments add: (SysmelParseTreeErrorNode new
+					sourcePosition: state currentSourcePosition;
+					errorMessage: 'Expected a right parenthesis')
+			].
+			receiver := SysmelParseTreeApplicationNode new
+				sourcePosition: (state sourcePositionFrom: startPosition);
+				functional: receiver;
+				arguments: arguments asArray;
+				yourself.
+		].
+	
+		currentKind = SSTLeftCurlyBracket ifTrue: [
+			argument := self parseBlock: state.
+			receiver := SysmelParseTreeApplicationNode new
+				sourcePosition: (state sourcePositionFrom: startPosition);
+				functional: receiver;
+				arguments: {argument};
+				yourself.
+		].
+		currentKind = SSTDictionaryStart ifTrue: [
+			argument := self parseDictionary: state.
+			receiver := SysmelParseTreeApplicationNode new
+				sourcePosition: (state sourcePositionFrom: startPosition);
+				functional: receiver;
+				arguments: {argument};
+				yourself.
+		].
+	].
+
+	^ receiver
 ]
 
 { #category : 'parsing' }

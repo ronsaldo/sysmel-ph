@@ -10,6 +10,11 @@ Class {
 }
 
 { #category : 'visiting' }
+SysmelParseTreeVisitor >> visitApplicationNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeVisitor >> visitAssignmentNode: node [
 	self subclassResponsibility
 ]
@@ -56,6 +61,16 @@ SysmelParseTreeVisitor >> visitLiteralStringNode: node [
 
 { #category : 'visiting' }
 SysmelParseTreeVisitor >> visitLiteralSymbolNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeVisitor >> visitMessageCascadeMessageNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeVisitor >> visitMessageCascadeNode: node [
 	self subclassResponsibility
 ]
 

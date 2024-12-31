@@ -17,6 +17,11 @@ SysmelParseTreeNode >> accept: visitor [
 	^ self subclassResponsibility
 ]
 
+{ #category : 'converting' }
+SysmelParseTreeNode >> asMessageSendCascadeReceiverAndFirstMessage [
+	^ { self . nil }
+]
+
 { #category : 'testing' }
 SysmelParseTreeNode >> isApplicationNode [
 	^ false
@@ -74,6 +79,16 @@ SysmelParseTreeNode >> isLiteralStringNode [
 
 { #category : 'testing' }
 SysmelParseTreeNode >> isLiteralSymbolNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SysmelParseTreeNode >> isMessageCascadeMessageNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SysmelParseTreeNode >> isMessageCascadeNode [
 	^ false
 ]
 
