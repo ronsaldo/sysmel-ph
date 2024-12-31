@@ -56,6 +56,11 @@ SysmelSourcePosition >> endLine: anObject [
 	endLine := anObject
 ]
 
+{ #category : 'as yet unclassified' }
+SysmelSourcePosition >> getTextValue [
+	^ sourceCode text copyFrom: startIndex to: endIndex - 1
+]
+
 { #category : 'accessing' }
 SysmelSourcePosition >> sourceCode [
 

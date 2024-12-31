@@ -92,7 +92,8 @@ SysmelScanner >> scanNextTokenWithState: state [
 			^ state makeToken: (isMultiKeyword
 				ifTrue: [ SSTMultiKeyword ]
 				ifFalse: [SSTKeyword]) startingFrom: initialState.
-		]
+		].
+		^ state makeToken: SSTIdentifier startingFrom: initialState.
 	].
 	
 	(self isDigit: c) ifTrue: [
@@ -185,9 +186,20 @@ SysmelScanner >> scanNextTokenWithState: state [
 				^ state makeErrorTokenStartingFrom: initialState withMessage: 'Incomplete string symbolliteral.'
 			].
 			state advance.
-		
-		^ state makeToken: SSTSymbol startingFrom: initialState
-
+			^ state makeToken: SSTSymbol startingFrom: initialState
+		].
+	
+		c1 = $[ ifTrue: [ 
+			state advance: 2.
+			^ state makeToken: SSTByteArrayStart startingFrom: initialState
+		].
+		c1 = ${ ifTrue: [ 
+			state advance: 2.
+			^ state makeToken: SSTDictionaryStart startingFrom: initialState
+		].
+		c1 = $( ifTrue: [ 
+			state advance: 2.
+			^ state makeToken: SSTLiteralArrayStart startingFrom: initialState
 		]
 	].
 
@@ -208,7 +220,84 @@ SysmelScanner >> scanNextTokenWithState: state [
 		
 		^ state makeToken: SSTString startingFrom: initialState
 	].
-	self halt.
+
+	"Characters"
+	c = $' ifTrue: [
+		state advance.
+		[state atEnd not and: [state peek ~= $']] whileTrue: [
+			(state peek == $\ and: [(state peek: 1) isCharacter ]) ifTrue: [ 
+				state advance: 2
+			] ifFalse: [
+				state advance
+			]
+		].
+		state peek ~= $' ifTrue: [
+			^ state makeErrorTokenStartingFrom: initialState withMessage: 'Incomplete character literal.'
+		].
+		state advance.
+		
+		^ state makeToken: SSTString startingFrom: initialState
+	].
+	"Punctuation"
+	c = $( ifTrue: [ state advance. ^ state makeToken: SSTLeftParent startingFrom: initialState ].
+	c = $) ifTrue: [ state advance. ^ state makeToken: SSTRightParent startingFrom: initialState ].
+	c = $[ ifTrue: [ state advance. ^ state makeToken: SSTLeftBracket startingFrom: initialState ].
+	c = $] ifTrue: [ state advance. ^ state makeToken: SSTRightBracket startingFrom: initialState ].
+	c = ${ ifTrue: [ state advance. ^ state makeToken: SSTLeftCurlyBracket startingFrom: initialState ].
+	c = $} ifTrue: [ state advance. ^ state makeToken: SSTRightCurlyBracket startingFrom: initialState ].
+	c = $; ifTrue: [ state advance. ^ state makeToken: SSTSemicolon startingFrom: initialState ].
+	c = $, ifTrue: [ state advance. ^ state makeToken: SSTComma startingFrom: initialState ].
+	c = $. ifTrue: [
+		state advance. 
+		(state peek = $. and: [ (state peek: 1) = $. ]) ifTrue: [ 
+			state advance: 2.
+			^ state makeToken: SSTEllipsis startingFrom: initialState ].
+		^ state makeToken: SSTDot startingFrom: initialState
+		].
+	c = $: ifTrue: [
+		state advance.
+		state peek = $: ifTrue: [
+			state advance.
+			^ state makeToken: SSTColonColon startingFrom: initialState ].
+		state peek = $= ifTrue: [
+			state advance.
+			^ state makeToken: SSTAssignment startingFrom: initialState ].
+		^ state makeToken: SSTColon startingFrom: initialState 
+		].
+	
+	c = $` ifTrue: [
+		| c2 |
+		c2 := state peek.
+		c2 = $' ifTrue: [ ^ state makeToken: SSTQuote startingFrom: initialState ].
+		c2 = $` ifTrue: [ ^ state makeToken: SSTQuasiQuote startingFrom: initialState ].
+		c2 = $, ifTrue: [ ^ state makeToken: SSTQuasiUnquote startingFrom: initialState ].
+		c2 = $@ ifTrue: [ ^ state makeToken: SSTSplice startingFrom: initialState ].
+	].
+
+	c = $| ifTrue: [
+		(self isOperatorCharacter: (state peek:1)) ifFalse: [ 
+			state advance.
+			^ state makeToken: SSTBar startingFrom: initialState 
+		]
+	].
+
+	"Operators"
+	(self isOperatorCharacter: c) ifTrue: [
+		| operatorToken |
+		[state atEnd not and: [ self isOperatorCharacter: c ]] whileTrue: [
+			state advance
+		].
+	
+		operatorToken := state makeToken: SSTOperator startingFrom: initialState.
+		^ self selectMoreSpecificKindForOperatorToken: operatorToken
+	].
+	
+	"Unexpected characters"
+
+	state atEnd ifFalse: [ 
+		state advance.
+	].
+	^ state makeErrorTokenStartingFrom: initialState withMessage: ('Unexpected character {1}.' format: {c})
 ]
 
 { #category : 'scanning' }
@@ -222,6 +311,21 @@ SysmelScanner >> scanSourceCode: sourceCode [
 	] doWhileTrue: [ token kind ~~ SSTEndOfSource ].
 	
 	^ tokens
+]
+
+{ #category : 'scanning' }
+SysmelScanner >> selectMoreSpecificKindForOperatorToken: operatorToken [
+	| textValue |
+	textValue := operatorToken getTextValue.
+
+	textValue = '<' ifTrue: [ operatorToken kind: SSTLessThan ].
+	textValue = '>' ifTrue: [ operatorToken kind: SSTGreaterThan ].
+	textValue = '*' ifTrue: [ operatorToken kind: SSTStar ].
+	textValue = '?' ifTrue: [ operatorToken kind: SSTQuestion ].
+	textValue = '!' ifTrue: [ operatorToken kind: SSTBang ].
+	textValue = '<-' ifTrue: [ operatorToken kind: SSTBindOperator ].
+	
+	^ operatorToken
 ]
 
 { #category : 'as yet unclassified' }

@@ -28,6 +28,11 @@ SysmelScannerToken >> errorMessage: anObject [
 	errorMessage := anObject
 ]
 
+{ #category : 'as yet unclassified' }
+SysmelScannerToken >> getTextValue [
+	^ sourcePosition getTextValue
+]
+
 { #category : 'accessing' }
 SysmelScannerToken >> kind [
 

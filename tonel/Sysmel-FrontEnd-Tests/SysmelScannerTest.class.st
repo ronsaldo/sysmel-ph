@@ -66,6 +66,14 @@ SysmelScannerTest >> testKeywordSymbol [
 ]
 
 { #category : 'as yet unclassified' }
+SysmelScannerTest >> testLeftSpecialBrackets [
+	self assert: (self scanTokenKinds: '#[') asArray equals: { SSTByteArrayStart . SSTEndOfSource }.
+	self assert: (self scanTokenKinds: '#{') asArray equals: { SSTDictionaryStart . SSTEndOfSource }.
+	self assert: (self scanTokenKinds: '#(') asArray equals: { SSTLiteralArrayStart . SSTEndOfSource }.
+
+]
+
+{ #category : 'as yet unclassified' }
 SysmelScannerTest >> testMultiKeyword [
 	self assert: (self scanTokenKinds: 'keyword:with:') asArray equals: { SSTMultiKeyword . SSTEndOfSource }
 ]
