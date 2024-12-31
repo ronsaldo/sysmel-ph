@@ -80,6 +80,11 @@ SysmelScannerTest >> testLeftSpecialBrackets [
 ]
 
 { #category : 'tests' }
+SysmelScannerTest >> testMacroOperators [
+	self assert: (self scanTokenKinds: '`'' `` `, `@') asArray equals: { SSTQuote. SSTQuasiQuote .SSTQuasiUnquote . SSTSplice . SSTEndOfSource }
+]
+
+{ #category : 'tests' }
 SysmelScannerTest >> testMultiKeyword [
 	self assert: (self scanTokenKinds: 'keyword:with:') asArray equals: { SSTMultiKeyword . SSTEndOfSource }
 ]

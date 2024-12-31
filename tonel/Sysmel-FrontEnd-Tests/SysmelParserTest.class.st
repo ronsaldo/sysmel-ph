@@ -50,6 +50,35 @@ SysmelParserTest >> testApplication2 [
 ]
 
 { #category : 'tests' }
+SysmelParserTest >> testApplication3 [
+	| node |
+	node := self parseSourceStringWithoutError: 'a(42. 5)'.
+	self assert: node isApplicationNode.
+	self assert: node functional isIdentifierReferenceNode.
+	self assert: node functional value equals: #a.
+	
+	self assert: node arguments size equals: 2.
+	self assert: node arguments first isLiteralIntegerNode.
+	self assert: node arguments first isLiteralIntegerNode equals: 42.
+	
+	self assert: node arguments second isLiteralIntegerNode.
+	self assert: node arguments second isLiteralIntegerNode equals: 5
+
+]
+
+{ #category : 'tests' }
+SysmelParserTest >> testAssignment [
+	| node |
+	node := self parseSourceStringWithoutError: 'a := 42'.
+	self assert: node isAssignmentNode .
+	self assert: node store isIdentifierReferenceNode.
+	self assert: node store name equals: #a.
+	
+	self assert: node value isLiteralIntegerNode.
+	self assert: node value value equals: 42
+]
+
+{ #category : 'tests' }
 SysmelParserTest >> testAssociation [
 	| node |
 	node := self parseSourceStringWithoutError: '42 : 5'.
@@ -125,6 +154,23 @@ SysmelParserTest >> testIdentifierReference [
 	node := self parseSourceStringWithoutError: 'identifier'.
 	self assert: node isIdentifierReferenceNode .
 	self assert: node name equals: #identifier.
+]
+
+{ #category : 'tests' }
+SysmelParserTest >> testKeywordMessageSend [
+	| node |
+	node := self parseSourceStringWithoutError: 'a perform: #yourself'.
+	self assert: node isMessageSendNode .
+	self assert: node receiver isIdentifierReferenceNode.
+	self assert: node receiver name equals: #a.
+
+	self assert: node selector isLiteralSymbolNode.
+	self assert: node selector value equals: #perform:.
+	
+	self assert: node arguments size equals: 1.
+	self assert: node arguments first isLiteralSymbolNode.
+	self assert: node arguments first value equals: #yourself.
+
 ]
 
 { #category : 'tests' }
@@ -209,6 +255,46 @@ SysmelParserTest >> testLiteralSymbolString [
 ]
 
 { #category : 'tests' }
+SysmelParserTest >> testQuasiQuote [
+	| node |
+	node := self parseSourceStringWithoutError: '``42'.
+	self assert: node isQuasiQuoteNode.
+	self assert: node term isLiteralIntegerNode.
+	self assert: node term value equals: 42.
+
+]
+
+{ #category : 'tests' }
+SysmelParserTest >> testQuasiUnquote [
+	| node |
+	node := self parseSourceStringWithoutError: '`,42'.
+	self assert: node isQuasiUnquoteNode.
+	self assert: node term isLiteralIntegerNode.
+	self assert: node term value equals: 42.
+
+]
+
+{ #category : 'tests' }
+SysmelParserTest >> testQuote [
+	| node |
+	node := self parseSourceStringWithoutError: '``42'.
+	self assert: node isQuoteNode.
+	self assert: node term isLiteralIntegerNode.
+	self assert: node term value equals: 42.
+
+]
+
+{ #category : 'tests' }
+SysmelParserTest >> testSplice [
+	| node |
+	node := self parseSourceStringWithoutError: '`@42'.
+	self assert: node isSpliceNode.
+	self assert: node term isLiteralIntegerNode.
+	self assert: node term value equals: 42.
+
+]
+
+{ #category : 'tests' }
 SysmelParserTest >> testTuple [
 	| node |
 	node := self parseSourceStringWithoutError: '()'.
@@ -246,4 +332,16 @@ SysmelParserTest >> testTuple2 [
 	self assert: element isLiteralIntegerNode.
 	self assert: element equals: 5.
 	
+]
+
+{ #category : 'tests' }
+SysmelParserTest >> testUnaryMessageSend [
+	| node |
+	node := self parseSourceStringWithoutError: 'a negated'.
+	self assert: node isMessageSendNode .
+	self assert: node receiver isIdentifierReferenceNode.
+	self assert: node receiver name equals: #a.
+
+	self assert: node selector isLiteralSymbolNode.
+	self assert: node selector value equals: #negated
 ]

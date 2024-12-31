@@ -10,6 +10,11 @@ Class {
 }
 
 { #category : 'visiting' }
+SysmelParseTreeVisitor >> visitAssignmentNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeVisitor >> visitAssociationNode: node [
 	self subclassResponsibility
 ]
@@ -50,6 +55,11 @@ SysmelParseTreeVisitor >> visitLiteralSymbolNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeVisitor >> visitMessageSendNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeVisitor >> visitNode: aNode [
 	^ aNode accept: self
 ]
@@ -60,12 +70,37 @@ SysmelParseTreeVisitor >> visitNodes: aCollectionOfNode [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeVisitor >> visitOptionalNode: aNode [
+	aNode ifNotNil: [ ^ self visitNode: aNode ]
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeVisitor >> visitParseErrorNode: node [
 	self subclassResponsibility
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeVisitor >> visitQuasiQuoteNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeVisitor >> visitQuasiUnquoteNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeVisitor >> visitQuoteNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeVisitor >> visitSequenceNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeVisitor >> visitSpliceNode: node [
 	self subclassResponsibility
 ]
 

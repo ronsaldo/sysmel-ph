@@ -23,6 +23,11 @@ SysmelParseTreeNode >> isApplicationNode [
 ]
 
 { #category : 'testing' }
+SysmelParseTreeNode >> isAssignmentNode [
+	^ false
+]
+
+{ #category : 'testing' }
 SysmelParseTreeNode >> isAssociationNode [
 	^ false
 ]
@@ -68,12 +73,37 @@ SysmelParseTreeNode >> isLiteralSymbolNode [
 ]
 
 { #category : 'testing' }
+SysmelParseTreeNode >> isMessageSendNode [
+	^ false
+]
+
+{ #category : 'testing' }
 SysmelParseTreeNode >> isParseErrorNode [
 	^ false
 ]
 
 { #category : 'testing' }
+SysmelParseTreeNode >> isQuasiQuoteNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SysmelParseTreeNode >> isQuasiUnquoteNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SysmelParseTreeNode >> isQuoteNode [
+	^ false
+]
+
+{ #category : 'testing' }
 SysmelParseTreeNode >> isSequenceNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SysmelParseTreeNode >> isSpliceNode [
 	^ false
 ]
 

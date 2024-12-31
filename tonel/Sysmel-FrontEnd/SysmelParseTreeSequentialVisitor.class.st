@@ -7,6 +7,12 @@ Class {
 }
 
 { #category : 'visiting' }
+SysmelParseTreeSequentialVisitor >> visitAssignmentNode: node [
+	self visitNode: node store.
+	self visitNode: node value.
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSequentialVisitor >> visitAssociationNode: node [
 	self visitNode: node key.
 	self visitNode: node value.
@@ -48,13 +54,40 @@ SysmelParseTreeSequentialVisitor >> visitLiteralSymbolNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeSequentialVisitor >> visitMessageSendNode: node [
+	self visitOptionalNode: node receiver.
+	self visitNode: node selector.
+	self visitNodes: node arguments
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSequentialVisitor >> visitParseErrorNode: node [
 	node innerNodes do: [ :each | self visitNode: each ]
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeSequentialVisitor >> visitQuasiQuoteNode: node [
+	self visitNode: node
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSequentialVisitor >> visitQuasiUnquoteNode: node [
+	self visitNode: node
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSequentialVisitor >> visitQuoteNode: node [
+	self visitNode: node
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSequentialVisitor >> visitSequenceNode: node [
 	self visitNodes: node elements
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSequentialVisitor >> visitSpliceNode: node [
+	self visitNode: node
 ]
 
 { #category : 'visiting' }

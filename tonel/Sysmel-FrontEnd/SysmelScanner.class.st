@@ -268,11 +268,11 @@ SysmelScanner >> scanNextTokenWithState: state [
 	
 	c = $` ifTrue: [
 		| c2 |
-		c2 := state peek.
-		c2 = $' ifTrue: [ ^ state makeToken: SSTQuote startingFrom: initialState ].
-		c2 = $` ifTrue: [ ^ state makeToken: SSTQuasiQuote startingFrom: initialState ].
-		c2 = $, ifTrue: [ ^ state makeToken: SSTQuasiUnquote startingFrom: initialState ].
-		c2 = $@ ifTrue: [ ^ state makeToken: SSTSplice startingFrom: initialState ].
+		c2 := state peek: 1.
+		c2 = $' ifTrue: [ state advance: 2. ^ state makeToken: SSTQuote startingFrom: initialState ].
+		c2 = $` ifTrue: [ state advance: 2. ^ state makeToken: SSTQuasiQuote startingFrom: initialState ].
+		c2 = $, ifTrue: [ state advance: 2. ^ state makeToken: SSTQuasiUnquote startingFrom: initialState ].
+		c2 = $@ ifTrue: [ state advance: 2. ^ state makeToken: SSTSplice startingFrom: initialState ].
 	].
 
 	c = $| ifTrue: [
