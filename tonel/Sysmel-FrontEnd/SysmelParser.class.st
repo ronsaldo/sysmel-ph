@@ -202,7 +202,7 @@ SysmelParser >> parseCascadeMessage: state [
 
 { #category : 'parsing' }
 SysmelParser >> parseCommaExpression: state [
-	| startPosition element elements |
+	| startPosition element elements hasUsedMemento memento |
 	startPosition := state position.
 	element := self parseAssignmentExpression: state.
 	state peekKind ~= SSTComma ifTrue: [
@@ -211,10 +211,17 @@ SysmelParser >> parseCommaExpression: state [
 
 	elements := OrderedCollection new.
 	elements add: element.
-	[ state peekKind = SSTComma ] whileTrue: [
+	hasUsedMemento := false.
+	[ state peekKind = SSTComma and: [ hasUsedMemento not ] ] whileTrue: [
 		state advance.
+		memento := state memento.
 		element := self parseAssignmentExpression: state.
-		elements add: element 
+		element isParseErrorNode ifTrue: [
+			state restore: memento.
+			hasUsedMemento := true
+		] ifFalse: [
+			elements add: element
+		]
 	].
 
 	^ SysmelParseTreeTupleNode new
