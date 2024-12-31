@@ -73,17 +73,17 @@ SysmelParseTreeSequentialVisitor >> visitParseErrorNode: node [
 
 { #category : 'visiting' }
 SysmelParseTreeSequentialVisitor >> visitQuasiQuoteNode: node [
-	self visitNode: node
+	self visitNode: node term
 ]
 
 { #category : 'visiting' }
 SysmelParseTreeSequentialVisitor >> visitQuasiUnquoteNode: node [
-	self visitNode: node
+	self visitNode: node term
 ]
 
 { #category : 'visiting' }
 SysmelParseTreeSequentialVisitor >> visitQuoteNode: node [
-	self visitNode: node
+	self visitNode: node term
 ]
 
 { #category : 'visiting' }
@@ -93,7 +93,7 @@ SysmelParseTreeSequentialVisitor >> visitSequenceNode: node [
 
 { #category : 'visiting' }
 SysmelParseTreeSequentialVisitor >> visitSpliceNode: node [
-	self visitNode: node
+	self visitNode: node term
 ]
 
 { #category : 'visiting' }

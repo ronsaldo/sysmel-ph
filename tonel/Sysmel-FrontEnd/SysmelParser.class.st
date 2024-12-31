@@ -57,14 +57,30 @@ SysmelParser >> parseAssociationExpression: state [
 
 { #category : 'parsing' }
 SysmelParser >> parseBinaryExpressionSequence: state [
-	| startPosition operand |
+	| startPosition operand elements operatorToken operator |
 	startPosition := state position.
 	operand := self parseUnaryPrefixExpression: state.
 	(self isBinaryExpressionOperator: state peekKind) ifFalse: [
 		^ operand
 	].
 
-	self halt
+	elements := OrderedCollection with: operand.
+	[self isBinaryExpressionOperator: state peekKind] whileTrue: [
+		operatorToken := state next.
+		operator := SysmelParseTreeLiteralSymbolNode new
+			sourcePosition: operatorToken sourcePosition; 
+			value: operatorToken getTextValue asSymbol;
+			yourself.
+		elements add: operator.
+		
+		operand := self parseUnaryPrefixExpression: state.
+		elements add: operand
+	].
+
+	^ SysmelParseTreeBinaryExpressionSequenceNode new
+		sourcePosition: (state sourcePositionFrom: startPosition);
+		elements: elements asArray;
+		yourself
 ]
 
 { #category : 'parsing' }
@@ -220,18 +236,66 @@ SysmelParser >> parseIdentifierReference: state [
 
 { #category : 'parsing' }
 SysmelParser >> parseKeywordApplication: state [
-	self halt
+	| startPosition symbolValue arguments firstKeywordSourcePosition lastKeywordSourcePosition keywordToken argument functionIdentifier |
+	self assert: state peekKind = SSTKeyword.
+	startPosition := state position.
+	
+	symbolValue := ''.
+	arguments := OrderedCollection new.
+	firstKeywordSourcePosition := state peek sourcePosition.
+	lastKeywordSourcePosition := firstKeywordSourcePosition.
+	
+	[ state peekKind = SSTKeyword ] whileTrue: [
+		keywordToken := state next.
+		lastKeywordSourcePosition := keywordToken sourcePosition.
+		symbolValue := symbolValue , keywordToken getTextValue.
+		
+		argument := self parseAssociationExpression: state.
+		arguments add: argument
+	].
+
+	functionIdentifier := SysmelParseTreeLiteralSymbolNode new
+		sourcePosition: (firstKeywordSourcePosition to: lastKeywordSourcePosition);
+		value: symbolValue asSymbol;
+		yourself.
+	^ SysmelParseTreeMessageSendNode new
+		sourcePosition: (state sourcePositionFrom: startPosition);
+		selector: functionIdentifier;
+		arguments: arguments asArray;
+		yourself
 ]
 
 { #category : 'parsing' }
 SysmelParser >> parseKeywordMessageSend: state [
-	| startPosition receiver |
+	| startPosition receiver symbolValue arguments firstKeywordSourcePosition lastKeywordSourcePosition keywordToken argument selector |
 	startPosition := state position.
 	receiver := self parseAssociationExpression: state.
 	state peekKind ~= SSTKeyword ifTrue: [ ^ receiver ].
 	
-	self halt
+	symbolValue := ''.
+	arguments := OrderedCollection new.
+	firstKeywordSourcePosition := state peek sourcePosition.
+	lastKeywordSourcePosition := firstKeywordSourcePosition.
+	
+	[ state peekKind = SSTKeyword ] whileTrue: [
+		keywordToken := state next.
+		lastKeywordSourcePosition := keywordToken sourcePosition.
+		symbolValue := symbolValue , keywordToken getTextValue.
+		
+		argument := self parseAssociationExpression: state.
+		arguments add: argument
+	].
 
+	selector := SysmelParseTreeLiteralSymbolNode new
+		sourcePosition: (firstKeywordSourcePosition to: lastKeywordSourcePosition);
+		value: symbolValue asSymbol;
+		yourself.
+	^ SysmelParseTreeMessageSendNode new
+		sourcePosition: (state sourcePositionFrom: startPosition);
+		receiver: receiver;
+		selector: selector;
+		arguments: arguments asArray;
+		yourself
 ]
 
 { #category : 'parsing' }
@@ -392,6 +456,48 @@ SysmelParser >> parseParenthesis: state [
 ]
 
 { #category : 'parsing' }
+SysmelParser >> parseQuasiQuote: state [
+	| startPosition term |
+	startPosition := state position.
+	self assert: state peekKind = SSTQuasiQuote.
+	state advance.
+	term := self parseUnaryPrefixExpression: state.
+
+	^ SysmelParseTreeQuasiQuoteNode new
+		sourcePosition: (state sourcePositionFrom: startPosition);
+		term: term;
+		yourself
+]
+
+{ #category : 'parsing' }
+SysmelParser >> parseQuasiUnquote: state [
+	| startPosition term |
+	startPosition := state position.
+	self assert: state peekKind = SSTQuasiUnquote.
+	state advance.
+	term := self parseUnaryPrefixExpression: state.
+
+	^ SysmelParseTreeQuasiUnquoteNode new
+		sourcePosition: (state sourcePositionFrom: startPosition);
+		term: term;
+		yourself
+]
+
+{ #category : 'parsing' }
+SysmelParser >> parseQuote: state [
+	| startPosition term |
+	startPosition := state position.
+	self assert: state peekKind = SSTQuote.
+	state advance.
+	term := self parseUnaryPrefixExpression: state.
+
+	^ SysmelParseTreeQuoteNode new
+		sourcePosition: (state sourcePositionFrom: startPosition);
+		term: term;
+		yourself
+]
+
+{ #category : 'parsing' }
 SysmelParser >> parseSequenceUntilEndOrDelimiter: delimiter state: state [
 	| initialPosition elements |
 	initialPosition := state position.
@@ -422,6 +528,20 @@ SysmelParser >> parseSourceCode: aSourceCode tokens: tokens [
 ]
 
 { #category : 'parsing' }
+SysmelParser >> parseSplice: state [
+	| startPosition term |
+	startPosition := state position.
+	self assert: state peekKind = SSTSplice.
+	state advance.
+	term := self parseUnaryPrefixExpression: state.
+
+	^ SysmelParseTreeSpliceNode new
+		sourcePosition: (state sourcePositionFrom: startPosition);
+		term: term;
+		yourself
+]
+
+{ #category : 'parsing' }
 SysmelParser >> parseTerm: state [
 	state peekKind = SSTIdentifier ifTrue: [ ^ self parseIdentifierReference: state ].
 	state peekKind = SSTLeftParent ifTrue: [ ^ self parseParenthesis: state ].
@@ -444,6 +564,11 @@ SysmelParser >> parseUnaryPostfixExpression: state [
 
 { #category : 'parsing' }
 SysmelParser >> parseUnaryPrefixExpression: state [
+	state peekKind = SSTQuote ifTrue: [ ^ self parseQuote: state ].
+	state peekKind = SSTQuasiQuote ifTrue: [ ^ self parseQuasiQuote: state ].
+	state peekKind = SSTQuasiUnquote ifTrue: [ ^ self parseQuasiUnquote: state ].
+	state peekKind = SSTQuote ifTrue: [ ^ self parseQuote: state ].
+	state peekKind = SSTSplice ifTrue: [ ^ self parseSplice: state ].
 	^ self parseUnaryPostfixExpression: state
 ]
 

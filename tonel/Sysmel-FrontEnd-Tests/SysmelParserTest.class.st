@@ -118,7 +118,7 @@ SysmelParserTest >> testBinaryExpressionSequence2 [
 	| node leftOperand operator rightOperand operator2 rightOperand2 |
 	node := self parseSourceStringWithoutError: '1 + 2 * 5'.
 	self assert: node isBinaryExpressionSequenceNode.
-	self assert: node elements size equals: 3.
+	self assert: node elements size equals: 5.
 	
 	leftOperand := node elements at: 1.
 	self assert: leftOperand isLiteralIntegerNode.
@@ -154,6 +154,28 @@ SysmelParserTest >> testIdentifierReference [
 	node := self parseSourceStringWithoutError: 'identifier'.
 	self assert: node isIdentifierReferenceNode .
 	self assert: node name equals: #identifier.
+]
+
+{ #category : 'tests' }
+SysmelParserTest >> testKeywordApplication [
+	| node |
+	node := self parseSourceStringWithoutError: 'if: condition then: trueResult else: falseResult'.
+	self assert: node isMessageSendNode .
+	self assert: node receiver isNil.
+
+	self assert: node selector isLiteralSymbolNode.
+	self assert: node selector value equals: #if:then:else:.
+	
+	self assert: node arguments size equals: 3.
+	self assert: node arguments first isIdentifierReferenceNode .
+	self assert: node arguments first name equals: #condition.
+	
+	self assert: node arguments second isIdentifierReferenceNode .
+	self assert: node arguments second name equals: #trueResult.
+
+	self assert: node arguments third isIdentifierReferenceNode .
+	self assert: node arguments third name equals: #falseResult.
+
 ]
 
 { #category : 'tests' }
@@ -277,7 +299,7 @@ SysmelParserTest >> testQuasiUnquote [
 { #category : 'tests' }
 SysmelParserTest >> testQuote [
 	| node |
-	node := self parseSourceStringWithoutError: '``42'.
+	node := self parseSourceStringWithoutError: '`''42'.
 	self assert: node isQuoteNode.
 	self assert: node term isLiteralIntegerNode.
 	self assert: node term value equals: 42.
