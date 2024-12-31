@@ -284,7 +284,7 @@ SysmelScanner >> scanNextTokenWithState: state [
 	"Operators"
 	(self isOperatorCharacter: c) ifTrue: [
 		| operatorToken |
-		[state atEnd not and: [ self isOperatorCharacter: c ]] whileTrue: [
+		[state atEnd not and: [ self isOperatorCharacter: state peek ]] whileTrue: [
 			state advance
 		].
 	
@@ -317,7 +317,6 @@ SysmelScanner >> scanSourceCode: sourceCode [
 SysmelScanner >> selectMoreSpecificKindForOperatorToken: operatorToken [
 	| textValue |
 	textValue := operatorToken getTextValue.
-
 	textValue = '<' ifTrue: [ operatorToken kind: SSTLessThan ].
 	textValue = '>' ifTrue: [ operatorToken kind: SSTGreaterThan ].
 	textValue = '*' ifTrue: [ operatorToken kind: SSTStar ].
