@@ -25,6 +25,11 @@ SysmelParseTreeVisitor >> visitBinaryExpressionSequenceNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeVisitor >> visitFunctionalDependentNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeVisitor >> visitIdentifierReferenceNode: node [
 	self subclassResponsibility
 ]

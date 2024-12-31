@@ -18,6 +18,69 @@ SysmelParser >> isBinaryExpressionOperator: kind [
 ]
 
 { #category : 'parsing' }
+SysmelParser >> parseAssignmentExpression: state [
+	| startPosition assignedStore assignedValue |
+	startPosition := state position.
+	assignedStore := self parseLowPrecedenceExpression: state.
+	state peekKind = SSTAssignment ifTrue: [
+		state advance.
+		assignedValue := self parseAssignmentExpression: state.
+		^ SysmelParseTreeAssignmentNode new
+				sourcePosition: (state sourcePositionFrom: startPosition);
+				store: assignedStore;
+				value: assignedValue;
+				yourself.
+	] ifFalse: [
+		^ assignedStore
+	]
+]
+
+{ #category : 'parsing' }
+SysmelParser >> parseAssociationExpression: state [
+	| startPosition key value |
+	startPosition := state position.
+	key := self parseBinaryExpressionSequence: state.
+	
+	state peekKind ~= SSTColon ifTrue: [
+		^ key
+	].
+	state advance.
+	value := self parseAssociationExpression: state.
+	
+	^ SysmelParseTreeAssociationNode new
+		sourcePosition: (state sourcePositionFrom: startPosition);
+		key: key;
+		value: value;
+		yourself
+	
+]
+
+{ #category : 'parsing' }
+SysmelParser >> parseBinaryExpressionSequence: state [
+	| startPosition operand |
+	startPosition := state position.
+	operand := self parseUnaryPrefixExpression: state.
+	(self isBinaryExpressionOperator: state peekKind) ifFalse: [
+		^ operand
+	].
+
+	self halt
+]
+
+{ #category : 'parsing' }
+SysmelParser >> parseBindExpression: state [
+	| startPosition patternExpressionOrValue |
+	startPosition := state position.
+	patternExpressionOrValue := self parseFunctionalTypeWithOptionalArgument: state.
+	state peekKind = SSTBindOperator ifTrue: [
+		state advance.
+		self halt
+	] ifFalse: [
+		^ patternExpressionOrValue
+	].
+]
+
+{ #category : 'parsing' }
 SysmelParser >> parseCEscapeSequences: string [
 	^ ByteString streamContents: [ :out |
 		| i size |
@@ -53,8 +116,31 @@ SysmelParser >> parseCEscapeSequences: string [
 ]
 
 { #category : 'parsing' }
+SysmelParser >> parseCommaExpression: state [
+	| startPosition element elements |
+	startPosition := state position.
+	element := self parseAssignmentExpression: state.
+	state peekKind ~= SSTComma ifTrue: [
+		^ element
+	].
+
+	elements := OrderedCollection new.
+	elements add: element.
+	[ state peekKind = SSTComma ] whileTrue: [
+		state advance.
+		element := self parseAssignmentExpression: state.
+		elements add: element 
+	].
+
+	^ SysmelParseTreeTupleNode new
+		sourcePosition: (state sourcePositionFrom: startPosition);
+		elements: elements asArray;
+		yourself
+]
+
+{ #category : 'parsing' }
 SysmelParser >> parseExpression: state [
-	^ self parseTerm: state
+	^ self parseBindExpression: state
 ]
 
 { #category : 'parsing' }
@@ -91,6 +177,37 @@ SysmelParser >> parseExpressionListUntilEndOrDelimiter: delimiter state: state [
 ]
 
 { #category : 'parsing' }
+SysmelParser >> parseFunctionalType: state [
+	| startPosition argumentPatternOrExpression resultTypeExpression |
+	startPosition := state position.
+	argumentPatternOrExpression := self parseCommaExpression: state.
+	state peekKind = SSTColonColon ifTrue: [
+		state advance.
+		resultTypeExpression := self parseFunctionalType: state.
+		^ SysmelParseTreeFunctionalDependentTypeNode new
+			sourcePosition: (state sourcePositionFrom: startPosition);
+			argumentPattern: argumentPatternOrExpression;
+			resultType: resultTypeExpression
+	].
+	^ argumentPatternOrExpression
+]
+
+{ #category : 'parsing' }
+SysmelParser >> parseFunctionalTypeWithOptionalArgument: state [
+	| startPosition resultTypeExpression |
+	state peekKind = SSTColonColon ifTrue: [
+		state advance.
+		startPosition := state position.
+		resultTypeExpression := self parseFunctionalType: state.
+		^ SysmelParseTreeFunctionalDependentTypeNode new
+			resultType: resultTypeExpression;
+			yourself
+	] ifFalse: [
+		^ self parseFunctionalType: state
+	]
+]
+
+{ #category : 'parsing' }
 SysmelParser >> parseIdentifierReference: state [
 	| token |
 	token := state next.
@@ -99,6 +216,22 @@ SysmelParser >> parseIdentifierReference: state [
 		sourcePosition: token sourcePosition;
 		name: token getTextValue asSymbol;
 		yourself
+]
+
+{ #category : 'parsing' }
+SysmelParser >> parseKeywordApplication: state [
+	self halt
+]
+
+{ #category : 'parsing' }
+SysmelParser >> parseKeywordMessageSend: state [
+	| startPosition receiver |
+	startPosition := state position.
+	receiver := self parseAssociationExpression: state.
+	state peekKind ~= SSTKeyword ifTrue: [ ^ receiver ].
+	
+	self halt
+
 ]
 
 { #category : 'parsing' }
@@ -206,6 +339,27 @@ SysmelParser >> parseLiteralSymbol: state [
 ]
 
 { #category : 'parsing' }
+SysmelParser >> parseLowPrecedenceExpression: state [
+	state peekKind = SSTKeyword ifTrue: [
+		^ self parseKeywordApplication: state
+	] ifFalse: [
+		^ self parseMessageCascade: state
+	]
+	
+]
+
+{ #category : 'parsing' }
+SysmelParser >> parseMessageCascade: state [
+	| startPosition firstMessage |
+	startPosition := state position.
+	firstMessage := self parseKeywordMessageSend: state.
+	state peekKind ~= SSTSemicolon ifTrue: [
+		^ firstMessage
+	].
+	self halt
+]
+
+{ #category : 'parsing' }
 SysmelParser >> parseParenthesis: state [
 	"("
 	| startPosition token expression |
@@ -281,6 +435,16 @@ SysmelParser >> parseTerm: state [
 { #category : 'parsing' }
 SysmelParser >> parseTopLevelExpression: state [
 	^ self parseSequenceUntilEndOrDelimiter: SSTEndOfSource state: state
+]
+
+{ #category : 'parsing' }
+SysmelParser >> parseUnaryPostfixExpression: state [
+	^ self parseTerm: state
+]
+
+{ #category : 'parsing' }
+SysmelParser >> parseUnaryPrefixExpression: state [
+	^ self parseUnaryPostfixExpression: state
 ]
 
 { #category : 'parsing' }

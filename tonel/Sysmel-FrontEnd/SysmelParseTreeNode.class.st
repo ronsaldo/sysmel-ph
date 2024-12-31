@@ -38,6 +38,11 @@ SysmelParseTreeNode >> isBinaryExpressionSequenceNode [
 ]
 
 { #category : 'testing' }
+SysmelParseTreeNode >> isFunctionalDependentTypeNode [
+	^ false
+]
+
+{ #category : 'testing' }
 SysmelParseTreeNode >> isIdentifierReferenceNode [
 	^ false
 ]

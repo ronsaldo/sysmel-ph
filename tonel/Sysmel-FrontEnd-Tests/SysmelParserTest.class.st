@@ -312,7 +312,7 @@ SysmelParserTest >> testTuple1 [
 	
 	element := node elements first.
 	self assert: element isLiteralIntegerNode.
-	self assert: element equals: 42.
+	self assert: element value equals: 42.
 	 
 	
 ]
@@ -326,11 +326,11 @@ SysmelParserTest >> testTuple2 [
 	
 	element := node elements first.
 	self assert: element isLiteralIntegerNode.
-	self assert: element equals: 42.
+	self assert: element value equals: 42.
 	 
 	element := node elements second.
 	self assert: element isLiteralIntegerNode.
-	self assert: element equals: 5.
+	self assert: element value equals: 5.
 	
 ]
 

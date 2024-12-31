@@ -24,6 +24,12 @@ SysmelParseTreeSequentialVisitor >> visitBinaryExpressionSequenceNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeSequentialVisitor >> visitFunctionalDependentNode: node [
+	self visitNode: node argumentPattern.
+	self visitNode: node resultType.
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSequentialVisitor >> visitIdentifierReferenceNode: node [
 	"By default do nothing here."
 ]
