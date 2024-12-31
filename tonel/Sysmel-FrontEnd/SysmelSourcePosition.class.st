@@ -103,3 +103,12 @@ SysmelSourcePosition >> startLine: anObject [
 
 	startLine := anObject
 ]
+
+{ #category : 'accessing' }
+SysmelSourcePosition >> to: otherPosition [
+	^ self copy
+		endIndex: otherPosition endIndex;
+		endLine: otherPosition endLine;
+		endColumn: otherPosition endColumn;
+		yourself
+]
