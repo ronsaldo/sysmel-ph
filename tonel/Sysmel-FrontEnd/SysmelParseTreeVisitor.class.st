@@ -10,8 +10,43 @@ Class {
 }
 
 { #category : 'visiting' }
+SysmelParseTreeVisitor >> visitIdentifierReferenceNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeVisitor >> visitLiteralCharacterNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeVisitor >> visitLiteralFloatNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeVisitor >> visitLiteralIntegerNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeVisitor >> visitLiteralStringNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeVisitor >> visitLiteralSymbolNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeVisitor >> visitNode: aNode [
 	^ aNode accept: self
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeVisitor >> visitParseErrorNode: node [
+	self subclassResponsibility
 ]
 
 { #category : 'visiting' }

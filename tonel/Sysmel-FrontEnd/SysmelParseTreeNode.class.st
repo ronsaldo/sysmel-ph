@@ -18,6 +18,41 @@ SysmelParseTreeNode >> accept: visitor [
 ]
 
 { #category : 'testing' }
+SysmelParseTreeNode >> isLiteralCharacterNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SysmelParseTreeNode >> isLiteralFloatNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SysmelParseTreeNode >> isLiteralIntegerNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SysmelParseTreeNode >> isLiteralNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SysmelParseTreeNode >> isLiteralStringNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SysmelParseTreeNode >> isLiteralSymbolNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SysmelParseTreeNode >> isParseErrorNode [
+	^ false
+]
+
+{ #category : 'testing' }
 SysmelParseTreeNode >> isSequenceNode [
 	^ false
 ]

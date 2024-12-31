@@ -21,6 +21,11 @@ SysmelScannerTest >> scanTokenKinds: aString [
 ]
 
 { #category : 'tests' }
+SysmelScannerTest >> testCharacter [
+	self assert: (self scanTokenKinds: '''A''') asArray equals: { SSTCharacter . SSTEndOfSource }
+]
+
+{ #category : 'tests' }
 SysmelScannerTest >> testEmpty [
 	self assert: (self scanTokenKinds: '') asArray equals: { SSTEndOfSource }
 ]

@@ -17,6 +17,46 @@ Class {
 	#tag : 'Parser'
 }
 
+{ #category : 'stream in' }
+SysmelParserState >> advance [
+	self advance: 1
+]
+
+{ #category : 'stream in' }
+SysmelParserState >> advance: offset [
+	position := position + offset
+]
+
+{ #category : 'as yet unclassified' }
+SysmelParserState >> advanceWithExpectedError: errorMessage [
+	| errorPosition |
+	self peekKind = SSTError ifTrue: [
+		| errorToken |
+		errorToken := self next.
+		^ SysmelParseTreeErrorNode new
+			sourcePosition: errorToken currentSourcePosition;
+			errorMessage: errorToken errorMessage;
+			yourself
+	].
+	self atEnd ifTrue: [
+		^ SysmelParseTreeErrorNode new
+			sourcePosition: self currentSourcePosition;
+			errorMessage: errorMessage;
+			yourself
+	].
+	errorPosition := self currentSourcePosition.
+	self advance.
+	^ SysmelParseTreeErrorNode new
+			sourcePosition: errorPosition;
+			errorMessage: errorMessage;
+			yourself
+]
+
+{ #category : 'accessing' }
+SysmelParserState >> atEnd [
+	^ position > tokens size
+]
+
 { #category : 'as yet unclassified' }
 SysmelParserState >> currentSourcePosition [
 	position <= tokens size ifTrue: [
@@ -35,6 +75,14 @@ SysmelParserState >> initialize [
 { #category : 'as yet unclassified' }
 SysmelParserState >> memento [
 	^ position
+]
+
+{ #category : 'stream in' }
+SysmelParserState >> next [
+	| result |
+	result := self peek.
+	self atEnd ifFalse: [ self advance ].
+	^ result
 ]
 
 { #category : 'stream in' }

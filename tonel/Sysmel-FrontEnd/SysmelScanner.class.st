@@ -237,7 +237,7 @@ SysmelScanner >> scanNextTokenWithState: state [
 		].
 		state advance.
 		
-		^ state makeToken: SSTString startingFrom: initialState
+		^ state makeToken: SSTCharacter startingFrom: initialState
 	].
 	"Punctuation"
 	c = $( ifTrue: [ state advance. ^ state makeToken: SSTLeftParent startingFrom: initialState ].
