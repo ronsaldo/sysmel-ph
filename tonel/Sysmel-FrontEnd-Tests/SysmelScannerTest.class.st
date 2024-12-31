@@ -45,7 +45,7 @@ SysmelScannerTest >> testIncompleteMultilineComment [
 
 { #category : 'as yet unclassified' }
 SysmelScannerTest >> testIncompleteString [
-	self assert: (self scanTokenKinds: '"Hello World"') asArray equals: { SSTError . SSTEndOfSource }
+	self assert: (self scanTokenKinds: '"Hello World') asArray equals: { SSTError . SSTEndOfSource }
 ]
 
 { #category : 'as yet unclassified' }

@@ -162,6 +162,51 @@ SysmelScanner >> scanNextTokenWithState: state [
 		
 			^ state makeToken: SSTSymbol startingFrom: initialState
 		].
+	
+		(self isOperatorCharacter: c1) ifTrue: [
+			state advance: 2.
+			[ state atEnd not and: [ self isOperatorCharacter: state peek ] ] whileTrue: [
+				state advance
+			].
+		
+			^ state makeToken: SSTSymbol startingFrom: initialState
+		].
+	
+		c1 = $" ifTrue: [
+			state advance: 2.
+			[state atEnd not and: [state peek ~= $"]] whileTrue: [
+				(state peek == $\ and: [(state peek: 1) isCharacter ]) ifTrue: [ 
+					state advance: 2
+				] ifFalse: [
+					state advance
+				]
+			].
+			state peek ~= $" ifTrue: [
+				^ state makeErrorTokenStartingFrom: initialState withMessage: 'Incomplete string symbolliteral.'
+			].
+			state advance.
+		
+		^ state makeToken: SSTSymbol startingFrom: initialState
+
+		]
+	].
+
+	"Strings"
+	c = $" ifTrue: [
+		state advance.
+		[state atEnd not and: [state peek ~= $"]] whileTrue: [
+			(state peek == $\ and: [(state peek: 1) isCharacter ]) ifTrue: [ 
+				state advance: 2
+			] ifFalse: [
+				state advance
+			]
+		].
+		state peek ~= $" ifTrue: [
+			^ state makeErrorTokenStartingFrom: initialState withMessage: 'Incomplete string literal.'
+		].
+		state advance.
+		
+		^ state makeToken: SSTString startingFrom: initialState
 	].
 	self halt.
 ]
