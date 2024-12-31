@@ -13,11 +13,13 @@ Class {
 
 { #category : 'testing' }
 SysmelScanner >> isDigit: character [
+	character isInteger ifTrue: [ ^ false ].
 	^ $0 <= character and: [ character <= $9 ]
 ]
 
 { #category : 'testing' }
 SysmelScanner >> isE: character [
+	character isInteger ifTrue: [ ^ false ].
 	^ 'eE' includes: character
 ]
 
@@ -36,6 +38,12 @@ SysmelScanner >> isIdentifierStart: c [
 { #category : 'testing' }
 SysmelScanner >> isOperatorCharacter: c [
 	^ '+-/\\*~<>=@%|&?!' includes: c
+]
+
+{ #category : 'testing' }
+SysmelScanner >> isPlusOrMinus: character [
+	character isInteger ifTrue: [ ^ false ].
+	^ '+-' includes: character
 ]
 
 { #category : 'as yet unclassified' }
@@ -84,10 +92,78 @@ SysmelScanner >> scanNextTokenWithState: state [
 			^ state makeToken: (isMultiKeyword
 				ifTrue: [ SSTMultiKeyword ]
 				ifFalse: [SSTKeyword]) startingFrom: initialState.
+		]
+	].
+	
+	(self isDigit: c) ifTrue: [
+		state advance.
+		[state atEnd not and: [ self isDigit: state peek ]] whileTrue: [
+			state advance
+		].
+			
+		"Parse the radix"
+		(state atEnd not and: [ 'rR' includes: state peek ]) ifTrue: [
+			state advance.
+			[state atEnd not and: [ self isIdentifierMiddle: state peek ]] whileTrue: [
+				state advance
+			].
+			
+			^ state makeToken: SSTNat startingFrom: initialState
 		].
 	
-		^ state makeToken: SSTIdentifier startingFrom: initialState.
-	]
+		"Decimal point"
+		(state peek = $. and: [ self isDigit: (state peek:1) ]) ifTrue: [
+			state advance: 2.
+			[state atEnd not and: [ self isDigit: state peek ]] whileTrue: [
+				state advance
+			].
+		
+			"Decimal exponent"
+			((self isE: state peek) and: [ (self isDigit: (state peek: 1)) 
+				or: [(self isPlusOrMinus: (state peek: 1)) and: (self isDigit: (state peek: 2))]]) ifTrue: [
+				state advance: 2.
+				[state atEnd not and: [ self isDigit: state peek ]] whileTrue: [
+					state advance
+				]
+			].
+	
+			^ state makeToken: SSTFloat startingFrom: initialState
+		].
+		
+		^ state makeToken: SSTNat startingFrom: initialState
+	].
+
+	"Symbols"
+	c = $# ifTrue: [
+		| c1 |
+		c1 := state peek: 1.
+		c1 isInteger ifTrue: [
+			state advance.
+			state makeErrorTokenStartingFrom: initialState withMessage: 'Unsupported single #'
+		].
+	
+		(self isIdentifierStart: c1) ifTrue: [
+			state advance: 2.
+			[ state atEnd not and: [self isIdentifierMiddle: state peek] ] whileTrue: [
+				state advance
+			].
+			
+			state peek = $: ifTrue: [
+				| isMultiKeyword hasAdvanced |
+				state advance.
+				isMultiKeyword := false.
+				hasAdvanced := true.
+				[ hasAdvanced ] whileTrue: [
+					hasAdvanced  := self scanAdvanceKeyword: state.
+					isMultiKeyword := isMultiKeyword or: [ hasAdvanced ].
+				].
+				^ state makeToken: SSTSymbol startingFrom: initialState.
+			].
+		
+			^ state makeToken: SSTSymbol startingFrom: initialState
+		].
+	].
+	self halt.
 ]
 
 { #category : 'scanning' }

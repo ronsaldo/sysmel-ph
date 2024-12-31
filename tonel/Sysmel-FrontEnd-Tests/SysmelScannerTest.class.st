@@ -62,12 +62,17 @@ SysmelScannerTest >> testKeyword [
 
 { #category : 'as yet unclassified' }
 SysmelScannerTest >> testKeywordSymbol [
-	self assert: (self scanTokenKinds: '#keyword:') asArray equals: { SSTMultiKeyword . SSTEndOfSource }
+	self assert: (self scanTokenKinds: '#keyword:') asArray equals: { SSTSymbol . SSTEndOfSource }
 ]
 
 { #category : 'as yet unclassified' }
 SysmelScannerTest >> testMultiKeyword [
 	self assert: (self scanTokenKinds: 'keyword:with:') asArray equals: { SSTMultiKeyword . SSTEndOfSource }
+]
+
+{ #category : 'as yet unclassified' }
+SysmelScannerTest >> testMultiKeywordSymbol [
+	self assert: (self scanTokenKinds: '#keyword:with:') asArray equals: { SSTSymbol . SSTEndOfSource }
 ]
 
 { #category : 'as yet unclassified' }
