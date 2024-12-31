@@ -7,8 +7,9 @@ Class {
 	#pools : [
 		'SysmelScannerTokens'
 	],
-	#category : 'Sysmel-FrontEnd-Tests',
-	#package : 'Sysmel-FrontEnd-Tests'
+	#category : 'Sysmel-FrontEnd-Tests-Scanner',
+	#package : 'Sysmel-FrontEnd-Tests',
+	#tag : 'Scanner'
 }
 
 { #category : 'tests' }

@@ -44,8 +44,9 @@ Class {
 		'SSTString',
 		'SSTSymbol'
 	],
-	#category : 'Sysmel-FrontEnd',
-	#package : 'Sysmel-FrontEnd'
+	#category : 'Sysmel-FrontEnd-Scanner',
+	#package : 'Sysmel-FrontEnd',
+	#tag : 'Scanner'
 }
 
 { #category : 'class initialization' }

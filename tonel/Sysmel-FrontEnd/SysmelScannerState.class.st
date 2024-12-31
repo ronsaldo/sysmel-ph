@@ -14,8 +14,9 @@ Class {
 	#pools : [
 		'SysmelScannerTokens'
 	],
-	#category : 'Sysmel-FrontEnd',
-	#package : 'Sysmel-FrontEnd'
+	#category : 'Sysmel-FrontEnd-Scanner',
+	#package : 'Sysmel-FrontEnd',
+	#tag : 'Scanner'
 }
 
 { #category : 'accessing' }

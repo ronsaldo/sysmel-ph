@@ -16,8 +16,9 @@ Class {
 	#pools : [
 		'SysmelScannerTokens'
 	],
-	#category : 'Sysmel-FrontEnd',
-	#package : 'Sysmel-FrontEnd'
+	#category : 'Sysmel-FrontEnd-Scanner',
+	#package : 'Sysmel-FrontEnd',
+	#tag : 'Scanner'
 }
 
 { #category : 'accessing' }
@@ -115,5 +116,14 @@ SysmelSourcePosition >> to: otherPosition [
 		endIndex: otherPosition endIndex;
 		endLine: otherPosition endLine;
 		endColumn: otherPosition endColumn;
+		yourself
+]
+
+{ #category : 'accessing' }
+SysmelSourcePosition >> until: otherPosition [
+	^ self copy
+		endIndex: otherPosition startIndex;
+		endLine: otherPosition startLine;
+		endColumn: otherPosition startColumn;
 		yourself
 ]
