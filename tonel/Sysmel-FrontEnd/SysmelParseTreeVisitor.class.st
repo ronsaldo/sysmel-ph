@@ -10,6 +10,16 @@ Class {
 }
 
 { #category : 'visiting' }
+SysmelParseTreeVisitor >> visitAssociationNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeVisitor >> visitBinaryExpressionSequenceNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeVisitor >> visitIdentifierReferenceNode: node [
 	self subclassResponsibility
 ]
@@ -45,11 +55,21 @@ SysmelParseTreeVisitor >> visitNode: aNode [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeVisitor >> visitNodes: aCollectionOfNode [
+	aCollectionOfNode do: [ :each | self visitNode: each ]
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeVisitor >> visitParseErrorNode: node [
 	self subclassResponsibility
 ]
 
 { #category : 'visiting' }
 SysmelParseTreeVisitor >> visitSequenceNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeVisitor >> visitTupleNode: node [
 	self subclassResponsibility
 ]

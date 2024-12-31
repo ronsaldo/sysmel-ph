@@ -18,6 +18,26 @@ SysmelParseTreeNode >> accept: visitor [
 ]
 
 { #category : 'testing' }
+SysmelParseTreeNode >> isApplicationNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SysmelParseTreeNode >> isAssociationNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SysmelParseTreeNode >> isBinaryExpressionSequenceNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SysmelParseTreeNode >> isIdentifierReferenceNode [
+	^ false
+]
+
+{ #category : 'testing' }
 SysmelParseTreeNode >> isLiteralCharacterNode [
 	^ false
 ]
@@ -54,6 +74,11 @@ SysmelParseTreeNode >> isParseErrorNode [
 
 { #category : 'testing' }
 SysmelParseTreeNode >> isSequenceNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SysmelParseTreeNode >> isTupleNode [
 	^ false
 ]
 

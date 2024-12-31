@@ -12,6 +12,11 @@ Class {
 	#tag : 'Parser'
 }
 
+{ #category : 'testing' }
+SysmelParser >> isBinaryExpressionOperator: kind [
+	^ {SSTOperator . SSTStar . SSTLessThan . SSTGreaterThan . SSTBar} includes: kind 
+]
+
 { #category : 'parsing' }
 SysmelParser >> parseCEscapeSequences: string [
 	^ ByteString streamContents: [ :out |
@@ -49,7 +54,7 @@ SysmelParser >> parseCEscapeSequences: string [
 
 { #category : 'parsing' }
 SysmelParser >> parseExpression: state [
-	^ self parseLiteral: state
+	^ self parseTerm: state
 ]
 
 { #category : 'parsing' }
@@ -83,6 +88,17 @@ SysmelParser >> parseExpressionListUntilEndOrDelimiter: delimiter state: state [
 	
 	].
 	^ elements
+]
+
+{ #category : 'parsing' }
+SysmelParser >> parseIdentifierReference: state [
+	| token |
+	token := state next.
+	self assert: token kind = SSTIdentifier.
+	^ SysmelParseTreeIdentifierReferenceNode new
+		sourcePosition: token sourcePosition;
+		name: token getTextValue asSymbol;
+		yourself
 ]
 
 { #category : 'parsing' }
@@ -190,6 +206,38 @@ SysmelParser >> parseLiteralSymbol: state [
 ]
 
 { #category : 'parsing' }
+SysmelParser >> parseParenthesis: state [
+	"("
+	| startPosition token expression |
+	startPosition := state position.
+	self assert: state peekKind = SSTLeftParent.
+	state advance.
+	
+	((self isBinaryExpressionOperator: state peekKind) and: [ (state peekKind: 1) = SSTRightParent]) ifTrue: [ 
+		token := state next.
+		state advance.
+		^ SysmelParseTreeIdentifierReferenceNode new
+			sourcePosition: token sourcePosition;
+			name: token getText asSymbol;
+			yourself
+	].
+
+	state peekKind = SSTRightParent ifTrue: [ 
+		state advance.
+		^ SysmelParseTreeTupleNode new
+			sourcePosition: (state sourcePositionFrom: startPosition);
+			elements: #();
+			yourself
+	].
+	
+	expression := self parseSequenceUntilEndOrDelimiter: SSTRightParent state: state.
+	
+	")"
+	expression := state expect: SSTRightParent addingErrorToNode: expression.
+	^ expression
+]
+
+{ #category : 'parsing' }
 SysmelParser >> parseSequenceUntilEndOrDelimiter: delimiter state: state [
 	| initialPosition elements |
 	initialPosition := state position.
@@ -217,6 +265,17 @@ SysmelParser >> parseSourceCode: aSourceCode tokens: tokens [
 		tokens: tokens;
 		yourself.
 	^ self parseWithState: state
+]
+
+{ #category : 'parsing' }
+SysmelParser >> parseTerm: state [
+	state peekKind = SSTIdentifier ifTrue: [ ^ self parseIdentifierReference: state ].
+	state peekKind = SSTLeftParent ifTrue: [ ^ self parseParenthesis: state ].
+	state peekKind = SSTLeftCurlyBracket ifTrue: [ ^ self parseBlock: state ].
+	state peekKind = SSTDictionaryStart ifTrue: [ ^ self parseDictionary: state ].
+	state peekKind = SSTColon ifTrue: [ ^ self parseBindableName: state ].
+	
+	^ self parseLiteral: state
 ]
 
 { #category : 'parsing' }

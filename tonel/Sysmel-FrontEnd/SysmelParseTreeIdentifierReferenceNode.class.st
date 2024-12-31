@@ -13,3 +13,20 @@ Class {
 SysmelParseTreeIdentifierReferenceNode >> accept: visitor [
 	^ visitor visitIdentifierReferenceNode: self
 ]
+
+{ #category : 'testing' }
+SysmelParseTreeIdentifierReferenceNode >> isIdentifierReferenceNode [
+	^ true
+]
+
+{ #category : 'accessing' }
+SysmelParseTreeIdentifierReferenceNode >> name [
+
+	^ name
+]
+
+{ #category : 'accessing' }
+SysmelParseTreeIdentifierReferenceNode >> name: anObject [
+
+	name := anObject
+]

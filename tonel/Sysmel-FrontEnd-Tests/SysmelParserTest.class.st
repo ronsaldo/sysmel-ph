@@ -50,10 +50,81 @@ SysmelParserTest >> testApplication2 [
 ]
 
 { #category : 'tests' }
+SysmelParserTest >> testAssociation [
+	| node |
+	node := self parseSourceStringWithoutError: '42 : 5'.
+	self assert: node isAssociationNode.
+
+	self assert: node key isLiteralIntegerNode.
+	self assert: node key value equals: 42.
+
+	self assert: node value isLiteralIntegerNode.
+	self assert: node value value equals: 5.
+
+]
+
+{ #category : 'tests' }
+SysmelParserTest >> testBinaryExpressionSequence [
+	| node leftOperand operator rightOperand |
+	node := self parseSourceStringWithoutError: '1 + 2'.
+	self assert: node isBinaryExpressionSequenceNode.
+	self assert: node elements size equals: 3.
+	
+	leftOperand := node elements at: 1.
+	self assert: leftOperand isLiteralIntegerNode.
+	self assert: leftOperand value equals: 1.
+	
+	operator := node elements at: 2.
+	self assert: operator isLiteralSymbolNode.
+	self assert: operator value equals: #+.
+
+	rightOperand := node elements at: 3.
+	self assert: rightOperand isLiteralIntegerNode.
+	self assert: rightOperand value equals: 2.
+	
+]
+
+{ #category : 'tests' }
+SysmelParserTest >> testBinaryExpressionSequence2 [
+	| node leftOperand operator rightOperand operator2 rightOperand2 |
+	node := self parseSourceStringWithoutError: '1 + 2 * 5'.
+	self assert: node isBinaryExpressionSequenceNode.
+	self assert: node elements size equals: 3.
+	
+	leftOperand := node elements at: 1.
+	self assert: leftOperand isLiteralIntegerNode.
+	self assert: leftOperand value equals: 1.
+	
+	operator := node elements at: 2.
+	self assert: operator isLiteralSymbolNode.
+	self assert: operator value equals: #+.
+
+	rightOperand := node elements at: 3.
+	self assert: rightOperand isLiteralIntegerNode.
+	self assert: rightOperand value equals: 2.
+	
+	operator2 := node elements at: 4.
+	self assert: operator2 isLiteralSymbolNode.
+	self assert: operator2 value equals: #*.
+
+	rightOperand2 := node elements at: 5.
+	self assert: rightOperand2 isLiteralIntegerNode.
+	self assert: rightOperand2 value equals: 5
+]
+
+{ #category : 'tests' }
 SysmelParserTest >> testEmpty [
 	| ast |
 	ast := self parseSourceStringWithoutError: ''.
 	self assert: ast isSequenceNode.
+]
+
+{ #category : 'tests' }
+SysmelParserTest >> testIdentifierReference [
+	| node |
+	node := self parseSourceStringWithoutError: 'identifier'.
+	self assert: node isIdentifierReferenceNode .
+	self assert: node name equals: #identifier.
 ]
 
 { #category : 'tests' }
@@ -135,4 +206,44 @@ SysmelParserTest >> testLiteralSymbolString [
 	node := self parseSourceStringWithoutError: '#"Hello \"World\""'.
 	self assert: node isLiteralSymbolNode.
 	self assert: node value equals: #'Hello "World"'.
+]
+
+{ #category : 'tests' }
+SysmelParserTest >> testTuple [
+	| node |
+	node := self parseSourceStringWithoutError: '()'.
+	self assert: node isTupleNode.
+	self assert: node elements isEmpty.
+	
+]
+
+{ #category : 'tests' }
+SysmelParserTest >> testTuple1 [
+	| node element |
+	node := self parseSourceStringWithoutError: '42,'.
+	self assert: node isTupleNode.
+	self assert: node elements size equals: 1.
+	
+	element := node elements first.
+	self assert: element isLiteralIntegerNode.
+	self assert: element equals: 42.
+	 
+	
+]
+
+{ #category : 'tests' }
+SysmelParserTest >> testTuple2 [
+	| node element |
+	node := self parseSourceStringWithoutError: '42, 5'.
+	self assert: node isTupleNode.
+	self assert: node elements size equals: 2.
+	
+	element := node elements first.
+	self assert: element isLiteralIntegerNode.
+	self assert: element equals: 42.
+	 
+	element := node elements second.
+	self assert: element isLiteralIntegerNode.
+	self assert: element equals: 5.
+	
 ]

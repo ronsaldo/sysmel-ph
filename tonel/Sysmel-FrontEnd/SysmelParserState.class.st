@@ -67,6 +67,18 @@ SysmelParserState >> currentSourcePosition [
 	^ tokens last sourcePosition
 ]
 
+{ #category : 'as yet unclassified' }
+SysmelParserState >> expect: expectedKind addingErrorToNode: expression [
+	self peekKind = expectedKind ifTrue: [
+		self advance.
+		^ expression 
+	].
+	^ SysmelParseTreeErrorNode new
+		errorMessage: 'Expected a specific token';
+		innerNodes: { expression };
+		yourself
+]
+
 { #category : 'initialization' }
 SysmelParserState >> initialize [
 	position := 1

@@ -7,6 +7,17 @@ Class {
 }
 
 { #category : 'visiting' }
+SysmelParseTreeSequentialVisitor >> visitAssociationNode: node [
+	self visitNode: node key.
+	self visitNode: node value.
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSequentialVisitor >> visitBinaryExpressionSequenceNode: node [
+	self visitNodes: node elements
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSequentialVisitor >> visitIdentifierReferenceNode: node [
 	"By default do nothing here."
 ]
@@ -43,5 +54,10 @@ SysmelParseTreeSequentialVisitor >> visitParseErrorNode: node [
 
 { #category : 'visiting' }
 SysmelParseTreeSequentialVisitor >> visitSequenceNode: node [
-	node elements do: [ :each | self visitNode: each ]
+	self visitNodes: node elements
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSequentialVisitor >> visitTupleNode: node [
+	self visitNodes: node elements
 ]
