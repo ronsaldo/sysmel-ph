@@ -10,12 +10,42 @@ Class {
 }
 
 { #category : 'testing' }
+SoNGraphNode >> isAllocaGraphNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SoNGraphNode >> isAssociationGraphNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SoNGraphNode >> isDictionaryGraphNode [
+	^ false
+]
+
+{ #category : 'testing' }
 SoNGraphNode >> isLiteralValueGraphNode [
 	^ false
 ]
 
 { #category : 'testing' }
+SoNGraphNode >> isLoadValueGraphNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SoNGraphNode >> isSendMessageGraphNode [
+	^ false
+]
+
+{ #category : 'testing' }
 SoNGraphNode >> isSequencingGraphNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SoNGraphNode >> isStoreValueGraphNode [
 	^ false
 ]
 

@@ -10,6 +10,11 @@ Class {
 	#tag : 'SeaOfNodesGraph'
 }
 
+{ #category : 'testing' }
+SoNStoreValueGraphNode >> isStoreValueGraphNode [
+	^ true
+]
+
 { #category : 'accessing' }
 SoNStoreValueGraphNode >> pointer [
 

@@ -10,6 +10,11 @@ Class {
 	#tag : 'SeaOfNodesGraph'
 }
 
+{ #category : 'testing' }
+SoNAllocaGraphNode >> isAllocaGraphNode [
+	^ true
+]
+
 { #category : 'accessing' }
 SoNAllocaGraphNode >> type [
 	^ type

@@ -68,6 +68,29 @@ SysmelParseTreeSemanticAnalyzerTest >> testAssignment [
 ]
 
 { #category : 'tests' }
+SysmelParseTreeSemanticAnalyzerTest >> testAssociation [ 
+	| asg |
+	asg := self parseAndAnalyseASG: '1 : 2'.
+	
+	self assert: asg isAssociationGraphNode.
+	self assert: asg key isLiteralValueGraphNode.
+	self assert: asg key value equals: 1.
+
+	self assert: asg value isLiteralValueGraphNode.
+	self assert: asg value value equals: 2.
+]
+
+{ #category : 'tests' }
+SysmelParseTreeSemanticAnalyzerTest >> testBinaryExpressionSequence [
+	| asg |
+	asg := self parseAndAnalyseASG: '1+2'.
+	self assert: asg isSendMessageGraphNode.
+	self assert: asg receiver value equals: 1.
+	self assert: asg selector value equals: #+.
+	self assert: asg arguments first value equals: 2
+]
+
+{ #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testBindableAssignment [ 
 	| asg |
 	asg := self parseAndAnalyseASG: ':x := 42'.
@@ -87,6 +110,42 @@ SysmelParseTreeSemanticAnalyzerTest >> testBindableAssignment2 [
 	
 	self assert: asg elements second value equals: 42.
 	self assert: asg elements second type equals: Integer.
+]
+
+{ #category : 'tests' }
+SysmelParseTreeSemanticAnalyzerTest >> testDictionary [
+	| asg |
+	asg := self parseAndAnalyseASG: '#{}'.
+	
+	self assert: asg isDictionaryGraphNode.
+	self assert: asg elements size equals: 0.
+]
+
+{ #category : 'tests' }
+SysmelParseTreeSemanticAnalyzerTest >> testDictionary1 [
+	| asg |
+	asg := self parseAndAnalyseASG: '#{First: 1}'.
+	
+	self assert: asg isDictionaryGraphNode.
+	self assert: asg elements size equals: 1.
+]
+
+{ #category : 'tests' }
+SysmelParseTreeSemanticAnalyzerTest >> testDictionary2 [
+	| asg |
+	asg := self parseAndAnalyseASG: '#{First: 1. Second: 2}'.
+	
+	self assert: asg isDictionaryGraphNode.
+	self assert: asg elements size equals: 2.
+]
+
+{ #category : 'tests' }
+SysmelParseTreeSemanticAnalyzerTest >> testDictionary3 [
+	| asg |
+	asg := self parseAndAnalyseASG: '#{First: 1. Second: 2. #Third : 3}'.
+	
+	self assert: asg isDictionaryGraphNode.
+	self assert: asg elements size equals: 3.
 ]
 
 { #category : 'tests' }
@@ -197,4 +256,14 @@ SysmelParseTreeSemanticAnalyzerTest >> testTuple2 [
 	asg := self parseAndAnalyseASG: '42, 5'.
 	self assert: asg isTupleGraphNode.
 	self assert: asg elements size equals: 2
+]
+
+{ #category : 'tests' }
+SysmelParseTreeSemanticAnalyzerTest >> testUnaryMessageSend [
+	| asg |
+	asg := self parseAndAnalyseASG: '1 negated'.
+	self assert: asg isSendMessageGraphNode.
+	self assert: asg receiver value equals: 1.
+	self assert: asg selector value equals: #negated.
+	self assert: asg arguments size equals: 0
 ]

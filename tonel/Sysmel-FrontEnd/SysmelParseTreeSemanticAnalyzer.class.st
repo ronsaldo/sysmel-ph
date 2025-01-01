@@ -92,6 +92,51 @@ SysmelParseTreeSemanticAnalyzer >> visitAssignmentNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitAssociationNode: node [
+	| analyzedKey analyzedValue association |
+	analyzedKey := self visitNode: node key.
+	analyzedValue := node value ifNotNil: [:val | self visitNode: val].
+	association := SoNAssociationGraphNode new
+		sourcePosition: node sourcePosition;
+		key: analyzedKey;
+		value: analyzedValue;
+		yourself.
+	currentRegion addInstruction: association.
+	^ association
+	
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitBinaryExpressionSequenceNode: node [
+	| receiver operator operand messageSend |
+	self assert: node elements size >= 1. 
+	receiver := self visitNode: node elements first.
+	2 to: node elements size by: 2 do: [ :i |
+		operator := self visitNode: (node elements at: i).
+		operand := self visitNode: (node elements at: i + 1).
+		messageSend := SoNSendMessageGraphNode new
+			receiver: receiver;
+			selector: operator;
+			arguments: { operand }.
+		currentRegion addInstruction: messageSend.
+		receiver := messageSend
+	].
+	^ receiver
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitDictionaryNode: node [
+	| analyzedElements dictionary |
+	analyzedElements := node elements collect: [ :each | self visitNode: each ].
+	dictionary := SoNDictionaryGraphNode new
+		sourcePosition: node sourcePosition;
+		elements: analyzedElements;
+		yourself.
+	currentRegion addInstruction: dictionary.
+	^ dictionary
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitIdentifierReferenceNode: node [
 	| symbolToFind binding |
 	symbolToFind := node name.
@@ -156,6 +201,28 @@ SysmelParseTreeSemanticAnalyzer >> visitLiteralSymbolNode: node [
 		value: node value;
 		type: Symbol;
 		yourself
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitMessageSendNode: node [
+	| receiver selector arguments instruction |
+	node receiver ifNil: [
+		"TODO. use selector for looking a function"
+		self flag.
+	].
+
+	receiver := self visitNodeWithoutTypeCoercion: node receiver.
+	selector := self visitAndEvaluateSymbolValue: node selector.
+	arguments := node arguments collect: [:each | self visitNode: each].
+	instruction := SoNSendMessageGraphNode new
+						sourcePosition: node sourcePosition;
+						receiver: receiver;
+						selector: selector;
+						arguments: arguments;
+						type: SysmelTypeGradual uniqueInstance;
+						yourself.
+	currentRegion addInstruction: instruction.
+	^ instruction
 ]
 
 { #category : 'visiting' }
