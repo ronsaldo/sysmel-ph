@@ -142,6 +142,18 @@ SysmelParserTest >> testBinaryExpressionSequence2 [
 ]
 
 { #category : 'tests' }
+SysmelParserTest >> testBindableAssignment [
+	| node |
+	node := self parseSourceStringWithoutError: 'a := 42'.
+	self assert: node isAssignmentNode .
+	self assert: node store isIdentifierReferenceNode.
+	self assert: node store name equals: #a.
+	
+	self assert: node value isLiteralIntegerNode.
+	self assert: node value value equals: 42
+]
+
+{ #category : 'tests' }
 SysmelParserTest >> testBindableName [
 	| node |
 	node := self parseSourceStringWithoutError: ':a'.
@@ -154,6 +166,17 @@ SysmelParserTest >> testBindableName [
 SysmelParserTest >> testBindableName2 [
 	| node |
 	node := self parseSourceStringWithoutError: ':(Integer)a'.
+	self assert: node isBindableNameNode .
+	self assert: node nameExpression isLiteralSymbolNode.
+	self assert: node typeExpression isNotNil.
+	self assert: node typeExpression isIdentifierReferenceNode .
+	self assert: node typeExpression name equals: #Integer.
+]
+
+{ #category : 'tests' }
+SysmelParserTest >> testBindableName3 [
+	| node |
+	node := self parseSourceStringWithoutError: ':!(Integer)a'.
 	self assert: node isBindableNameNode .
 	self assert: node nameExpression isLiteralSymbolNode.
 	self assert: node typeExpression isNotNil.

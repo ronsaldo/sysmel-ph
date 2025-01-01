@@ -110,7 +110,7 @@ SysmelParser >> parseBindableName: state [
 	isExistential := false.
 	isMutable := false.
 	state peekKind = SSTBang ifTrue: [
-		isMutable := true
+		isMutable := true.
 		state advance
 	].
 

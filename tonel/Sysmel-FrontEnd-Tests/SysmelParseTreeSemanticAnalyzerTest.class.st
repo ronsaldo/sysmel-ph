@@ -14,12 +14,18 @@ Class {
 
 { #category : 'parsing' }
 SysmelParseTreeSemanticAnalyzerTest >> parseAndAnalyse: sourceString [
-	| ast environment |
+	| ast environment asgAndRegion |
 	ast := self parseSourceStringWithoutError: sourceString.
 	environment := module makeEnvironmentFor: ast.
 
-	^ SysmelParseTreeSemanticAnalyzer new
-			analyzeAST: ast withEnvironment: environment
+	asgAndRegion := SysmelParseTreeSemanticAnalyzer new
+			analyzeAST: ast withEnvironment: environment region: SoNRegionGraphNode new.
+	^ asgAndRegion
+]
+
+{ #category : 'parsing' }
+SysmelParseTreeSemanticAnalyzerTest >> parseAndAnalyseASG: sourceString [
+	^ (self parseAndAnalyse: sourceString) first
 ]
 
 { #category : 'parsing' }
@@ -46,9 +52,47 @@ SysmelParseTreeSemanticAnalyzerTest >> setUp [
 ]
 
 { #category : 'tests' }
+SysmelParseTreeSemanticAnalyzerTest >> testAssignment [ 
+	| asg asgAndRegion region |
+	asgAndRegion := self parseAndAnalyse: ':!x := 42. x := 5'.
+	asg := asgAndRegion first.
+	region := asgAndRegion second.
+	
+	self assert: asg isSequencingGraphNode.
+	self assert: asg elements size equals: 2.
+	self assert: asg elements first isLiteralValueGraphNode.
+	self assert: asg elements first value equals: 42.
+
+	self assert: asg elements second isLiteralValueGraphNode.
+	self assert: asg elements second value equals: 5.
+]
+
+{ #category : 'tests' }
+SysmelParseTreeSemanticAnalyzerTest >> testBindableAssignment [ 
+	| asg |
+	asg := self parseAndAnalyseASG: ':x := 42'.
+	self assert: asg isLiteralValueGraphNode.
+	self assert: asg value equals: 42.
+	self assert: asg type equals: Integer.
+]
+
+{ #category : 'tests' }
+SysmelParseTreeSemanticAnalyzerTest >> testBindableAssignment2 [
+	| asg |
+	asg := self parseAndAnalyseASG: ':x := 42. x'.
+	self assert: asg isSequencingGraphNode.
+	self assert: asg elements size equals: 2.
+	self assert: asg elements first value equals: 42.
+	self assert: asg elements first type equals: Integer.
+	
+	self assert: asg elements second value equals: 42.
+	self assert: asg elements second type equals: Integer.
+]
+
+{ #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testEmpty [
 	| asg |
-	asg := self parseAndAnalyse: ''.
+	asg := self parseAndAnalyseASG: ''.
 	self assert: asg isSequencingGraphNode.
 	self assert: asg elements isEmpty.
 	self assert: asg type isVoid.
@@ -57,7 +101,7 @@ SysmelParseTreeSemanticAnalyzerTest >> testEmpty [
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testIntrinsicIdentifierReference [ 
 	| asg |
-	asg := self parseAndAnalyse: 'Object'.
+	asg := self parseAndAnalyseASG: 'Object'.
 	self assert: asg isLiteralValueGraphNode.
 	self assert: asg value equals: Object.
 	self assert: asg type equals: Object class.
@@ -66,7 +110,7 @@ SysmelParseTreeSemanticAnalyzerTest >> testIntrinsicIdentifierReference [
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testLexicalBlock [ 
 	| asg |
-	asg := self parseAndAnalyse: '{42}'.
+	asg := self parseAndAnalyseASG: '{42}'.
 	self assert: asg isLiteralValueGraphNode.
 	self assert: asg value equals: 42.
 	self assert: asg type equals: Integer.
@@ -75,7 +119,7 @@ SysmelParseTreeSemanticAnalyzerTest >> testLexicalBlock [
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testLiteralCharacter [ 
 	| asg |
-	asg := self parseAndAnalyse: '''A'''.
+	asg := self parseAndAnalyseASG: '''A'''.
 	self assert: asg isLiteralValueGraphNode.
 	self assert: asg value equals: $A.
 	self assert: asg type equals: Character.
@@ -84,7 +128,7 @@ SysmelParseTreeSemanticAnalyzerTest >> testLiteralCharacter [
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testLiteralFloat [
 	| asg |
-	asg := self parseAndAnalyse: '42.5'.
+	asg := self parseAndAnalyseASG: '42.5'.
 	self assert: asg isLiteralValueGraphNode.
 	self assert: asg value equals: 42.5.
 	self assert: asg type equals: Float.
@@ -93,7 +137,7 @@ SysmelParseTreeSemanticAnalyzerTest >> testLiteralFloat [
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testLiteralInteger [
 	| asg |
-	asg := self parseAndAnalyse: '42'.
+	asg := self parseAndAnalyseASG: '42'.
 	self assert: asg isLiteralValueGraphNode.
 	self assert: asg value equals: 42.
 	self assert: asg type equals: Integer.
@@ -102,7 +146,7 @@ SysmelParseTreeSemanticAnalyzerTest >> testLiteralInteger [
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testLiteralInteger2 [
 	| asg |
-	asg := self parseAndAnalyse: '42. 5'.
+	asg := self parseAndAnalyseASG: '42. 5'.
 	self assert: asg isSequencingGraphNode.
 	self assert: asg elements size equals: 2.
 	
@@ -116,7 +160,7 @@ SysmelParseTreeSemanticAnalyzerTest >> testLiteralInteger2 [
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testLiteralString [
 	| asg |
-	asg := self parseAndAnalyse: '"Hello World"'.
+	asg := self parseAndAnalyseASG: '"Hello World"'.
 	self assert: asg isLiteralValueGraphNode.
 	self assert: asg value equals: 'Hello World'.
 	self assert: asg type equals: String.
@@ -125,7 +169,7 @@ SysmelParseTreeSemanticAnalyzerTest >> testLiteralString [
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testLiteralSymbol [
 	| asg |
-	asg := self parseAndAnalyse: '#helloSymbol'.
+	asg := self parseAndAnalyseASG: '#helloSymbol'.
 	self assert: asg isLiteralValueGraphNode.
 	self assert: asg value equals: #helloSymbol.
 	self assert: asg type equals: Symbol.
@@ -134,7 +178,7 @@ SysmelParseTreeSemanticAnalyzerTest >> testLiteralSymbol [
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testTuple [
 	| asg |
-	asg := self parseAndAnalyse: '()'.
+	asg := self parseAndAnalyseASG: '()'.
 	self assert: asg isTupleGraphNode.
 	self assert: asg elements size equals: 0
 ]
@@ -142,7 +186,7 @@ SysmelParseTreeSemanticAnalyzerTest >> testTuple [
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testTuple1 [
 	| asg |
-	asg := self parseAndAnalyse: '42,'.
+	asg := self parseAndAnalyseASG: '42,'.
 	self assert: asg isTupleGraphNode.
 	self assert: asg elements size equals: 1
 ]
@@ -150,7 +194,7 @@ SysmelParseTreeSemanticAnalyzerTest >> testTuple1 [
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testTuple2 [
 	| asg |
-	asg := self parseAndAnalyse: '42, 5'.
+	asg := self parseAndAnalyseASG: '42, 5'.
 	self assert: asg isTupleGraphNode.
 	self assert: asg elements size equals: 2
 ]

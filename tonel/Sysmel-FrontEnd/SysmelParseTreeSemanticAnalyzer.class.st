@@ -3,7 +3,8 @@ Class {
 	#superclass : 'SysmelParseTreeVisitor',
 	#instVars : [
 		'environment',
-		'expectedType'
+		'expectedType',
+		'currentRegion'
 	],
 	#category : 'Sysmel-FrontEnd-Analysis',
 	#package : 'Sysmel-FrontEnd',
@@ -11,25 +12,83 @@ Class {
 }
 
 { #category : 'as yet unclassified' }
-SysmelParseTreeSemanticAnalyzer >> analyzeAST: ast withEnvironment: newEnvironment [
-	^ self analyzeAST: ast withEnvironment: newEnvironment andExpectedType: nil
+SysmelParseTreeSemanticAnalyzer >> analyzeAST: ast withEnvironment: newEnvironment region: region [
+	^ self analyzeAST: ast withEnvironment: newEnvironment region: region andExpectedType: nil
 ]
 
 { #category : 'as yet unclassified' }
-SysmelParseTreeSemanticAnalyzer >> analyzeAST: ast withEnvironment: newEnvironment andExpectedType: anExpectedType [
+SysmelParseTreeSemanticAnalyzer >> analyzeAST: ast withEnvironment: newEnvironment region: region andExpectedType: anExpectedType [
+	| asg |
 	environment := newEnvironment.
 	expectedType := anExpectedType.
-	^ self visitNode: ast
+	currentRegion := region.
+	asg := self visitNode: ast.
+	^ { asg . region }
 ]
 
 { #category : 'as yet unclassified' }
 SysmelParseTreeSemanticAnalyzer >> coerceNode: aNode into: targetType [
 	targetType ifNil: [ ^ aNode ].
-	aNode type = targetType ifTrue: [ aNode ].
-	targetType isVoid ifTrue: [ aNode ].
+	aNode type = targetType ifTrue: [ ^ aNode ].
+	targetType isVoid ifTrue: [ ^ aNode ].
 	self error: ('{1} Cannot coerce from {2} into {3}' format: {
 		aNode sourcePosition printString . aNode type printString. targetType printString
 	})
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitAndEvaluateSymbolValue: node [
+	| analyzedNode |
+	analyzedNode := self visitNode: node.
+	self assert: analyzedNode isLiteralValueGraphNode.
+	self assert: analyzedNode value isSymbol.
+	^ analyzedNode value
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitAndEvaluateType: aNode [
+	^ self visitNode: aNode
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitAssignmentNode: node [
+	| analyzedValue analyzedStore valueType alloca baseType coercedValue |
+	analyzedValue := node value ifNotNil: [self visitNode: node value ] .
+	node store isBindableNameNode ifTrue: [
+		| bindableName name |
+		bindableName := node store.
+		name := self visitAndEvaluateSymbolValue: bindableName nameExpression.
+		name ifNil: [ ^ analyzedValue ].
+		valueType := analyzedValue type.
+		bindableName typeExpression ifNotNil: [
+			valueType = self visitAndEvaluateType: bindableName typeExpression
+		].
+		bindableName isMutable ifTrue: [
+			alloca := SoNAllocaGraphNode new 
+				sourcePosition: bindableName sourcePosition;
+				valueType: valueType;
+				type: (SysmelReferenceType withBaseType: valueType);
+				yourself.
+			currentRegion addInstruction: alloca.
+			environment addSymbol: name valueBinding: alloca.				
+		] ifFalse: [ 
+			environment addSymbol: name valueBinding: analyzedValue.
+		].
+		^ analyzedValue
+	].
+
+	analyzedStore := self visitNode: node store.
+	analyzedStore type isReferenceLikeType ifTrue: [
+		baseType := analyzedStore type asDecayedSysmelType.
+		coercedValue := self coerceNode: analyzedValue into: baseType.
+		currentRegion addInstruction: (SoNStoreValueGraphNode new
+			sourcePosition: node sourcePosition;
+			pointer: analyzedStore;
+			value: coercedValue).
+		^ coercedValue
+	].
+
+	self error: 'Cannot perform this assignment.'
 ]
 
 { #category : 'visiting' }
@@ -121,11 +180,11 @@ SysmelParseTreeSemanticAnalyzer >> visitNodeWithoutTypeCoercion: aNode [
 SysmelParseTreeSemanticAnalyzer >> visitSequenceNode: node [
 	| lastIndex analyzedElements |
 	node elements isEmpty ifTrue: [ 
-		^ SoNSequencingGraphNode new
+		^ currentRegion addInstruction: (SoNSequencingGraphNode new
 			sourcePosition: node sourcePosition;
 			elements: #();
 			type: SysmelVoidType uniqueInstance;
-			yourself
+			yourself)
 	].
 
 	node elements size = 1 ifTrue: [
@@ -140,11 +199,11 @@ SysmelParseTreeSemanticAnalyzer >> visitSequenceNode: node [
 			self visitNodeWithTypeCoercion: element
 		]
 	].
-	^ SoNSequencingGraphNode new
+	^ currentRegion addInstruction: (SoNSequencingGraphNode new
 		sourcePosition: node sourcePosition;
 		elements: analyzedElements;
 		type: analyzedElements last type;
-		yourself
+		yourself)
 ]
 
 { #category : 'visiting' }
@@ -165,11 +224,11 @@ SysmelParseTreeSemanticAnalyzer >> visitTupleNode: node [
 			elements: analyzedElementTypes;
 			yourself.
 			
-	^ SoNTupleGraphNode new
+	^ currentRegion addInstruction: (SoNTupleGraphNode new
 		sourcePosition: node sourcePosition;
 		elements: analyzedElements;
 		type: tupleType;
-		yourself
+		yourself)
 ]
 
 { #category : 'enumerating' }

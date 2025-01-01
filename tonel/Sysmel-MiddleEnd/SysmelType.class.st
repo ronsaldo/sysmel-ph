@@ -10,6 +10,21 @@ Class {
 	#tag : 'TypeSystem'
 }
 
+{ #category : 'converting' }
+SysmelType >> asDecayedSysmelType [
+	^ self
+]
+
+{ #category : 'testing' }
+SysmelType >> isPointerLikeType [
+	^ false
+]
+
+{ #category : 'testing' }
+SysmelType >> isReferenceLikeType [
+	^ false
+]
+
 { #category : 'testing' }
 SysmelType >> isValidSysmelType [
 	^ true
