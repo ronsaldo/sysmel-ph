@@ -55,6 +55,15 @@ SysmelParseTreeSemanticAnalyzerTest >> testEmpty [
 ]
 
 { #category : 'tests' }
+SysmelParseTreeSemanticAnalyzerTest >> testIntrinsicIdentifierReference [ 
+	| asg |
+	asg := self parseAndAnalyse: 'Object'.
+	self assert: asg isLiteralValueGraphNode.
+	self assert: asg value equals: Object.
+	self assert: asg type equals: Object class.
+]
+
+{ #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testLexicalBlock [ 
 	| asg |
 	asg := self parseAndAnalyse: '{42}'.

@@ -9,6 +9,11 @@ Class {
 	#tag : 'Environment'
 }
 
+{ #category : 'as yet unclassified' }
+SysmelModuleEnvironment >> getModule [
+	^ module
+]
+
 { #category : 'accessing' }
 SysmelModuleEnvironment >> module [
 

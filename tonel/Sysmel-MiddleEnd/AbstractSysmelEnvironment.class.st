@@ -20,3 +20,8 @@ AbstractSysmelEnvironment >> getModule [
 AbstractSysmelEnvironment >> getNamespace [
 	^ self subclassResponsibility
 ]
+
+{ #category : 'as yet unclassified' }
+AbstractSysmelEnvironment >> lookupRecursively: symbol [
+	self subclassResponsibility
+]

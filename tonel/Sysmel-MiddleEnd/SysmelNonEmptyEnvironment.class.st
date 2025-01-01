@@ -16,16 +16,44 @@ SysmelNonEmptyEnvironment class >> parent: aParentEnvironment [
 	^ self new parent: aParentEnvironment; yourself
 ]
 
+{ #category : 'adding' }
+SysmelNonEmptyEnvironment >> addSymbol: symbol valueBinding: value [
+	localSymbols at: symbol put: (SymbolValueBinding new name: symbol; value: value; yourself)
+]
+
+{ #category : 'as yet unclassified' }
+SysmelNonEmptyEnvironment >> getModule [
+	^ parent getModule
+]
+
+{ #category : 'as yet unclassified' }
+SysmelNonEmptyEnvironment >> getNamespace [
+	^ parent getNamespace
+]
+
+{ #category : 'initialization' }
+SysmelNonEmptyEnvironment >> initialize [
+	super initialize.
+	localSymbols := Dictionary new.
+]
+
 { #category : 'accessing' }
 SysmelNonEmptyEnvironment >> localSymbols [
 
 	^ localSymbols
 ]
 
-{ #category : 'accessing' }
-SysmelNonEmptyEnvironment >> localSymbols: anObject [
+{ #category : 'as yet unclassified' }
+SysmelNonEmptyEnvironment >> lookupLocalSymbol: symbol [
+	^ (localSymbols includesKey: symbol)
+		ifTrue: [ localSymbols at: symbol ]
+		ifFalse: [ nil ]
+]
 
-	localSymbols := anObject
+{ #category : 'as yet unclassified' }
+SysmelNonEmptyEnvironment >> lookupRecursively: symbol [
+	(self lookupLocalSymbol: symbol) ifNotNil: [ :binding | ^ binding ].
+	^ parent lookupRecursively: symbol
 ]
 
 { #category : 'accessing' }

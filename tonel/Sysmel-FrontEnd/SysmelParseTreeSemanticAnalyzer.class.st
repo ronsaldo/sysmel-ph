@@ -33,6 +33,14 @@ SysmelParseTreeSemanticAnalyzer >> coerceNode: aNode into: targetType [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitIdentifierReferenceNode: node [
+	| symbolToFind binding |
+	symbolToFind := node name.
+	binding := environment lookupRecursively: symbolToFind.
+	^ binding evaluateASGIn: node sourcePosition.
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitLexicalBlockNode: node [
 	| childEnvironment oldEnvironment |
 	childEnvironment := (SysmelLexicalEnvironment parent: environment)

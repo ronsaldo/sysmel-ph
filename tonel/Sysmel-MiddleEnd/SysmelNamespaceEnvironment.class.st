@@ -9,6 +9,11 @@ Class {
 	#tag : 'Environment'
 }
 
+{ #category : 'as yet unclassified' }
+SysmelNamespaceEnvironment >> getNamespace [
+	^ namespace
+]
+
 { #category : 'accessing' }
 SysmelNamespaceEnvironment >> namespace [
 

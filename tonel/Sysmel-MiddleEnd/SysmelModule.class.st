@@ -27,6 +27,7 @@ SysmelModule >> getOrCreateBasicEnvironment [
 	
 	empty := SysmelEmptyEnvironment new.
 	intrinsicsEnvironment := SysmelIntrinsicsEnvironment parent: empty.
+	intrinsicsEnvironment buildIntrinsicSymbols.
 	moduleEnvironment := (SysmelModuleEnvironment parent: intrinsicsEnvironment) module: self.
 	namespaceEnvironment := (SysmelNamespaceEnvironment parent: moduleEnvironment) namespace: globalNamespace.
 	^ basicEnvironment := namespaceEnvironment
