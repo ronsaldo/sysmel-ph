@@ -58,6 +58,11 @@ SysmelParseTreeNode >> isBlockNode [
 ]
 
 { #category : 'testing' }
+SysmelParseTreeNode >> isDictionaryNode [
+	^ false
+]
+
+{ #category : 'testing' }
 SysmelParseTreeNode >> isFunctionalDependentTypeNode [
 	^ false
 ]

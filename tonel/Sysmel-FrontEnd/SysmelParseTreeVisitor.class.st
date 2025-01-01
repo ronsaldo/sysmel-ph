@@ -45,6 +45,11 @@ SysmelParseTreeVisitor >> visitBlockNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeVisitor >> visitDictionaryNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeVisitor >> visitFunctionalDependentNode: node [
 	self subclassResponsibility
 ]

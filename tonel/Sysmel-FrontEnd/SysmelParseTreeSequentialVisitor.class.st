@@ -48,6 +48,11 @@ SysmelParseTreeSequentialVisitor >> visitBlockNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeSequentialVisitor >> visitDictionaryNode: node [
+	self visitNodes: node elements
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSequentialVisitor >> visitFunctionalDependentNode: node [
 	self visitOptionalNode: node argumentPattern.
 	self visitOptionalNode: node resultType.

@@ -193,10 +193,42 @@ SysmelParserTest >> testCascadeMessageSend [
 ]
 
 { #category : 'tests' }
+SysmelParserTest >> testDictionary [
+	| node |
+	node := self parseSourceStringWithoutError: '#{First: 1}'.
+	self assert: node isDictionaryNode.
+	self assert: node elements size equals: 1.
+]
+
+{ #category : 'tests' }
+SysmelParserTest >> testDictionary2 [
+	| node |
+	node := self parseSourceStringWithoutError: '#{First: 1. Second: 2}'.
+	self assert: node isDictionaryNode.
+	self assert: node elements size equals: 2.
+]
+
+{ #category : 'tests' }
+SysmelParserTest >> testDictionary3 [
+	| node |
+	node := self parseSourceStringWithoutError: '#{First: 1. Second: 2. #Third : 3}'.
+	self assert: node isDictionaryNode.
+	self assert: node elements size equals: 3.
+]
+
+{ #category : 'tests' }
 SysmelParserTest >> testEmpty [
 	| ast |
 	ast := self parseSourceStringWithoutError: ''.
 	self assert: ast isSequenceNode.
+]
+
+{ #category : 'tests' }
+SysmelParserTest >> testEmptyDictionary [
+	| node |
+	node := self parseSourceStringWithoutError: '#{}'.
+	self assert: node isDictionaryNode.
+	self assert: node elements size equals: 0.
 ]
 
 { #category : 'tests' }

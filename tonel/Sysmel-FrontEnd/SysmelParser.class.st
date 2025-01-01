@@ -329,7 +329,78 @@ SysmelParser >> parseCommaExpression: state [
 
 { #category : 'parsing' }
 SysmelParser >> parseDictionary: state [
-	self halt
+	" #{"
+	| startPosition expectsExpression elements expression |
+	startPosition := state position.
+	self assert: state peekKind = SSTDictionaryStart.
+	state advance.
+
+	"Chop the initial dots."
+	[ state atEnd not and: [ state peekKind = SSTDot ] ] whileTrue: [
+		state advance
+	].
+
+	"Parse the next expression"
+	expectsExpression := true.
+	elements := OrderedCollection new.
+	[ state atEnd not and: [ state peekKind ~= SSTRightCurlyBracket ] ] whileTrue: [
+		expectsExpression ifFalse: [
+			elements add: (SysmelParseTreeErrorNode new
+				sourcePosition: state currentSourcePosition;
+				errorMessage: 'Expected a dot before association.')
+		].
+	
+		expression := self parseDictionaryAssociation: state.
+		elements add: expression.
+		
+		"Chop the next dots"
+		[ state peekKind = SSTDot ] whileTrue: [
+			expectsExpression := true.
+			state advance
+		]
+	].
+
+	"}"
+	state peekKind = SSTRightCurlyBracket ifTrue: [
+		state advance
+	] ifFalse: [ 
+		elements add: (SysmelParseTreeErrorNode new
+			sourcePosition: state currentSourcePosition;
+			errorMessage: 'Expected a right curly brack (}).')
+	].
+	^ SysmelParseTreeDictionaryNode new
+		sourcePosition: (state sourcePositionFrom: startPosition);
+		elements: elements asArray;
+		yourself
+]
+
+{ #category : 'parsing' }
+SysmelParser >> parseDictionaryAssociation: state [
+	| startPosition value keyToken key keyAndValue |
+	startPosition := state position.
+	value := nil.
+
+	(state peekKind = SSTKeyword or: [state peekKind = SSTMultiKeyword ] ) ifTrue: [
+		keyToken := state next.
+		key := SysmelParseTreeLiteralSymbolNode new
+			sourcePosition: keyToken sourcePosition;
+			value: keyToken getTextValue asSymbol;
+			yourself.
+			
+		(state peekKind ~= SSTDot and: [ state peekKind ~= SSTRightCurlyBracket ]) ifTrue: [
+			value := self parseAssociationExpression: state
+		].
+	
+		keyAndValue := SysmelParseTreeAssociationNode new
+			sourcePosition: (state sourcePositionFrom: startPosition);
+			key: key;
+			value: value;
+			yourself
+	] ifFalse: [
+		keyAndValue := self parseAssociationExpression: state
+	].
+	
+	^ keyAndValue
 ]
 
 { #category : 'parsing' }
