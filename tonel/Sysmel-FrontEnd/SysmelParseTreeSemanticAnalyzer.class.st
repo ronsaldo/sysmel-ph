@@ -33,6 +33,51 @@ SysmelParseTreeSemanticAnalyzer >> coerceNode: aNode into: targetType [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitLiteralCharacterNode: node [
+	^ SoNLiteralValueGraphNode new
+		sourcePosition: node sourcePosition;
+		value: node value;
+		type: Character;
+		yourself
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitLiteralFloatNode: node [
+	^ SoNLiteralValueGraphNode new
+		sourcePosition: node sourcePosition;
+		value: node value;
+		type: Float;
+		yourself
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitLiteralIntegerNode: node [
+	^ SoNLiteralValueGraphNode new
+		sourcePosition: node sourcePosition;
+		value: node value;
+		type: Integer;
+		yourself
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitLiteralStringNode: node [
+	^ SoNLiteralValueGraphNode new
+		sourcePosition: node sourcePosition;
+		value: node value;
+		type: String;
+		yourself
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitLiteralSymbolNode: node [
+	^ SoNLiteralValueGraphNode new
+		sourcePosition: node sourcePosition;
+		value: node value;
+		type: Symbol;
+		yourself
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitNodeWithTypeCoercion: aNode [
 	^ self coerceNode: (self visitNode: aNode) into: expectedType
 ]
@@ -44,7 +89,7 @@ SysmelParseTreeSemanticAnalyzer >> visitNodeWithoutTypeCoercion: aNode [
 	]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitSequenceNode: node [
 	| lastIndex analyzedElements |
 	node elements isEmpty ifTrue: [ 
@@ -53,6 +98,10 @@ SysmelParseTreeSemanticAnalyzer >> visitSequenceNode: node [
 			elements: #();
 			type: SysmelVoidType uniqueInstance;
 			yourself
+	].
+
+	node elements size = 1 ifTrue: [
+		^ self visitNodeWithTypeCoercion: node elements first
 	].
 
 	lastIndex := node elements size.

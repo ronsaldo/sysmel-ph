@@ -10,6 +10,11 @@ Class {
 }
 
 { #category : 'testing' }
+SoNGraphNode >> isLiteralValueGraphNode [
+	^ false
+]
+
+{ #category : 'testing' }
 SoNGraphNode >> isSequencingGraphNode [
 	^ false
 ]

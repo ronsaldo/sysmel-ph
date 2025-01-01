@@ -53,3 +53,62 @@ SysmelParseTreeSemanticAnalyzerTest >> testEmpty [
 	self assert: asg elements isEmpty.
 	self assert: asg type isVoid.
 ]
+
+{ #category : 'tests' }
+SysmelParseTreeSemanticAnalyzerTest >> testLiteralCharacter [ 
+	| asg |
+	asg := self parseAndAnalyse: '''A'''.
+	self assert: asg isLiteralValueGraphNode.
+	self assert: asg value equals: $A.
+	self assert: asg type equals: Character.
+]
+
+{ #category : 'tests' }
+SysmelParseTreeSemanticAnalyzerTest >> testLiteralFloat [
+	| asg |
+	asg := self parseAndAnalyse: '42.5'.
+	self assert: asg isLiteralValueGraphNode.
+	self assert: asg value equals: 42.5.
+	self assert: asg type equals: Float.
+]
+
+{ #category : 'tests' }
+SysmelParseTreeSemanticAnalyzerTest >> testLiteralInteger [
+	| asg |
+	asg := self parseAndAnalyse: '42'.
+	self assert: asg isLiteralValueGraphNode.
+	self assert: asg value equals: 42.
+	self assert: asg type equals: Integer.
+]
+
+{ #category : 'tests' }
+SysmelParseTreeSemanticAnalyzerTest >> testLiteralInteger2 [
+	| asg |
+	asg := self parseAndAnalyse: '42. 5'.
+	self assert: asg isSequencingGraphNode.
+	self assert: asg elements size equals: 2.
+	
+	self assert: asg elements first value equals: 42.
+	self assert: asg elements first type equals: Integer.
+	
+	self assert: asg elements second value equals: 5.
+	self assert: asg elements second type equals: Integer.
+]
+
+{ #category : 'tests' }
+SysmelParseTreeSemanticAnalyzerTest >> testLiteralString [
+	| asg |
+	asg := self parseAndAnalyse: '"Hello World"'.
+	self assert: asg isLiteralValueGraphNode.
+	self assert: asg value equals: 'Hello World'.
+	self assert: asg type equals: String.
+]
+
+{ #category : 'tests' }
+SysmelParseTreeSemanticAnalyzerTest >> testLiteralSymbol [
+	| asg |
+	asg := self parseAndAnalyse: '#helloSymbol'.
+	self assert: asg isLiteralValueGraphNode.
+	self assert: asg value equals: #helloSymbol.
+	self assert: asg type equals: Symbol.
+]
