@@ -1,6 +1,6 @@
 Class {
 	#name : 'SoNGraphNode',
-	#superclass : 'Object',
+	#superclass : 'SysmelProgramEntity',
 	#instVars : [
 		'sourcePosition'
 	],
@@ -16,6 +16,11 @@ SoNGraphNode >> isLiteralValueGraphNode [
 
 { #category : 'testing' }
 SoNGraphNode >> isSequencingGraphNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SoNGraphNode >> isTupleGraphNode [
 	^ false
 ]
 

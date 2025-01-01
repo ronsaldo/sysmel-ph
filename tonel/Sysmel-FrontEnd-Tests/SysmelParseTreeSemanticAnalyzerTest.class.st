@@ -55,6 +55,15 @@ SysmelParseTreeSemanticAnalyzerTest >> testEmpty [
 ]
 
 { #category : 'tests' }
+SysmelParseTreeSemanticAnalyzerTest >> testLexicalBlock [ 
+	| asg |
+	asg := self parseAndAnalyse: '{42}'.
+	self assert: asg isLiteralValueGraphNode.
+	self assert: asg value equals: 42.
+	self assert: asg type equals: Integer.
+]
+
+{ #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testLiteralCharacter [ 
 	| asg |
 	asg := self parseAndAnalyse: '''A'''.
@@ -111,4 +120,28 @@ SysmelParseTreeSemanticAnalyzerTest >> testLiteralSymbol [
 	self assert: asg isLiteralValueGraphNode.
 	self assert: asg value equals: #helloSymbol.
 	self assert: asg type equals: Symbol.
+]
+
+{ #category : 'tests' }
+SysmelParseTreeSemanticAnalyzerTest >> testTuple [
+	| asg |
+	asg := self parseAndAnalyse: '()'.
+	self assert: asg isTupleGraphNode.
+	self assert: asg elements size equals: 0
+]
+
+{ #category : 'tests' }
+SysmelParseTreeSemanticAnalyzerTest >> testTuple1 [
+	| asg |
+	asg := self parseAndAnalyse: '42,'.
+	self assert: asg isTupleGraphNode.
+	self assert: asg elements size equals: 1
+]
+
+{ #category : 'tests' }
+SysmelParseTreeSemanticAnalyzerTest >> testTuple2 [
+	| asg |
+	asg := self parseAndAnalyse: '42, 5'.
+	self assert: asg isTupleGraphNode.
+	self assert: asg elements size equals: 2
 ]

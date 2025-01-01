@@ -8,3 +8,15 @@ Class {
 	#package : 'Sysmel-MiddleEnd',
 	#tag : 'TypeSystem'
 }
+
+{ #category : 'accessing' }
+SysmelProductType >> elements [
+
+	^ elements
+]
+
+{ #category : 'accessing' }
+SysmelProductType >> elements: anObject [
+
+	elements := anObject
+]
