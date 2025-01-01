@@ -8,3 +8,8 @@ Class {
 	#package : 'Sysmel-MiddleEnd',
 	#tag : 'TypeSystem'
 }
+
+{ #category : 'testing' }
+SysmelType >> isVoid [
+	^ false
+]

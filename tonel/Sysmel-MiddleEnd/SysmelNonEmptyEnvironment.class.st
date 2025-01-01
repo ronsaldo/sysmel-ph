@@ -2,8 +2,9 @@ Class {
 	#name : 'SysmelNonEmptyEnvironment',
 	#superclass : 'AbstractSysmelEnvironment',
 	#instVars : [
+		'sourcePosition',
 		'parent',
-		'localSymbol'
+		'localSymbols'
 	],
 	#category : 'Sysmel-MiddleEnd-Environment',
 	#package : 'Sysmel-MiddleEnd',
@@ -16,6 +17,18 @@ SysmelNonEmptyEnvironment class >> parent: aParentEnvironment [
 ]
 
 { #category : 'accessing' }
+SysmelNonEmptyEnvironment >> localSymbols [
+
+	^ localSymbols
+]
+
+{ #category : 'accessing' }
+SysmelNonEmptyEnvironment >> localSymbols: anObject [
+
+	localSymbols := anObject
+]
+
+{ #category : 'accessing' }
 SysmelNonEmptyEnvironment >> parent [
 
 	^ parent
@@ -25,4 +38,16 @@ SysmelNonEmptyEnvironment >> parent [
 SysmelNonEmptyEnvironment >> parent: anObject [
 
 	parent := anObject
+]
+
+{ #category : 'accessing' }
+SysmelNonEmptyEnvironment >> sourcePosition [
+
+	^ sourcePosition
+]
+
+{ #category : 'accessing' }
+SysmelNonEmptyEnvironment >> sourcePosition: anObject [
+
+	sourcePosition := anObject
 ]
