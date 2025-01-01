@@ -30,6 +30,11 @@ SysmelParseTreeVisitor >> visitBinaryExpressionSequenceNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeVisitor >> visitBindableNameNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeVisitor >> visitFunctionalDependentNode: node [
 	self subclassResponsibility
 ]

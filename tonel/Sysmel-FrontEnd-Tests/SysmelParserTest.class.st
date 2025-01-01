@@ -142,6 +142,15 @@ SysmelParserTest >> testBinaryExpressionSequence2 [
 ]
 
 { #category : 'tests' }
+SysmelParserTest >> testBindableName [
+	| node |
+	node := self parseSourceStringWithoutError: ':a'.
+	self assert: node isBindableNameNode .
+	self assert: node nameExpression isLiteralSymbolNode.
+	self assert: node typeExpression isNil.
+]
+
+{ #category : 'tests' }
 SysmelParserTest >> testCascadeMessageSend [
 	| node |
 	node := self parseSourceStringWithoutError: 'a + 2; - 3; perform: #yourself'.

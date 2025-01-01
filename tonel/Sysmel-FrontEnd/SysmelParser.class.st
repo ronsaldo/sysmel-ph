@@ -98,6 +98,22 @@ SysmelParser >> parseBindExpression: state [
 
 { #category : 'parsing' }
 SysmelParser >> parseBindableName: state [
+	| startPosition isExistential isMutable |
+	startPosition := state position.
+	self assert: state peekKind = SSTColon.
+	state advance.
+	
+	isExistential := false.
+	isMutable := false.
+	state peekKind = SSTBang ifTrue: [
+		isMutable := true
+		state advance
+	].
+
+	state peekKind = SSTQuestion ifTrue: [
+		isExistential := true
+		state advance
+	].
 	self halt
 ]
 
