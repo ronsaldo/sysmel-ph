@@ -17,6 +17,16 @@ SysmelNonEmptyEnvironment class >> parent: aParentEnvironment [
 ]
 
 { #category : 'adding' }
+SysmelNonEmptyEnvironment >> addPrimitiveGlobalMacro: macroName type: macroType implementation: implementation [
+	self addSymbol: macroName valueBinding: (PrimitiveMacroMethod new type: macroType; implementation: implementation; yourself)
+]
+
+{ #category : 'adding' }
+SysmelNonEmptyEnvironment >> addPrimitiveGlobalMethod: methodName type: methodType implementation: implementation [
+	self addSymbol: methodName valueBinding: (PrimitiveMacroMethod new type: methodType; implementation: implementation; yourself)
+]
+
+{ #category : 'adding' }
 SysmelNonEmptyEnvironment >> addSymbol: symbol valueBinding: value [
 	localSymbols at: symbol put: (SymbolValueBinding new name: symbol; value: value; yourself)
 ]

@@ -64,6 +64,13 @@ SysmelParseTreeSequentialVisitor >> visitIdentifierReferenceNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeSequentialVisitor >> visitIfConditionNode: node [
+	self visitNode: node condition.
+	self visitOptionalNode: node trueResult.
+	self visitOptionalNode: node falseResult.
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSequentialVisitor >> visitLexicalBlockNode: node [
 	self visitNode: node body
 ]
@@ -75,6 +82,11 @@ SysmelParseTreeSequentialVisitor >> visitLiteralCharacterNode: node [
 
 { #category : 'visiting' }
 SysmelParseTreeSequentialVisitor >> visitLiteralFloatNode: node [
+	"Nothing is required here."
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSequentialVisitor >> visitLiteralFunctionNode: node [
 	"Nothing is required here."
 ]
 

@@ -52,9 +52,21 @@ SysmelParseTreeSemanticAnalyzer >> visitAndEvaluateType: aNode [
 
 { #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitApplicationNode: node [
-	| analyzedFunctional analyzedFunctionalType analyzedArguments application |
+	| analyzedFunctional analyzedFunctionalType analyzedArguments application isMacro macroArguments macroResult |
 	analyzedFunctional := self visitNode: node functional.
 	analyzedFunctionalType := analyzedFunctional type.
+	isMacro := analyzedFunctional value isMacro.
+	isMacro ifTrue: [
+		| macro macroContext |
+		macro := analyzedFunctional value.
+		macroContext := MacroContext new
+			sourcePosition: node sourcePosition;
+			environment: environment;
+			yourself.
+		macroArguments := node arguments.
+		macroResult := macro evaluateWithContext: macroContext andArguments: macroArguments.
+		^ self visitNode: macroResult
+	].
 	
 	analyzedArguments := node arguments collectWithIndex: [ :arg :index |
 		self visitNode: arg
@@ -169,6 +181,80 @@ SysmelParseTreeSemanticAnalyzer >> visitIdentifierReferenceNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitIfConditionNode: node [
+	| analyzedCondition analyzedTrueResult analyzedFalseResult trueRegion falseRegion mergeRegion trueResult falseResult trueResultType falseResultType mergePhi startingRegion |
+	analyzedCondition := self visitNode: node condition withExpectedType: Boolean.
+	trueRegion := nil.
+	trueResult := nil.
+	falseRegion := nil.
+	falseResult := nil.
+	mergeRegion := SoNRegionGraphNode new.
+	mergeRegion immediateDominator: currentRegion.
+	analyzedTrueResult := node trueResult ifNotNil: [:action |
+		trueRegion := SoNRegionGraphNode new
+			addPredecessor: currentRegion;
+			addSuccessor: mergeRegion;
+			immediateDominator: currentRegion;
+			yourself.
+		currentRegion addSuccessor: trueRegion.
+		
+		trueResult := self visitNode: action withRegion: trueRegion.
+	] ifNil: [
+		currentRegion addSuccessor: mergeRegion.
+		mergeRegion addPredecessor: currentRegion.
+	].
+	analyzedFalseResult := node falseResult ifNotNil: [:action|
+		falseRegion := SoNRegionGraphNode new
+			addPredecessor: currentRegion;
+			addSuccessor: mergeRegion;
+			immediateDominator: currentRegion;
+			yourself.
+		currentRegion addSuccessor: falseRegion.
+
+		falseResult := self visitNode: action withRegion: falseRegion.
+	] ifNil: [
+		currentRegion addSuccessor: mergeRegion.
+		mergeRegion addPredecessor: currentRegion.
+	].
+ 
+	currentRegion addInstruction: (SoNConditionalBranchGraphNode new
+		sourcePosition: node sourcePosition;
+		condition: analyzedCondition;
+		trueDestination: (trueRegion ifNil: [mergeRegion]);
+		falseDestination: (falseRegion ifNil: [mergeRegion]);
+		mergeDestination: mergeRegion).
+	startingRegion := currentRegion.
+	currentRegion := mergeRegion.
+	
+	(trueResult isNil or: [falseResult isNil]) ifTrue: [
+		^ SoNLiteralValueGraphNode voidValue
+	].
+
+	trueResultType := trueResult type asDecayedSysmelType .
+	falseResultType := falseResult type asDecayedSysmelType .
+	trueResultType = falseResultType ifTrue: [
+		mergePhi := SoNPhiGraphNode new
+							sourcePosition: node sourcePosition;
+							type: falseResultType;
+							yourself.
+		mergeRegion addMergePhi: mergePhi.
+		trueRegion addPhiCopy: (SoNPhiCopyGraphNode new
+			value: trueResult;
+			type: trueResultType;
+			destination: mergePhi;
+			yourself).
+		falseRegion addPhiCopy: (SoNPhiCopyGraphNode new
+			value: falseResult;
+			type: falseResultType;
+			destination: mergePhi;
+			yourself).
+		^ mergePhi
+	] ifFalse: [
+		^ SoNLiteralValueGraphNode voidValue
+	]
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitLexicalBlockNode: node [
 	| childEnvironment oldEnvironment |
 	childEnvironment := (SysmelLexicalEnvironment parent: environment)
@@ -197,6 +283,15 @@ SysmelParseTreeSemanticAnalyzer >> visitLiteralFloatNode: node [
 		sourcePosition: node sourcePosition;
 		value: node value;
 		type: Float;
+		yourself
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitLiteralFunctionNode: node [
+	^ SoNLiteralValueGraphNode new
+		sourcePosition: node sourcePosition;
+		value: node value;
+		type: node value type;
 		yourself
 ]
 
@@ -256,8 +351,18 @@ SysmelParseTreeSemanticAnalyzer >> visitMessageCascadeNode: node [
 SysmelParseTreeSemanticAnalyzer >> visitMessageSendNode: node [
 	| receiver selector arguments instruction |
 	node receiver ifNil: [
-		"TODO. use selector for looking a function"
-		self flag.
+		| functionBinding application |
+		selector := self visitAndEvaluateSymbolValue: node selector.
+		functionBinding := environment lookupRecursively: selector.
+		functionBinding ifNil: [ self error: 'Failed to find global function or macro named: ' , selector ].
+		application := SysmelParseTreeApplicationNode new
+			sourcePosition: node sourcePosition;
+			functional: (SysmelParseTreeLiteralFunction new
+				sourcePosition: node sourcePosition;
+				value: functionBinding value);
+			arguments: node arguments;
+			yourself.
+		^ self visitNode: application 
 	].
 
 	receiver := self visitNodeWithoutTypeCoercion: node receiver.
@@ -272,6 +377,24 @@ SysmelParseTreeSemanticAnalyzer >> visitMessageSendNode: node [
 						yourself.
 	currentRegion addInstruction: instruction.
 	^ instruction
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitNode: node withExpectedType: anExpectedType [
+	| visitedNode |
+	visitedNode := self visitNode: node.
+	(visitedNode type isSubtypeOf: anExpectedType) ifFalse: [
+		self error: node sourcePosition printString , 'Cannot coerce node through subtyping.'
+	].
+	^ visitedNode
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitNode: aNode withRegion: aRegionOfCode [
+	| oldRegion |
+	oldRegion := currentRegion.
+	currentRegion := aRegionOfCode.
+	^ [ self visitNode: aNode ] ensure: [ currentRegion := oldRegion ]
 ]
 
 { #category : 'visiting' }

@@ -60,6 +60,11 @@ SysmelParseTreeVisitor >> visitIdentifierReferenceNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeVisitor >> visitIfConditionNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeVisitor >> visitLexicalBlockNode: node [
 	self subclassResponsibility
 ]
@@ -71,6 +76,11 @@ SysmelParseTreeVisitor >> visitLiteralCharacterNode: node [
 
 { #category : 'visiting' }
 SysmelParseTreeVisitor >> visitLiteralFloatNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeVisitor >> visitLiteralFunctionNode: node [
 	self subclassResponsibility
 ]
 

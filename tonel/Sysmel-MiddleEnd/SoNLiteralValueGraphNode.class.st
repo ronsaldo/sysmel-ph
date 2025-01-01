@@ -10,6 +10,11 @@ Class {
 	#tag : 'SeaOfNodesGraph'
 }
 
+{ #category : 'as yet unclassified' }
+SoNLiteralValueGraphNode class >> voidValue [
+	^ self new value: SysmelVoidType uniqueInstance; type: SysmelVoidType
+]
+
 { #category : 'testing' }
 SoNLiteralValueGraphNode >> isLiteralValueGraphNode [
 	^ true

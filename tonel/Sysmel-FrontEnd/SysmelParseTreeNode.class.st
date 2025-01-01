@@ -73,6 +73,11 @@ SysmelParseTreeNode >> isIdentifierReferenceNode [
 ]
 
 { #category : 'testing' }
+SysmelParseTreeNode >> isIfConditionNode [
+	^ false
+]
+
+{ #category : 'testing' }
 SysmelParseTreeNode >> isLexicalBlockNode [
 	^ false
 ]
@@ -84,6 +89,11 @@ SysmelParseTreeNode >> isLiteralCharacterNode [
 
 { #category : 'testing' }
 SysmelParseTreeNode >> isLiteralFloatNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SysmelParseTreeNode >> isLiteralFunctionNode [
 	^ false
 ]
 
