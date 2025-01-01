@@ -30,6 +30,12 @@ SysmelParseTreeSequentialVisitor >> visitBinaryExpressionSequenceNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeSequentialVisitor >> visitBindPatternNode: node [
+	self visitNode: node pattern.
+	self visitNode: node value.
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSequentialVisitor >> visitBindableNameNode: node [
 	self visitOptionalNode: node typeExpression.
 	self visitOptionalNode: node nameExpression.

@@ -43,6 +43,11 @@ SysmelParseTreeNode >> isBinaryExpressionSequenceNode [
 ]
 
 { #category : 'testing' }
+SysmelParseTreeNode >> isBindPatternNode [
+	^ false
+]
+
+{ #category : 'testing' }
 SysmelParseTreeNode >> isBindableNameNode [
 	^ false
 ]

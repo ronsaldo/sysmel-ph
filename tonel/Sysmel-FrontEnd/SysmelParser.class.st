@@ -85,12 +85,17 @@ SysmelParser >> parseBinaryExpressionSequence: state [
 
 { #category : 'parsing' }
 SysmelParser >> parseBindExpression: state [
-	| startPosition patternExpressionOrValue |
+	| startPosition patternExpressionOrValue boundValue |
 	startPosition := state position.
 	patternExpressionOrValue := self parseFunctionalTypeWithOptionalArgument: state.
 	state peekKind = SSTBindOperator ifTrue: [
 		state advance.
-		self halt
+		boundValue := self parseBindExpression: state.
+		^ SysmelParseTreeBindPatternNode new
+			sourcePosition: (state sourcePositionFrom: startPosition);
+			pattern: patternExpressionOrValue;
+			value: boundValue;
+			yourself
 	] ifFalse: [
 		^ patternExpressionOrValue
 	].
@@ -98,7 +103,7 @@ SysmelParser >> parseBindExpression: state [
 
 { #category : 'parsing' }
 SysmelParser >> parseBindableName: state [
-	| startPosition isExistential isMutable |
+	| startPosition isExistential isMutable isImplicitAndTypeExpression isImplicit typeExpression hasPostTypeExpression isVariadic nameExpression |
 	startPosition := state position.
 	self assert: state peekKind = SSTColon.
 	state advance.
@@ -111,10 +116,44 @@ SysmelParser >> parseBindableName: state [
 	].
 
 	state peekKind = SSTQuestion ifTrue: [
-		isExistential := true
+		isExistential := true.
 		state advance
 	].
-	self halt
+
+	isImplicitAndTypeExpression := self parseOptionalBindableNameType: state.
+	isImplicit := isImplicitAndTypeExpression first.
+	typeExpression := isImplicitAndTypeExpression second.
+	hasPostTypeExpression := false.
+	
+	isVariadic := false.
+	state peekKind = SSTEllipsis ifTrue: [
+		state advance.
+		isVariadic := true.
+		nameExpression := nil
+	] ifFalse: [
+		nameExpression := self parseNameExpression: state.
+		isImplicitAndTypeExpression := self parseOptionalBindableNameType: state.
+		isImplicit := isImplicitAndTypeExpression first.
+		typeExpression := isImplicitAndTypeExpression second.
+		hasPostTypeExpression := typeExpression isNotNil.
+		
+		state peekKind = SSTEllipsis ifTrue: [
+			state advance.
+			isVariadic := true.
+		]
+	].
+	
+	^ SysmelParseTreeBindableNameNode new
+		sourcePosition: (state sourcePositionFrom: startPosition);
+		typeExpression: typeExpression;
+		nameExpression: nameExpression;
+		isImplicit: isImplicit;
+		isExistential: isExistential;
+		isVariadic: isVariadic;
+		isMutable: isMutable;
+		hasPostTypeExpression: hasPostTypeExpression;
+		yourself
+		
 ]
 
 { #category : 'parsing' }
@@ -534,6 +573,41 @@ SysmelParser >> parseMessageCascade: state [
 		receiver: receiver;
 		messages: cascaded asArray;
 		yourself
+]
+
+{ #category : 'parsing' }
+SysmelParser >> parseNameExpression: state [
+	| token |
+	state peekKind = SSTIdentifier ifTrue: [
+		token := state next.
+		^ SysmelParseTreeLiteralSymbolNode new
+			sourcePosition: token sourcePosition;
+			value: token getTextValue asSymbol;
+			yourself
+	] ifFalse: [
+		^ SysmelParseTreeErrorNode new
+			sourcePosition: state currentSourcePosition;
+			errorMessage: 'Expected a bindable name.'
+	]
+]
+
+{ #category : 'parsing' }
+SysmelParser >> parseOptionalBindableNameType: state [
+	| typeExpression |
+	state peekKind = SSTLeftBracket ifTrue: [ 
+		state advance.
+		typeExpression := self parseExpression: state.
+		typeExpression := state expect: SSTRightBracket addingErrorToNode: typeExpression.
+		^ { true . typeExpression }
+	].
+	state peekKind = SSTLeftParent ifTrue: [ 
+		state advance.
+		typeExpression := self parseExpression: state.
+		typeExpression := state expect: SSTRightBracket addingErrorToNode: typeExpression.
+		^ { false . typeExpression }
+	].
+
+	^ { false. nil }
 ]
 
 { #category : 'parsing' }
