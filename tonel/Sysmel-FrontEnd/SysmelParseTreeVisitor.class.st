@@ -40,12 +40,22 @@ SysmelParseTreeVisitor >> visitBindableNameNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeVisitor >> visitBlockNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeVisitor >> visitFunctionalDependentNode: node [
 	self subclassResponsibility
 ]
 
 { #category : 'visiting' }
 SysmelParseTreeVisitor >> visitIdentifierReferenceNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeVisitor >> visitLexicalBlockNode: node [
 	self subclassResponsibility
 ]
 

@@ -151,6 +151,38 @@ SysmelParserTest >> testBindableName [
 ]
 
 { #category : 'tests' }
+SysmelParserTest >> testBindableName2 [
+	| node |
+	node := self parseSourceStringWithoutError: ':(Integer)a'.
+	self assert: node isBindableNameNode .
+	self assert: node nameExpression isLiteralSymbolNode.
+	self assert: node typeExpression isNotNil.
+	self assert: node typeExpression isIdentifierReferenceNode .
+	self assert: node typeExpression name equals: #Integer.
+]
+
+{ #category : 'tests' }
+SysmelParserTest >> testBlock [
+	| node |
+	node := self parseSourceStringWithoutError: '{| | x}'.
+	self assert: node isBlockNode .
+	self assert: node body isIdentifierReferenceNode.
+	self assert: node body name equals: #x.
+]
+
+{ #category : 'tests' }
+SysmelParserTest >> testBlock2 [
+	| node |
+	node := self parseSourceStringWithoutError: '{| :(Integer)x :: Integer | x}'.
+	self assert: node isBlockNode .
+	self assert: node functionalType isFunctionalDependentTypeNode.
+	
+	self assert: node body isIdentifierReferenceNode.
+	self assert: node body name equals: #x.
+
+]
+
+{ #category : 'tests' }
 SysmelParserTest >> testCascadeMessageSend [
 	| node |
 	node := self parseSourceStringWithoutError: 'a + 2; - 3; perform: #yourself'.
@@ -165,6 +197,17 @@ SysmelParserTest >> testEmpty [
 	| ast |
 	ast := self parseSourceStringWithoutError: ''.
 	self assert: ast isSequenceNode.
+]
+
+{ #category : 'tests' }
+SysmelParserTest >> testFunctionalType [
+	| node |
+	node := self parseSourceStringWithoutError: ':(Integer)x :: Integer'.
+	self assert: node isFunctionalDependentTypeNode .
+	self assert: node argumentPattern isBindableNameNode.
+
+	self assert: node resultType isIdentifierReferenceNode.
+	self assert: node resultType name equals: #Integer.
 ]
 
 { #category : 'tests' }
@@ -212,6 +255,15 @@ SysmelParserTest >> testKeywordMessageSend [
 	self assert: node arguments first isLiteralSymbolNode.
 	self assert: node arguments first value equals: #yourself.
 
+]
+
+{ #category : 'tests' }
+SysmelParserTest >> testLexicalBlock [
+	| node |
+	node := self parseSourceStringWithoutError: '{42}'.
+	self assert: node isLexicalBlockNode .
+	self assert: node body isLiteralIntegerNode.
+	self assert: node body value equals: 42.
 ]
 
 { #category : 'tests' }

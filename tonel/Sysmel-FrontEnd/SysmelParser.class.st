@@ -107,7 +107,6 @@ SysmelParser >> parseBindableName: state [
 	startPosition := state position.
 	self assert: state peekKind = SSTColon.
 	state advance.
-	
 	isExistential := false.
 	isMutable := false.
 	state peekKind = SSTBang ifTrue: [
@@ -134,8 +133,10 @@ SysmelParser >> parseBindableName: state [
 		nameExpression := self parseNameExpression: state.
 		isImplicitAndTypeExpression := self parseOptionalBindableNameType: state.
 		isImplicit := isImplicitAndTypeExpression first.
-		typeExpression := isImplicitAndTypeExpression second.
-		hasPostTypeExpression := typeExpression isNotNil.
+		typeExpression ifNil: [
+			typeExpression := isImplicitAndTypeExpression second.
+			hasPostTypeExpression := typeExpression isNotNil.
+		].
 		
 		state peekKind = SSTEllipsis ifTrue: [
 			state advance.
@@ -158,7 +159,48 @@ SysmelParser >> parseBindableName: state [
 
 { #category : 'parsing' }
 SysmelParser >> parseBlock: state [
-	self halt.
+	"{"
+	| startPosition functionalType body |
+	startPosition := state position.
+	self assert: state peekKind = SSTLeftCurlyBracket.
+	state advance.
+	
+	functionalType := nil.
+	state peekKind = SSTBar ifTrue: [
+		state advance.
+		state peekKind = SSTBar ifTrue: [ 
+			state advance.
+			functionalType := SysmelParseTreeFunctionalDependentTypeNode new
+				sourcePosition: state currentSourcePosition.
+		] ifFalse: [
+			functionalType := self parseFunctionalType: state.
+			functionalType := state expect: SSTBar addingErrorToNode: functionalType.
+			functionalType isFunctionalDependentTypeNode ifFalse: [
+				functionalType := SysmelParseTreeFunctionalDependentTypeNode new
+					sourcePosition: state currentSourcePosition;
+					argumentPattern: functionalType;
+					yourself.
+			]
+		]
+	].
+
+	body := self parseSequenceUntilEndOrDelimiter: SSTRightCurlyBracket state: state.
+	
+	"}" 
+	
+	body := state expect: SSTRightCurlyBracket addingErrorToNode: body.
+	functionalType ifNil: [
+		^ SysmelParseTreeLexicalBlockNode new
+			sourcePosition: (state sourcePositionFrom: startPosition);
+			body: body;
+			yourself
+	] ifNotNil: [
+		^ SysmelParseTreeBlockNode new
+			sourcePosition: (state sourcePositionFrom: startPosition);
+			functionalType: functionalType;
+			body: body;
+			yourself.
+	]
 ]
 
 { #category : 'parsing' }
@@ -335,7 +377,23 @@ SysmelParser >> parseFunctionalType: state [
 	argumentPatternOrExpression := self parseCommaExpression: state.
 	state peekKind = SSTColonColon ifTrue: [
 		state advance.
-		resultTypeExpression := self parseFunctionalType: state.
+		resultTypeExpression := self parseFunctionalTypeInner: state.
+		^ SysmelParseTreeFunctionalDependentTypeNode new
+			sourcePosition: (state sourcePositionFrom: startPosition);
+			argumentPattern: argumentPatternOrExpression;
+			resultType: resultTypeExpression
+	].
+	^ argumentPatternOrExpression
+]
+
+{ #category : 'parsing' }
+SysmelParser >> parseFunctionalTypeInner: state [
+	| startPosition argumentPatternOrExpression resultTypeExpression |
+	startPosition := state position.
+	argumentPatternOrExpression := self parseTerm: state.
+	state peekKind = SSTColonColon ifTrue: [
+		state advance.
+		resultTypeExpression := self parseFunctionalTypeInner: state.
 		^ SysmelParseTreeFunctionalDependentTypeNode new
 			sourcePosition: (state sourcePositionFrom: startPosition);
 			argumentPattern: argumentPatternOrExpression;
@@ -603,7 +661,7 @@ SysmelParser >> parseOptionalBindableNameType: state [
 	state peekKind = SSTLeftParent ifTrue: [ 
 		state advance.
 		typeExpression := self parseExpression: state.
-		typeExpression := state expect: SSTRightBracket addingErrorToNode: typeExpression.
+		typeExpression := state expect: SSTRightParent addingErrorToNode: typeExpression.
 		^ { false . typeExpression }
 	].
 

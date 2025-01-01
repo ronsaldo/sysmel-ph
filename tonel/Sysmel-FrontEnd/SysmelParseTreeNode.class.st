@@ -53,12 +53,22 @@ SysmelParseTreeNode >> isBindableNameNode [
 ]
 
 { #category : 'testing' }
+SysmelParseTreeNode >> isBlockNode [
+	^ false
+]
+
+{ #category : 'testing' }
 SysmelParseTreeNode >> isFunctionalDependentTypeNode [
 	^ false
 ]
 
 { #category : 'testing' }
 SysmelParseTreeNode >> isIdentifierReferenceNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SysmelParseTreeNode >> isLexicalBlockNode [
 	^ false
 ]
 

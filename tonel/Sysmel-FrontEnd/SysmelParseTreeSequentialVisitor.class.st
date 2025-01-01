@@ -42,14 +42,25 @@ SysmelParseTreeSequentialVisitor >> visitBindableNameNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeSequentialVisitor >> visitBlockNode: node [
+	self visitNode: node functionalType .
+	self visitNode: node body.
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSequentialVisitor >> visitFunctionalDependentNode: node [
-	self visitNode: node argumentPattern.
-	self visitNode: node resultType.
+	self visitOptionalNode: node argumentPattern.
+	self visitOptionalNode: node resultType.
 ]
 
 { #category : 'visiting' }
 SysmelParseTreeSequentialVisitor >> visitIdentifierReferenceNode: node [
 	"By default do nothing here."
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSequentialVisitor >> visitLexicalBlockNode: node [
+	self visitNode: node body
 ]
 
 { #category : 'visiting' }

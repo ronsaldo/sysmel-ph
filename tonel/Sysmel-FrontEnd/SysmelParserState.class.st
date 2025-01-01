@@ -73,6 +73,7 @@ SysmelParserState >> expect: expectedKind addingErrorToNode: expression [
 		self advance.
 		^ expression 
 	].
+	self halt.
 	^ SysmelParseTreeErrorNode new
 		errorMessage: 'Expected a specific token';
 		innerNodes: { expression };
