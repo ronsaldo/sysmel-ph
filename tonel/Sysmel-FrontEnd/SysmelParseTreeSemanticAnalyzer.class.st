@@ -51,6 +51,25 @@ SysmelParseTreeSemanticAnalyzer >> visitAndEvaluateType: aNode [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitApplicationNode: node [
+	| analyzedFunctional analyzedFunctionalType analyzedArguments application |
+	analyzedFunctional := self visitNode: node functional.
+	analyzedFunctionalType := analyzedFunctional type.
+	
+	analyzedArguments := node arguments collectWithIndex: [ :arg :index |
+		self visitNode: arg
+	].
+
+	application := SoNApplicationGraphNode new
+		sourcePosition: node sourcePosition;
+		functional: analyzedFunctional;
+		arguments: analyzedArguments;
+		yourself.
+	currentRegion addInstruction: application.
+	^ application
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitAssignmentNode: node [
 	| analyzedValue analyzedStore valueType alloca baseType coercedValue |
 	analyzedValue := node value ifNotNil: [self visitNode: node value ] .
@@ -122,6 +141,11 @@ SysmelParseTreeSemanticAnalyzer >> visitBinaryExpressionSequenceNode: node [
 		receiver := messageSend
 	].
 	^ receiver
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitBindableNameNode: node [
+	^ self error: 'A bindable name requires an initial value assignment.'
 ]
 
 { #category : 'visiting' }
@@ -201,6 +225,31 @@ SysmelParseTreeSemanticAnalyzer >> visitLiteralSymbolNode: node [
 		value: node value;
 		type: Symbol;
 		yourself
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitMessageCascadeMessageNode: node [
+	self error: 'A cascade message requires a cascade.'
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitMessageCascadeNode: node [
+	| receiver lastResult |
+	receiver := self visitNode: node receiver.
+	lastResult := receiver.
+	node messages do: [ :eachMessage |
+		| selector arguments messageSend|
+		selector := self visitAndEvaluateSymbolValue: eachMessage selector.
+		arguments := eachMessage arguments collect: [ :eachArgument | self visitNode: eachArgument ].
+		lastResult := messageSend := SoNSendMessageGraphNode new
+			sourcePosition: eachMessage sourcePosition;
+			receiver: receiver;
+			selector: selector;
+			arguments: arguments;
+			yourself.
+		currentRegion addInstruction: messageSend
+	].
+	^ lastResult
 ]
 
 { #category : 'visiting' }

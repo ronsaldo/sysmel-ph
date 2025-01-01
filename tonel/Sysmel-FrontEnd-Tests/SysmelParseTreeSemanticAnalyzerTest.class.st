@@ -52,6 +52,18 @@ SysmelParseTreeSemanticAnalyzerTest >> setUp [
 ]
 
 { #category : 'tests' }
+SysmelParseTreeSemanticAnalyzerTest >> testApplication [ 
+	| asg asgAndRegion region |
+	asgAndRegion := self parseAndAnalyse: 'Object()'.
+	asg := asgAndRegion first.
+	region := asgAndRegion second.
+	
+	self assert: asg isApplicationGraphNode.
+	self assert: asg functional isLiteralValueGraphNode.
+	self assert: asg arguments size equals: 0.
+]
+
+{ #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testAssignment [ 
 	| asg asgAndRegion region |
 	asgAndRegion := self parseAndAnalyse: ':!x := 42. x := 5'.
@@ -232,6 +244,19 @@ SysmelParseTreeSemanticAnalyzerTest >> testLiteralSymbol [
 	self assert: asg isLiteralValueGraphNode.
 	self assert: asg value equals: #helloSymbol.
 	self assert: asg type equals: Symbol.
+]
+
+{ #category : 'tests' }
+SysmelParseTreeSemanticAnalyzerTest >> testMessageCascade [
+	| asgAndRegions regions |
+	asgAndRegions := self parseAndAnalyse: '45;negated;yourself'.
+	regions := asgAndRegions second.
+	self assert: regions instructions size equals: 2.
+	self assert: regions instructions first isSendMessageGraphNode.
+	self assert: regions instructions first selector equals: #negated.
+
+	self assert: regions instructions second isSendMessageGraphNode.
+	self assert: regions instructions second selector equals: #yourself.
 ]
 
 { #category : 'tests' }

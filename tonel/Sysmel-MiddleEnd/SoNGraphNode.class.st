@@ -15,6 +15,11 @@ SoNGraphNode >> isAllocaGraphNode [
 ]
 
 { #category : 'testing' }
+SoNGraphNode >> isApplicationGraphNode [
+	^ false
+]
+
+{ #category : 'testing' }
 SoNGraphNode >> isAssociationGraphNode [
 	^ false
 ]
