@@ -352,7 +352,7 @@ SysmelParseTreeSemanticAnalyzer >> visitMessageCascadeNode: node [
 
 { #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitMessageSendNode: node [
-	| receiver selector arguments instruction |
+	| receiver selector arguments instruction method resultType receiverValue argumentsValues resultValue |
 	node receiver ifNil: [
 		| functionBinding application |
 		selector := self visitAndEvaluateSymbolValue: node selector.
@@ -370,13 +370,41 @@ SysmelParseTreeSemanticAnalyzer >> visitMessageSendNode: node [
 
 	receiver := self visitNodeWithoutTypeCoercion: node receiver.
 	selector := self visitAndEvaluateSymbolValue: node selector.
+	method := receiver type lookupSelector: selector.
+	(method isNotNil and: [method hasPragmaNamed: #sysmelMacro]) ifTrue: [ 
+		self halt
+	].
 	arguments := node arguments collect: [:each | self visitNode: each].
+
+	resultType := SysmelTypeGradual uniqueInstance.
+	(method isNotNil and: [ method hasPragmaNamed: #resultType: ]) ifTrue: [
+		| resulTypeName foundType |
+		resulTypeName := (method pragmaAt: #resultType:) arguments first.
+		foundType := (environment lookupRecursively: resulTypeName) value.
+		foundType ifNotNil: [ resultType := foundType ]
+	].
+
+	(method isNotNil
+		and: [(method hasPragmaNamed: #pure)
+		and: [receiver isConstantDataNode
+		and: [arguments allSatisfy: [:each | each isConstantDataNode]]]]) ifTrue: [
+		receiverValue := receiver asConstantValueForPureEvaluation.
+		argumentsValues := arguments collect: [ :eachArg | eachArg asConstantValueForPureEvaluation ].
+		resultValue := receiverValue perform: selector withArguments: argumentsValues.
+
+		^ SoNLiteralValueGraphNode new
+			sourcePosition: node sourcePosition;
+			value: resultValue;
+			type: (resultType ifNil: [resultValue asSysmelType]);
+			yourself
+	].
+	
 	instruction := SoNSendMessageGraphNode new
 						sourcePosition: node sourcePosition;
 						receiver: receiver;
 						selector: selector;
 						arguments: arguments;
-						type: SysmelTypeGradual uniqueInstance;
+						type: resultType;
 						yourself.
 	currentRegion addInstruction: instruction.
 	^ instruction

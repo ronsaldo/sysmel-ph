@@ -11,6 +11,11 @@ Class {
 	#tag : 'TypeSystem'
 }
 
+{ #category : 'converting' }
+SysmelPrimitiveTypeValue >> asSysmelType [
+	^ primitiveType
+]
+
 { #category : 'accessing' }
 SysmelPrimitiveTypeValue >> primitiveType [
 

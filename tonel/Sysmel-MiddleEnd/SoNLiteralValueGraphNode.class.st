@@ -15,6 +15,11 @@ SoNLiteralValueGraphNode class >> voidValue [
 	^ self new value: SysmelVoidType uniqueInstance; type: SysmelVoidType
 ]
 
+{ #category : 'converting' }
+SoNLiteralValueGraphNode >> asConstantValueForPureEvaluation [
+	^ value
+]
+
 { #category : 'testing' }
 SoNLiteralValueGraphNode >> isConstantDataNode [
 	^ true

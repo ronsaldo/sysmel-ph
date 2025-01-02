@@ -9,6 +9,11 @@ Class {
 	#tag : 'SeaOfNodesGraph'
 }
 
+{ #category : 'converting' }
+SoNGraphNode >> asConstantValueForPureEvaluation [
+	^ self error: 'Not a constant value.'
+]
+
 { #category : 'testing' }
 SoNGraphNode >> isAllocaGraphNode [
 	^ false

@@ -30,3 +30,11 @@ SeaOfNodesCodeTest >> testEmpty [
 	self assert: seaOfNodes dataResult type isVoidType.
 	self assert: seaOfNodes startingRegion isEmpty.
 ]
+
+{ #category : 'tests' }
+SeaOfNodesCodeTest >> testPrimitiveIntegers [
+	| seaOfNodes |
+	seaOfNodes := self parseAndEvaluateString: '56u32'.
+	self assert: seaOfNodes dataResult type equals: SysmelType UInt32.
+	self assert: seaOfNodes startingRegion isEmpty.
+]
