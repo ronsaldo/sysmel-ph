@@ -93,4 +93,10 @@ SysmelIntrinsicsEnvironment >> primitiveGlobalMacros [
 
 { #category : 'as yet unclassified' }
 SysmelIntrinsicsEnvironment >> primitiveTypes [
+	"PrimitiveIntegers"
+	{#UInt8 . #Int64 . #Char16 . #Int16 . #UInt32 . #Int8 . #UInt64 . #Char8 . #Char32 . #UInt16 . #Int32} do: [ :eachTypeName |
+		| eachPrimitiveType|
+		eachPrimitiveType := SysmelType perform: eachTypeName.
+		self addSymbol: eachPrimitiveType valueBinding: eachPrimitiveType.
+	]
 ]

@@ -15,6 +15,15 @@ SeaOfNodesCodeTest >> parseAndEvaluateString: string [
 ]
 
 { #category : 'tests' }
+SeaOfNodesCodeTest >> testConstant [
+	| seaOfNodes |
+	seaOfNodes := self parseAndEvaluateString: '42'.
+	self assert: seaOfNodes dataResult type equals: Integer.
+	self assert: seaOfNodes dataResult value equals: 42.
+	self assert: seaOfNodes startingRegion isEmpty.
+]
+
+{ #category : 'tests' }
 SeaOfNodesCodeTest >> testEmpty [
 	| seaOfNodes |
 	seaOfNodes := self parseAndEvaluateString: ''.

@@ -15,6 +15,6 @@ SysmelTypeGradual class >> uniqueInstance [
 ]
 
 { #category : 'testing' }
-SysmelTypeGradual >> isGradual [
+SysmelTypeGradual >> isGradualType [
 	^ true
 ]
