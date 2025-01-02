@@ -30,6 +30,11 @@ SoNLiteralValueGraphNode >> isLiteralValueGraphNode [
 	^ true
 ]
 
+{ #category : 'testing' }
+SoNLiteralValueGraphNode >> isTypeNode [
+	^ value isValidSysmelType
+]
+
 { #category : 'accessing' }
 SoNLiteralValueGraphNode >> type [
 

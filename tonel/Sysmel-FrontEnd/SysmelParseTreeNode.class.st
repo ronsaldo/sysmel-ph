@@ -63,6 +63,11 @@ SysmelParseTreeNode >> isDictionaryNode [
 ]
 
 { #category : 'testing' }
+SysmelParseTreeNode >> isFunctionNode [
+	^ false
+]
+
+{ #category : 'testing' }
 SysmelParseTreeNode >> isFunctionalDependentTypeNode [
 	^ false
 ]
@@ -74,6 +79,11 @@ SysmelParseTreeNode >> isIdentifierReferenceNode [
 
 { #category : 'testing' }
 SysmelParseTreeNode >> isIfConditionNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SysmelParseTreeNode >> isLambdaNode [
 	^ false
 ]
 
@@ -138,6 +148,11 @@ SysmelParseTreeNode >> isParseErrorNode [
 ]
 
 { #category : 'testing' }
+SysmelParseTreeNode >> isPiNode [
+	^ false
+]
+
+{ #category : 'testing' }
 SysmelParseTreeNode >> isQuasiQuoteNode [
 	^ false
 ]
@@ -158,6 +173,11 @@ SysmelParseTreeNode >> isSequenceNode [
 ]
 
 { #category : 'testing' }
+SysmelParseTreeNode >> isSigmaNode [
+	^ false
+]
+
+{ #category : 'testing' }
 SysmelParseTreeNode >> isSpliceNode [
 	^ false
 ]
@@ -170,6 +190,11 @@ SysmelParseTreeNode >> isTupleNode [
 { #category : 'testing' }
 SysmelParseTreeNode >> isWhileLoopNode [
 	^ false
+]
+
+{ #category : 'testing' }
+SysmelParseTreeNode >> parseAndUnpackArgumentsPattern [
+	^ self error: 'Not a valid argument expression.'
 ]
 
 { #category : 'accessing' }

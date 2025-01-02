@@ -97,6 +97,11 @@ SysmelParseTreeBindableNameNode >> nameExpression: anObject [
 	nameExpression := anObject
 ]
 
+{ #category : 'testing' }
+SysmelParseTreeBindableNameNode >> parseAndUnpackArgumentsPattern [
+	^ {{self}. isExistential . isVariadic}
+]
+
 { #category : 'accessing' }
 SysmelParseTreeBindableNameNode >> typeExpression [
 

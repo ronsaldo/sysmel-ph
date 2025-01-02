@@ -313,6 +313,17 @@ SysmelParserTest >> testKeywordMessageSend [
 ]
 
 { #category : 'tests' }
+SysmelParserTest >> testLambdaFunction [
+	| node |
+	node := self parseSourceStringWithoutError: ':square(:(Integer)x :: Integer) := x*x'.
+	self assert: node isAssignmentNode .
+	self assert: node store isBindableNameNode.
+	self assert: node store typeExpression isFunctionalDependentTypeNode.
+
+	self assert: node value isBinaryExpressionSequenceNode.
+]
+
+{ #category : 'tests' }
 SysmelParserTest >> testLexicalBlock [
 	| node |
 	node := self parseSourceStringWithoutError: '{42}'.

@@ -53,6 +53,14 @@ SysmelParseTreeSequentialVisitor >> visitDictionaryNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeSequentialVisitor >> visitFunctionNode: node [
+	self visitOptionalNode: node nameExpression.
+	self visitNode: node functionalType.
+	self visitNode: node body
+	
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSequentialVisitor >> visitFunctionalDependentNode: node [
 	self visitOptionalNode: node argumentPattern.
 	self visitOptionalNode: node resultType.
@@ -68,6 +76,11 @@ SysmelParseTreeSequentialVisitor >> visitIfConditionNode: node [
 	self visitNode: node condition.
 	self visitOptionalNode: node trueResult.
 	self visitOptionalNode: node falseResult.
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSequentialVisitor >> visitLambdaNode: node [
+	self halt
 ]
 
 { #category : 'visiting' }
@@ -130,6 +143,12 @@ SysmelParseTreeSequentialVisitor >> visitParseErrorNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeSequentialVisitor >> visitPiNode: node [
+	self visitNodes: node arguments.
+	self visitOptionalNode: node body.
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSequentialVisitor >> visitQuasiQuoteNode: node [
 	self visitNode: node term
 ]
@@ -147,6 +166,12 @@ SysmelParseTreeSequentialVisitor >> visitQuoteNode: node [
 { #category : 'visiting' }
 SysmelParseTreeSequentialVisitor >> visitSequenceNode: node [
 	self visitNodes: node elements
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSequentialVisitor >> visitSigmaNode: node [
+	self visitNodes: node arguments.
+	self visitOptionalNode: node body.
 ]
 
 { #category : 'visiting' }

@@ -45,6 +45,11 @@ SoNGraphNode >> isDictionaryGraphNode [
 ]
 
 { #category : 'testing' }
+SoNGraphNode >> isLambdaNode [
+	^ false
+]
+
+{ #category : 'testing' }
 SoNGraphNode >> isLiteralValueGraphNode [
 	^ false
 ]
@@ -65,6 +70,11 @@ SoNGraphNode >> isPhiGraphNode [
 ]
 
 { #category : 'testing' }
+SoNGraphNode >> isPiNode [
+	^ false
+]
+
+{ #category : 'testing' }
 SoNGraphNode >> isSendMessageGraphNode [
 	^ false
 ]
@@ -75,12 +85,22 @@ SoNGraphNode >> isSequencingGraphNode [
 ]
 
 { #category : 'testing' }
+SoNGraphNode >> isSigmaNode [
+	^ false
+]
+
+{ #category : 'testing' }
 SoNGraphNode >> isStoreValueGraphNode [
 	^ false
 ]
 
 { #category : 'testing' }
 SoNGraphNode >> isTupleGraphNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SoNGraphNode >> isTypeNode [
 	^ false
 ]
 

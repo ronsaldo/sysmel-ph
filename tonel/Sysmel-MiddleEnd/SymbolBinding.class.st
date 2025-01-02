@@ -2,6 +2,7 @@ Class {
 	#name : 'SymbolBinding',
 	#superclass : 'Object',
 	#instVars : [
+		'sourcePosition',
 		'name'
 	],
 	#category : 'Sysmel-MiddleEnd-Environment',
@@ -24,4 +25,16 @@ SymbolBinding >> name [
 SymbolBinding >> name: anObject [
 
 	name := anObject
+]
+
+{ #category : 'accessing' }
+SymbolBinding >> sourcePosition [
+
+	^ sourcePosition
+]
+
+{ #category : 'accessing' }
+SymbolBinding >> sourcePosition: anObject [
+
+	sourcePosition := anObject
 ]

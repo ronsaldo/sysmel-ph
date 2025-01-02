@@ -50,6 +50,11 @@ SysmelParseTreeVisitor >> visitDictionaryNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeVisitor >> visitFunctionNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeVisitor >> visitFunctionalDependentNode: node [
 	self subclassResponsibility
 ]
@@ -61,6 +66,11 @@ SysmelParseTreeVisitor >> visitIdentifierReferenceNode: node [
 
 { #category : 'visiting' }
 SysmelParseTreeVisitor >> visitIfConditionNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeVisitor >> visitLambdaNode: node [
 	self subclassResponsibility
 ]
 
@@ -135,6 +145,11 @@ SysmelParseTreeVisitor >> visitParseErrorNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeVisitor >> visitPiNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeVisitor >> visitQuasiQuoteNode: node [
 	self subclassResponsibility
 ]
@@ -151,6 +166,11 @@ SysmelParseTreeVisitor >> visitQuoteNode: node [
 
 { #category : 'visiting' }
 SysmelParseTreeVisitor >> visitSequenceNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeVisitor >> visitSigmaNode: node [
 	self subclassResponsibility
 ]
 

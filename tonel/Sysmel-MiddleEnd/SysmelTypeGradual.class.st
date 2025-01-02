@@ -18,3 +18,8 @@ SysmelTypeGradual class >> uniqueInstance [
 SysmelTypeGradual >> isGradualType [
 	^ true
 ]
+
+{ #category : 'accessing' }
+SysmelTypeGradual >> type [
+	^ self
+]

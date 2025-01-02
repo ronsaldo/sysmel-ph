@@ -65,7 +65,7 @@ SysmelParseTreeSemanticAnalyzerTest >> testApplication [
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testAssignment [ 
-	| asg asgAndRegion region seaOfNodes |
+	| asg region seaOfNodes |
 	seaOfNodes := self parseAndAnalyse: ':!x := 42. x := 5'.
 	asg := seaOfNodes dataResult.
 	region := seaOfNodes startingRegion.
@@ -170,6 +170,14 @@ SysmelParseTreeSemanticAnalyzerTest >> testEmpty [
 ]
 
 { #category : 'tests' }
+SysmelParseTreeSemanticAnalyzerTest >> testFunctionalType [
+	| node |
+	node := self parseAndAnalyse: ':(Integer)x :: Integer'.
+	self assert: node dataResult isPiNode.
+	self assert: node startingRegion isEmpty.
+]
+
+{ #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testIfStatement [
 	| asg |
 	asg := self parseAndAnalyse: 'if: true then: 1 else: 2'.
@@ -183,6 +191,14 @@ SysmelParseTreeSemanticAnalyzerTest >> testIntrinsicIdentifierReference [
 	self assert: asg isLiteralValueGraphNode.
 	self assert: asg value equals: Object.
 	self assert: asg type equals: Object class.
+]
+
+{ #category : 'tests' }
+SysmelParseTreeSemanticAnalyzerTest >> testLambdaFunction [
+	| node |
+	node := self parseAndAnalyse: '(:(Integer)x :: Integer) := x*x'.
+	self assert: node dataResult isPiNode.
+	self assert: node startingRegion isEmpty.
 ]
 
 { #category : 'tests' }
@@ -264,6 +280,14 @@ SysmelParseTreeSemanticAnalyzerTest >> testMessageCascade [
 
 	self assert: regions instructions second isSendMessageGraphNode.
 	self assert: regions instructions second selector equals: #yourself.
+]
+
+{ #category : 'tests' }
+SysmelParseTreeSemanticAnalyzerTest >> testNamedFunction [
+	| node |
+	node := self parseAndAnalyse: ':square(:(Integer)x :: Integer) := x*x'.
+	self assert: node dataResult isPiNode.
+	self assert: node startingRegion isEmpty.
 ]
 
 { #category : 'tests' }

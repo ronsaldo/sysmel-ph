@@ -30,3 +30,16 @@ SysmelParseTreeTupleNode >> elements: anObject [
 SysmelParseTreeTupleNode >> isTupleNode [
 	^ true
 ]
+
+{ #category : 'testing' }
+SysmelParseTreeTupleNode >> parseAndUnpackArgumentsPattern [
+	| isExistential isVariadic |
+	(self elements allSatisfy: [ :each | each isBindableNameNode ]) ifFalse: [
+		self error: 'Tuple argument pattern must be filled with bindable name nodes'
+	].
+
+	isExistential := false.
+	isVariadic := false.
+	
+	^ { self elements . isExistential . isVariadic }
+]
