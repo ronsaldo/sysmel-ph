@@ -10,6 +10,11 @@ Class {
 	#tag : 'SeaOfNodesGraph'
 }
 
+{ #category : 'as yet unclassified' }
+SoNTupleGraphNode >> dataDependencies [
+	^ elements
+]
+
 { #category : 'accessing' }
 SoNTupleGraphNode >> elements [
 

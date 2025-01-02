@@ -9,6 +9,11 @@ Class {
 	#tag : 'SeaOfNodesGraph'
 }
 
+{ #category : 'as yet unclassified' }
+SoNDictionaryGraphNode >> dataDependencies [
+	^ elements
+]
+
 { #category : 'accessing' }
 SoNDictionaryGraphNode >> elements [
 

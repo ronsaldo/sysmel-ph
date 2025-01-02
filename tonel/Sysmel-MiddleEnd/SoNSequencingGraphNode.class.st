@@ -10,6 +10,11 @@ Class {
 	#tag : 'SeaOfNodesGraph'
 }
 
+{ #category : 'as yet unclassified' }
+SoNSequencingGraphNode >> dataDependencies [
+	^ elements
+]
+
 { #category : 'accessing' }
 SoNSequencingGraphNode >> elements [
 

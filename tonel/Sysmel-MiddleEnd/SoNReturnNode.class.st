@@ -10,6 +10,11 @@ Class {
 	#tag : 'SeaOfNodesGraph'
 }
 
+{ #category : 'as yet unclassified' }
+SoNReturnNode >> dataDependencies [
+	^ value ifNotNil: [{ value }] ifNil: [ #() ]
+]
+
 { #category : 'accessing' }
 SoNReturnNode >> type [
 

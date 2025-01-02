@@ -24,6 +24,11 @@ SoNSendMessageGraphNode >> arguments: anObject [
 	arguments := anObject
 ]
 
+{ #category : 'as yet unclassified' }
+SoNSendMessageGraphNode >> dataDependencies [
+	^ {receiver . selector} , arguments 
+]
+
 { #category : 'testing' }
 SoNSendMessageGraphNode >> isSendMessageGraphNode [
 	^ true

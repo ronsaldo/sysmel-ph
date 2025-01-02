@@ -63,6 +63,11 @@ SoNTypedFunctionalNode >> captureBindings: anObject [
 	captureBindings := anObject
 ]
 
+{ #category : 'as yet unclassified' }
+SoNTypedFunctionalNode >> dataDependencies [
+	^ { captureBindings }
+]
+
 { #category : 'accessing' }
 SoNTypedFunctionalNode >> isVariadic [
 

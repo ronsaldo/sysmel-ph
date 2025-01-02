@@ -19,6 +19,11 @@ SoNGraphNode >> asReducedTypeExpression [
 	^ self
 ]
 
+{ #category : 'as yet unclassified' }
+SoNGraphNode >> dataDependencies [
+	^ #()
+]
+
 { #category : 'testing' }
 SoNGraphNode >> isAllocaGraphNode [
 	^ false

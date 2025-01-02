@@ -9,6 +9,11 @@ Class {
 	#tag : 'SeaOfNodesGraph'
 }
 
+{ #category : 'as yet unclassified' }
+SoNLoadValueGraphNode >> dataDependencies [
+	^ pointer
+]
+
 { #category : 'testing' }
 SoNLoadValueGraphNode >> isLoadValueGraphNode [
 	^ true

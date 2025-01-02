@@ -11,6 +11,12 @@ Class {
 	#tag : 'SeaOfNodesGraph'
 }
 
+{ #category : 'as yet unclassified' }
+SoNAssociationGraphNode >> dataDependencies [
+	value ifNil: [ ^ { key } ].
+	^ {key . value}
+]
+
 { #category : 'testing' }
 SoNAssociationGraphNode >> isAssociationGraphNode [
 	^ true

@@ -10,6 +10,11 @@ Class {
 	#tag : 'SeaOfNodesGraph'
 }
 
+{ #category : 'as yet unclassified' }
+SoNStoreValueGraphNode >> dataDependencies [
+	^ { pointer . value }
+]
+
 { #category : 'testing' }
 SoNStoreValueGraphNode >> isStoreValueGraphNode [
 	^ true

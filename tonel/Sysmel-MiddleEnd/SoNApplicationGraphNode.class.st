@@ -23,6 +23,11 @@ SoNApplicationGraphNode >> arguments: anObject [
 	arguments := anObject
 ]
 
+{ #category : 'as yet unclassified' }
+SoNApplicationGraphNode >> dataDependencies [
+	^ {functional } , arguments
+]
+
 { #category : 'accessing' }
 SoNApplicationGraphNode >> functional [
 
