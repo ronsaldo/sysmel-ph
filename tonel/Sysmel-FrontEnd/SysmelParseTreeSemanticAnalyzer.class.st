@@ -23,7 +23,10 @@ SysmelParseTreeSemanticAnalyzer >> analyzeAST: ast withEnvironment: newEnvironme
 	expectedType := anExpectedType.
 	currentRegion := region.
 	asg := self visitNode: ast.
-	^ { asg . region }
+	^ SeaOfNodesCode new
+		dataResult: asg;
+		startingRegion: region;
+		yourself
 ]
 
 { #category : 'as yet unclassified' }
@@ -55,7 +58,7 @@ SysmelParseTreeSemanticAnalyzer >> visitApplicationNode: node [
 	| analyzedFunctional analyzedFunctionalType analyzedArguments application isMacro macroArguments macroResult |
 	analyzedFunctional := self visitNode: node functional.
 	analyzedFunctionalType := analyzedFunctional type.
-	isMacro := analyzedFunctional value isMacro.
+	isMacro := analyzedFunctional value isSysmelMacro.
 	isMacro ifTrue: [
 		| macro macroContext |
 		macro := analyzedFunctional value.

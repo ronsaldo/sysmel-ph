@@ -25,7 +25,7 @@ SysmelParseTreeSemanticAnalyzerTest >> parseAndAnalyse: sourceString [
 
 { #category : 'parsing' }
 SysmelParseTreeSemanticAnalyzerTest >> parseAndAnalyseASG: sourceString [
-	^ (self parseAndAnalyse: sourceString) first
+	^ (self parseAndAnalyse: sourceString) dataResult
 ]
 
 { #category : 'parsing' }
@@ -53,10 +53,10 @@ SysmelParseTreeSemanticAnalyzerTest >> setUp [
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testApplication [ 
-	| asg asgAndRegion region |
-	asgAndRegion := self parseAndAnalyse: 'Object()'.
-	asg := asgAndRegion first.
-	region := asgAndRegion second.
+	| asg region seaOfNodes |
+	seaOfNodes := self parseAndAnalyse: 'Object()'.
+	asg := seaOfNodes dataResult.
+	region := seaOfNodes startingRegion.
 	
 	self assert: asg isApplicationGraphNode.
 	self assert: asg functional isLiteralValueGraphNode.
@@ -65,10 +65,10 @@ SysmelParseTreeSemanticAnalyzerTest >> testApplication [
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testAssignment [ 
-	| asg asgAndRegion region |
-	asgAndRegion := self parseAndAnalyse: ':!x := 42. x := 5'.
-	asg := asgAndRegion first.
-	region := asgAndRegion second.
+	| asg asgAndRegion region seaOfNodes |
+	seaOfNodes := self parseAndAnalyse: ':!x := 42. x := 5'.
+	asg := seaOfNodes dataResult.
+	region := seaOfNodes startingRegion.
 	
 	self assert: asg isSequencingGraphNode.
 	self assert: asg elements size equals: 2.
@@ -173,7 +173,7 @@ SysmelParseTreeSemanticAnalyzerTest >> testEmpty [
 SysmelParseTreeSemanticAnalyzerTest >> testIfStatement [
 	| asg |
 	asg := self parseAndAnalyse: 'if: true then: 1 else: 2'.
-	self assert: asg first isPhiGraphNode.
+	self assert: asg dataResult isPhiGraphNode.
 ]
 
 { #category : 'tests' }
@@ -255,9 +255,9 @@ SysmelParseTreeSemanticAnalyzerTest >> testLiteralSymbol [
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testMessageCascade [
-	| asgAndRegions regions |
-	asgAndRegions := self parseAndAnalyse: '45;negated;yourself'.
-	regions := asgAndRegions second.
+	| seaOfNodes regions |
+	seaOfNodes := self parseAndAnalyse: '45;negated;yourself'.
+	regions := seaOfNodes startingRegion .
 	self assert: regions instructions size equals: 2.
 	self assert: regions instructions first isSendMessageGraphNode.
 	self assert: regions instructions first selector equals: #negated.

@@ -28,7 +28,7 @@ PrimitiveMacroMethod >> implementation: anObject [
 ]
 
 { #category : 'testing' }
-PrimitiveMacroMethod >> isMacro [
+PrimitiveMacroMethod >> isSysmelMacro [
 	^ true
 ]
 

@@ -4,3 +4,8 @@ Extension { #name : 'ProtoObject' }
 ProtoObject >> asDecayedSysmelType [
 	^ self
 ]
+
+{ #category : '*Sysmel-FrontEnd' }
+ProtoObject >> isSysmelMacro [
+	^ false
+]
