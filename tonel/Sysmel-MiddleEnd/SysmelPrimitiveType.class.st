@@ -46,6 +46,11 @@ SysmelPrimitiveType >> literalSuffix: anObject [
 	literalSuffix := anObject
 ]
 
+{ #category : 'lookup' }
+SysmelPrimitiveType >> lookupSelector: aSelector [
+	^ SysmelPrimitiveIntegerTypeValue lookupSelector: aSelector
+]
+
 { #category : 'as yet unclassified' }
 SysmelPrimitiveType >> normalizeInteger: integer [
 	^ integer bitAnd: (1<<(size * 8)) - 1

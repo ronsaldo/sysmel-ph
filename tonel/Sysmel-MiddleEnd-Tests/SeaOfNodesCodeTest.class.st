@@ -38,3 +38,11 @@ SeaOfNodesCodeTest >> testPrimitiveIntegers [
 	self assert: seaOfNodes dataResult type equals: SysmelType UInt32.
 	self assert: seaOfNodes startingRegion isEmpty.
 ]
+
+{ #category : 'tests' }
+SeaOfNodesCodeTest >> testPrimitiveIntegersArithmetic [
+	| seaOfNodes |
+	seaOfNodes := self parseAndEvaluateString: '56u32 + 48u32'.
+	self assert: seaOfNodes dataResult type equals: SysmelType UInt32.
+	self assert: seaOfNodes startingRegion isEmpty.
+]

@@ -5,3 +5,32 @@ Class {
 	#package : 'Sysmel-MiddleEnd',
 	#tag : 'TypeSystem'
 }
+
+{ #category : 'arithmetic' }
+SysmelPrimitiveIntegerTypeValue >> * operand [
+	<pure>
+	^ primitiveType fromInteger: self asInteger * operand asInteger
+]
+
+{ #category : 'arithmetic' }
+SysmelPrimitiveIntegerTypeValue >> + operand [
+	<pure>
+	^ primitiveType fromInteger: self asInteger + operand asInteger
+]
+
+{ #category : 'arithmetic' }
+SysmelPrimitiveIntegerTypeValue >> - operand [
+	<pure>
+	^ primitiveType fromInteger: self asInteger - operand asInteger
+]
+
+{ #category : 'arithmetic' }
+SysmelPrimitiveIntegerTypeValue >> / operand [
+	<pure>
+	^ primitiveType fromInteger: self asInteger // operand asInteger
+]
+
+{ #category : 'converting' }
+SysmelPrimitiveIntegerTypeValue >> asInteger [
+	^ value asInteger
+]

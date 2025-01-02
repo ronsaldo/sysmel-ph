@@ -163,6 +163,11 @@ SysmelType >> isVoid [
 	^ false
 ]
 
+{ #category : 'lookup' }
+SysmelType >> lookupSelector: aSelector [
+	^ nil
+]
+
 { #category : 'accessing' }
 SysmelType >> optionalName [
 

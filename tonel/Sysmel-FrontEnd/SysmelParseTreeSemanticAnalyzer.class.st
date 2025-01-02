@@ -143,19 +143,23 @@ SysmelParseTreeSemanticAnalyzer >> visitAssociationNode: node [
 { #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitBinaryExpressionSequenceNode: node [
 	| receiver operator operand messageSend |
-	self assert: node elements size >= 1. 
-	receiver := self visitNode: node elements first.
+	self assert: node elements isNotEmpty. 
+	node elements size = 1 ifTrue: [ ^ self visitNode: node elements first ].
+	
+	receiver := node elements first.
 	2 to: node elements size by: 2 do: [ :i |
-		operator := self visitNode: (node elements at: i).
-		operand := self visitNode: (node elements at: i + 1).
-		messageSend := SoNSendMessageGraphNode new
+		operator := node elements at: i.
+		operand := node elements at: i + 1.
+		messageSend := SysmelParseTreeMessageSendNode new
+			sourcePosition: node sourcePosition;
 			receiver: receiver;
 			selector: operator;
-			arguments: { operand }.
-		currentRegion addInstruction: messageSend.
+			arguments: { operand };
+			yourself.
+
 		receiver := messageSend
 	].
-	^ receiver
+	^ self visitNode: receiver
 ]
 
 { #category : 'visiting' }
@@ -371,6 +375,7 @@ SysmelParseTreeSemanticAnalyzer >> visitMessageSendNode: node [
 	receiver := self visitNodeWithoutTypeCoercion: node receiver.
 	selector := self visitAndEvaluateSymbolValue: node selector.
 	method := receiver type lookupSelector: selector.
+	
 	(method isNotNil and: [method hasPragmaNamed: #sysmelMacro]) ifTrue: [ 
 		self halt
 	].
@@ -391,11 +396,10 @@ SysmelParseTreeSemanticAnalyzer >> visitMessageSendNode: node [
 		receiverValue := receiver asConstantValueForPureEvaluation.
 		argumentsValues := arguments collect: [ :eachArg | eachArg asConstantValueForPureEvaluation ].
 		resultValue := receiverValue perform: selector withArguments: argumentsValues.
-
 		^ SoNLiteralValueGraphNode new
 			sourcePosition: node sourcePosition;
 			value: resultValue;
-			type: (resultType ifNil: [resultValue asSysmelType]);
+			type: resultValue asSysmelType;
 			yourself
 	].
 	
