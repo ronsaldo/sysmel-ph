@@ -11,6 +11,17 @@ Class {
 	#tag : 'Environment'
 }
 
+{ #category : 'as yet unclassified' }
+SymbolArgumentBinding >> evaluateASGIn: evalSourcePosition [
+	^ SoNArgumentGraphNode new
+		sourcePosition: evalSourcePosition;
+		type: typeExpression asReducedTypeExpression;
+		binding: self;
+		isImplicit: isImplicit;
+		isExistential: isExistential;
+		yourself
+]
+
 { #category : 'accessing' }
 SymbolArgumentBinding >> isExistential [
 

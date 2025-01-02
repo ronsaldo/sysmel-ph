@@ -14,6 +14,11 @@ SoNGraphNode >> asConstantValueForPureEvaluation [
 	^ self error: 'Not a constant value.'
 ]
 
+{ #category : 'converting' }
+SoNGraphNode >> asReducedTypeExpression [
+	^ self
+]
+
 { #category : 'testing' }
 SoNGraphNode >> isAllocaGraphNode [
 	^ false

@@ -20,6 +20,11 @@ SoNLiteralValueGraphNode >> asConstantValueForPureEvaluation [
 	^ value
 ]
 
+{ #category : 'converting' }
+SoNLiteralValueGraphNode >> asReducedTypeExpression [
+	^ self isTypeNode ifTrue: [value] ifFalse: [type]
+]
+
 { #category : 'testing' }
 SoNLiteralValueGraphNode >> isConstantDataNode [
 	^ true

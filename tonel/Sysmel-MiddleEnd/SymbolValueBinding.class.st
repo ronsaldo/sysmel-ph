@@ -10,9 +10,10 @@ Class {
 }
 
 { #category : 'as yet unclassified' }
-SymbolValueBinding >> evaluateASGIn: sourcePosition [
+SymbolValueBinding >> evaluateASGIn: evalSourcePosition [
 	(value isKindOf: SoNGraphNode) ifTrue: [ ^ value ].
 	^ SoNLiteralValueGraphNode new
+		sourcePosition: evalSourcePosition;
 		value: value;
 		type: value asSysmelType;
 		yourself

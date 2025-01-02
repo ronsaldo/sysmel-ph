@@ -164,9 +164,9 @@ SysmelParseTreeSemanticAnalyzerTest >> testDictionary3 [
 SysmelParseTreeSemanticAnalyzerTest >> testEmpty [
 	| asg |
 	asg := self parseAndAnalyseASG: ''.
-	self assert: asg isSequencingGraphNode.
-	self assert: asg elements isEmpty.
-	self assert: asg type isVoid.
+	self assert: asg isLiteralValueGraphNode.
+	self assert: asg value equals: SysmelVoidType uniqueInstance.
+	self assert: asg type isVoidType.
 ]
 
 { #category : 'tests' }
@@ -197,7 +197,7 @@ SysmelParseTreeSemanticAnalyzerTest >> testIntrinsicIdentifierReference [
 SysmelParseTreeSemanticAnalyzerTest >> testLambdaFunction [
 	| node |
 	node := self parseAndAnalyse: '(:(Integer)x :: Integer) := x*x'.
-	self assert: node dataResult isPiNode.
+	self assert: node dataResult isLambdaNode.
 	self assert: node startingRegion isEmpty.
 ]
 
@@ -286,7 +286,7 @@ SysmelParseTreeSemanticAnalyzerTest >> testMessageCascade [
 SysmelParseTreeSemanticAnalyzerTest >> testNamedFunction [
 	| node |
 	node := self parseAndAnalyse: ':square(:(Integer)x :: Integer) := x*x'.
-	self assert: node dataResult isPiNode.
+	self assert: node dataResult isLambdaNode.
 	self assert: node startingRegion isEmpty.
 ]
 

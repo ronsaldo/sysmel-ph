@@ -3,7 +3,8 @@ Class {
 	#superclass : 'SysmelNonEmptyEnvironment',
 	#instVars : [
 		'argumentBindings',
-		'captureBindings'
+		'captureBindings',
+		'fixpointBinding'
 	],
 	#category : 'Sysmel-MiddleEnd-Environment',
 	#package : 'Sysmel-MiddleEnd',
@@ -13,6 +14,11 @@ Class {
 { #category : 'accessing' }
 SysmelFunctionalAnalysisEnvironment >> captureBindings [
 	^ captureBindings
+]
+
+{ #category : 'accessing' }
+SysmelFunctionalAnalysisEnvironment >> fixpointBinding [
+	^ fixpointBinding
 ]
 
 { #category : 'initialization' }
@@ -28,5 +34,14 @@ SysmelFunctionalAnalysisEnvironment >> withArgumentBinding: anArgumentBinding [
 	
 	anArgumentBinding name ifNotNil: [
 		localSymbols at: anArgumentBinding name put: anArgumentBinding
+	]
+]
+
+{ #category : 'as yet unclassified' }
+SysmelFunctionalAnalysisEnvironment >> withFixpointBinding: aFixpointBinding [
+	fixpointBinding :=aFixpointBinding.
+	
+	aFixpointBinding name ifNotNil: [
+		localSymbols at: aFixpointBinding name put: aFixpointBinding
 	]
 ]

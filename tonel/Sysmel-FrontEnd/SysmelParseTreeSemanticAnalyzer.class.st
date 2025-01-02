@@ -375,7 +375,7 @@ SysmelParseTreeSemanticAnalyzer >> visitIfConditionNode: node [
 
 { #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitLambdaNode: node [
-	| functionalEnvironment typedArguments typedArgument |
+	| functionalEnvironment typedArguments typedArgument analyzedResultTypeExpression name typedPi typeUniverse fixpointBinding body bodyType bodyRegion |
 	functionalEnvironment := SysmelFunctionalAnalysisEnvironment parent: environment.
 	typedArguments := OrderedCollection new.
 	node arguments do: [ :eachArgument |
@@ -385,7 +385,68 @@ SysmelParseTreeSemanticAnalyzer >> visitLambdaNode: node [
 		functionalEnvironment := functionalEnvironment withArgumentBinding: typedArgument binding.
 		typedArguments add: typedArgument
 	]. 
-	self halt
+	
+	" Analyze here the result type expression, so that we can introduce the fixpoint binding without poluting the environment"
+	analyzedResultTypeExpression := nil.
+	node resultType ifNotNil: [
+		analyzedResultTypeExpression := self withEnvironment: functionalEnvironment do: [ self visitTypeExpression: node resultType ]
+	].
+
+	name := self evaluateOptionalSymbol: node nameExpression.
+	
+	"Construct the dependent type without result type inference."
+	typedPi := nil.
+	(analyzedResultTypeExpression isNotNil or: [ node isFixpoint and name isNotNil ]) ifTrue: [
+		typeUniverse := SysmelTypeUniverse withIndex: 0.
+		typedPi := SoNPiNode new
+			sourcePosition: node sourcePosition;
+			name: nil;
+			type: typeUniverse;
+			arguments: typedArguments;
+			isVariadic: node isVariadic;
+			captureBindings: functionalEnvironment captureBindings;
+			body: analyzedResultTypeExpression;
+			callingConvention: node callingConvention;
+			yourself.
+		typedPi := self reducePiNode: typedPi
+	].
+	
+	"Add the fixpoint symbol"
+	fixpointBinding := nil.
+	(node isFixpoint and: [name isNotNil ]) ifTrue: [
+		fixpointBinding := SymbolFixpointBinding new
+			sourcePosition: node sourcePosition;
+			name: name;
+			typeExpression: typedPi;
+			yourself.
+		functionalEnvironment := functionalEnvironment withFixpointBinding: fixpointBinding
+	].
+	
+	"Analyze the body"
+	bodyRegion := SoNRegionGraphNode new
+		sourcePosition: node sourcePosition;
+		yourself.
+	body := self withEnvironment: functionalEnvironment region: bodyRegion do: [ self visitNode: node body withExpectedTypeExpression: analyzedResultTypeExpression ].
+	
+	"Compute the lambda type"
+	bodyType := body type.
+	typeUniverse := SysmelTypeUniverse withIndex: 0.
+	
+	typedPi ifNil: [
+		self halt
+	].
+
+	"Make the typed lambda node"	
+	^ SoNLambdaNode new
+		sourcePosition: node sourcePosition;
+		name: name;
+		type: typedPi;
+		arguments: typedArguments;
+		isVariadic: node isVariadic;
+		captureBindings: functionalEnvironment captureBindings;
+		body: body;
+		callingConvention: node callingConvention;
+		yourself
 ]
 
 { #category : 'visiting' }
@@ -552,6 +613,14 @@ SysmelParseTreeSemanticAnalyzer >> visitNode: node withExpectedType: anExpectedT
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitNode: node withExpectedTypeExpression: expectedTypeExpression [
+	| visitedNode |
+	visitedNode := self visitNode: node.
+	self flag: 'Perform the type checking'.
+	^ visitedNode
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitNode: aNode withRegion: aRegionOfCode [
 	| oldRegion |
 	oldRegion := currentRegion.
@@ -701,6 +770,19 @@ SysmelParseTreeSemanticAnalyzer >> withEnvironment: newEnvironment do: aBlock [
 	oldEnvironment := environment.
 	environment := newEnvironment.
 	^ aBlock ensure: [ environment := oldEnvironment ]
+]
+
+{ #category : 'as yet unclassified' }
+SysmelParseTreeSemanticAnalyzer >> withEnvironment: newEnvironment region: aRegion do: aBlock [
+	| oldEnvironment oldRegion |
+	oldEnvironment := environment.
+	oldRegion := currentRegion.
+	currentRegion := aRegion.
+	environment := newEnvironment.
+	^ aBlock ensure: [
+		environment := oldEnvironment.
+		currentRegion := oldRegion
+	]
 ]
 
 { #category : 'enumerating' }
