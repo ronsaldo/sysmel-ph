@@ -167,6 +167,11 @@ SysmelParseTreeNode >> isTupleNode [
 	^ false
 ]
 
+{ #category : 'testing' }
+SysmelParseTreeNode >> isWhileLoopNode [
+	^ false
+]
+
 { #category : 'accessing' }
 SysmelParseTreeNode >> sourcePosition [
 

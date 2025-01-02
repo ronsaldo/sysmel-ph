@@ -11,6 +11,7 @@ SysmelIntrinsicsEnvironment >> buildIntrinsicSymbols [
 	self importIntrinsicClasses.
 	self importIntrinsicValues.
 	self primitiveGlobalMacros.
+	self primitiveTypes.
 ]
 
 { #category : 'as yet unclassified' }
@@ -48,5 +49,48 @@ SysmelIntrinsicsEnvironment >> primitiveGlobalMacros [
 				trueResult: trueAction;
 				falseResult: falseAction;
 				yourself.
-		]
+		].
+		self addPrimitiveGlobalMacro: #if:then:
+		type: (SysmelSimpleFunctionType withArguments: 
+		{ #context -> MacroContext .
+		  #condition -> SysmelParseTreeNode .
+			#trueResult -> SysmelParseTreeNode} resultType: SysmelParseTreeNode)
+		implementation: [ :macroContext :condition :trueAction |
+			SysmelParseTreeIfConditionNode new
+				sourcePosition: macroContext sourcePosition;
+				condition: condition;
+				trueResult: trueAction;
+				yourself.
+		].
+		self addPrimitiveGlobalMacro: #while:do:
+		type: (SysmelSimpleFunctionType withArguments: 
+		{ #context -> MacroContext .
+		  #condition -> SysmelParseTreeNode .
+			#body -> SysmelParseTreeNode} resultType: SysmelParseTreeNode)
+		implementation: [ :macroContext :condition :body |
+			SysmelParseTreeWhileLoopNode new
+				sourcePosition: macroContext sourcePosition;
+				condition: condition;
+				body: body;
+				yourself.
+		].
+		self addPrimitiveGlobalMacro: #while:do:continueWith:
+		type: (SysmelSimpleFunctionType withArguments: 
+		{ #context -> MacroContext .
+		  #condition -> SysmelParseTreeNode .
+			#body -> SysmelParseTreeNode .
+			#continueAction -> SysmelParseTreeNode}
+			resultType: SysmelParseTreeNode)
+		implementation: [ :macroContext :condition :body :continueExpression |
+			SysmelParseTreeWhileLoopNode new
+				sourcePosition: macroContext sourcePosition;
+				condition: condition;
+				body: body;
+				continueExpression: continueExpression;
+				yourself.
+		].
+]
+
+{ #category : 'as yet unclassified' }
+SysmelIntrinsicsEnvironment >> primitiveTypes [
 ]

@@ -12,6 +12,11 @@ Class {
 	#tag : 'TypeSystem'
 }
 
+{ #category : 'testing' }
+SysmelVoidType class >> isVoidType [
+	^ true
+]
+
 { #category : 'accessing' }
 SysmelVoidType class >> uniqueInstance [
 	^ uniqueInstance ifNil: [ uniqueInstance := self new ]

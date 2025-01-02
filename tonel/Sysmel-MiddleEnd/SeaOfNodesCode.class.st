@@ -25,6 +25,12 @@ SeaOfNodesCode >> dataResult: anObject [
 	dataResult := anObject
 ]
 
+{ #category : 'as yet unclassified' }
+SeaOfNodesCode >> findRegions [
+	| allRegions |
+	allRegions := OrderedCollection new.
+]
+
 { #category : 'accessing' }
 SeaOfNodesCode >> startingRegion [
 

@@ -21,6 +21,11 @@ SoNBranchGraphNode >> destination: anObject [
 	destination := anObject
 ]
 
+{ #category : 'testing' }
+SoNBranchGraphNode >> isControlFlowNode [
+	^ true
+]
+
 { #category : 'accessing' }
 SoNBranchGraphNode >> type [
 	^ SysmelVoidType uniqueInstance

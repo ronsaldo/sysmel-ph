@@ -158,3 +158,10 @@ SysmelParseTreeSequentialVisitor >> visitSpliceNode: node [
 SysmelParseTreeSequentialVisitor >> visitTupleNode: node [
 	self visitNodes: node elements
 ]
+
+{ #category : 'visiting' }
+SysmelParseTreeSequentialVisitor >> visitWhileLoopNode: node [
+	self visitOptionalNode: node condition.
+	self visitOptionalNode: node body.
+	self visitOptionalNode: node continueExpression.
+]

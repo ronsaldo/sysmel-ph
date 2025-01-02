@@ -422,11 +422,11 @@ SysmelParseTreeSemanticAnalyzer >> visitNodeWithoutTypeCoercion: aNode [
 SysmelParseTreeSemanticAnalyzer >> visitSequenceNode: node [
 	| lastIndex analyzedElements |
 	node elements isEmpty ifTrue: [ 
-		^ currentRegion addInstruction: (SoNSequencingGraphNode new
+		^ SoNLiteralValueGraphNode new
 			sourcePosition: node sourcePosition;
-			elements: #();
-			type: SysmelVoidType uniqueInstance;
-			yourself)
+			value: SysmelVoidType uniqueInstance;
+			type: SysmelVoidType;
+			yourself
 	].
 
 	node elements size = 1 ifTrue: [

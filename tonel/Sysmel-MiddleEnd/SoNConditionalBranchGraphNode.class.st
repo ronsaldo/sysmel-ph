@@ -36,6 +36,11 @@ SoNConditionalBranchGraphNode >> falseDestination: anObject [
 	falseDestination := anObject
 ]
 
+{ #category : 'testing' }
+SoNConditionalBranchGraphNode >> isControlFlowNode [
+	^ true
+]
+
 { #category : 'accessing' }
 SoNConditionalBranchGraphNode >> mergeDestination [
 

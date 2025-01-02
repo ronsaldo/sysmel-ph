@@ -16,7 +16,9 @@ Class {
 
 { #category : 'adding' }
 SoNRegionGraphNode >> addInstruction: anInstruction [
-	instructions add: anInstruction.
+	anInstruction isConstantDataNode ifFalse: [
+		instructions add: anInstruction.
+	].
 	^ anInstruction
 ]
 
@@ -72,6 +74,11 @@ SoNRegionGraphNode >> instructions [
 SoNRegionGraphNode >> instructions: anObject [
 
 	instructions := anObject
+]
+
+{ #category : 'testing' }
+SoNRegionGraphNode >> isEmpty [
+	^ instructions isEmpty and: [ phiCopy isEmpty and: [ mergePhi isEmpty ] ]
 ]
 
 { #category : 'accessing' }

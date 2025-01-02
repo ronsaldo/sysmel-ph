@@ -16,6 +16,11 @@ SoNLiteralValueGraphNode class >> voidValue [
 ]
 
 { #category : 'testing' }
+SoNLiteralValueGraphNode >> isConstantDataNode [
+	^ true
+]
+
+{ #category : 'testing' }
 SoNLiteralValueGraphNode >> isLiteralValueGraphNode [
 	^ true
 ]

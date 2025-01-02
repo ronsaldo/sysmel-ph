@@ -163,3 +163,8 @@ SysmelParseTreeVisitor >> visitSpliceNode: node [
 SysmelParseTreeVisitor >> visitTupleNode: node [
 	self subclassResponsibility
 ]
+
+{ #category : 'visiting' }
+SysmelParseTreeVisitor >> visitWhileLoopNode: node [
+	self subclassResponsibility
+]

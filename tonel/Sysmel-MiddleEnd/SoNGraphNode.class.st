@@ -25,6 +25,16 @@ SoNGraphNode >> isAssociationGraphNode [
 ]
 
 { #category : 'testing' }
+SoNGraphNode >> isConstantDataNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SoNGraphNode >> isControlFlowNode [
+	^ false
+]
+
+{ #category : 'testing' }
 SoNGraphNode >> isDictionaryGraphNode [
 	^ false
 ]
