@@ -109,3 +109,9 @@ SoNRegionGraphNode >> previousRegions: anObject [
 SoNRegionGraphNode >> type [
 	^ SysmelVoidType uniqueInstance
 ]
+
+{ #category : 'enumerating' }
+SoNRegionGraphNode >> withAllSuccessorsDo: aBlock [
+	aBlock value: self.
+	nextRegions do: [:each | each withAllSuccessorsDo: aBlock ]
+]

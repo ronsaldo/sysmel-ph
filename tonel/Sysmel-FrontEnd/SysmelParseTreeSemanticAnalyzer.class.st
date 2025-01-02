@@ -446,6 +446,10 @@ SysmelParseTreeSemanticAnalyzer >> visitLambdaNode: node [
 		captureBindings: functionalEnvironment captureBindings;
 		body: body;
 		callingConvention: node callingConvention;
+		seaOfNodesCode: (SeaOfNodesCode new
+			dataResult: body;
+			startingRegion: bodyRegion;
+			yourself)
 		yourself
 ]
 
