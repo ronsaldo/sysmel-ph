@@ -170,6 +170,13 @@ SysmelParseTreeSemanticAnalyzerTest >> testEmpty [
 ]
 
 { #category : 'tests' }
+SysmelParseTreeSemanticAnalyzerTest >> testIfStatement [
+	| asg |
+	asg := self parseAndAnalyse: 'if: true then: 1 else: 2'.
+	self assert: asg first isPhiGraphNode.
+]
+
+{ #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testIntrinsicIdentifierReference [ 
 	| asg |
 	asg := self parseAndAnalyseASG: 'Object'.

@@ -23,6 +23,11 @@ SoNPhiCopyGraphNode >> destination: anObject [
 	destination := anObject
 ]
 
+{ #category : 'testing' }
+SoNPhiCopyGraphNode >> isPhiCopyGraphNode [
+	^ false
+]
+
 { #category : 'accessing' }
 SoNPhiCopyGraphNode >> type [
 

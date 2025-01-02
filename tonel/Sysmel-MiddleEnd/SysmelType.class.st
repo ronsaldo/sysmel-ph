@@ -16,6 +16,11 @@ SysmelType >> asDecayedSysmelType [
 ]
 
 { #category : 'testing' }
+SysmelType >> isGradual [
+	^ false
+]
+
+{ #category : 'testing' }
 SysmelType >> isPointerLikeType [
 	^ false
 ]

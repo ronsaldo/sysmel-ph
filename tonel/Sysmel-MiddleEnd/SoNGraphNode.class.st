@@ -40,6 +40,16 @@ SoNGraphNode >> isLoadValueGraphNode [
 ]
 
 { #category : 'testing' }
+SoNGraphNode >> isPhiCopyGraphNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SoNGraphNode >> isPhiGraphNode [
+	^ false
+]
+
+{ #category : 'testing' }
 SoNGraphNode >> isSendMessageGraphNode [
 	^ false
 ]

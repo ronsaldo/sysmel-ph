@@ -9,6 +9,11 @@ Class {
 	#tag : 'SeaOfNodesGraph'
 }
 
+{ #category : 'testing' }
+SoNPhiGraphNode >> isPhiGraphNode [
+	^ true
+]
+
 { #category : 'accessing' }
 SoNPhiGraphNode >> type [
 
