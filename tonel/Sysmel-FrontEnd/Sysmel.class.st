@@ -14,13 +14,18 @@ Sysmel class >> moduleNamed: aModuleName [
 ]
 
 { #category : 'as yet unclassified' }
-Sysmel >> moduleNamed: aModuleNamed [
-	module := SysmelModule named: #Testing
+Sysmel >> moduleNamed: aModuleName [
+	module := SysmelModule named: aModuleName
 ]
 
 { #category : 'parsing' }
 Sysmel >> parseAndEvaluateFile: aFileReference [
-	self halt.
+	^self parseAndEvaluateSourceCode: (SysmelSourceCode new
+			language: #sysmel;
+			directory: aFileReference parent canonicalize fullName ;
+			name: aFileReference basename;
+			text: aFileReference contents;
+			yourself)
 ]
 
 { #category : 'parsing' }
