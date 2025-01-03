@@ -15,6 +15,14 @@ SoNReturnNode >> dataDependenciesDo: aBlock [
 	value ifNotNil: [ aBlock value: value ]
 ]
 
+{ #category : 'as yet unclassified' }
+SoNReturnNode >> evaluateWithContext: evaluationContext [
+	| resultValue |
+	resultValue := evaluationContext evaluateNodeValue: value.
+	
+	^ evaluationContext returnValue: resultValue
+]
+
 { #category : 'testing' }
 SoNReturnNode >> isBasicBlockTerminator [
 	^ true

@@ -635,7 +635,7 @@ SysmelParseTreeSemanticAnalyzer >> visitMessageSendNode: node [
 							sourcePosition: node sourcePosition;
 							value: selector;
 							type: Symbol;
-							yourself)
+							yourself);
 						arguments: arguments;
 						type: resultType;
 						yourself.

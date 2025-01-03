@@ -26,6 +26,11 @@ SeaOfNodesCode >> endingRegions: anObject [
 ]
 
 { #category : 'as yet unclassified' }
+SeaOfNodesCode >> evaluate [
+	^ instructionSchedule evaluateWithArguments: #()
+]
+
+{ #category : 'as yet unclassified' }
 SeaOfNodesCode >> findDataDependencies [
 	| visitedSet |
 	visitedSet := Set new.
@@ -40,7 +45,7 @@ SeaOfNodesCode >> instructionSchedule [
 { #category : 'as yet unclassified' }
 SeaOfNodesCode >> scheduleAndEvaluate [
 	self scheduleInstructions.
-	self halt
+	^ self evaluate
 ]
 
 { #category : 'as yet unclassified' }

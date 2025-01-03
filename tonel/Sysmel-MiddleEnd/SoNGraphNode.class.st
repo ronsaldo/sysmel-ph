@@ -5,7 +5,8 @@ Class {
 		'sourcePosition',
 		'users',
 		'userSet',
-		'ownerRegion'
+		'ownerRegion',
+		'index'
 	],
 	#category : 'Sysmel-MiddleEnd-SeaOfNodesGraph',
 	#package : 'Sysmel-MiddleEnd',
@@ -45,6 +46,23 @@ SoNGraphNode >> dataDependencies [
 
 { #category : 'as yet unclassified' }
 SoNGraphNode >> dataDependenciesDo: aBlock [
+]
+
+{ #category : 'as yet unclassified' }
+SoNGraphNode >> evaluateWithContext: evaluationContext [
+	self subclassResponsibility
+]
+
+{ #category : 'accessing' }
+SoNGraphNode >> index [
+
+	^ index
+]
+
+{ #category : 'accessing' }
+SoNGraphNode >> index: anObject [
+
+	index := anObject
 ]
 
 { #category : 'initialization' }

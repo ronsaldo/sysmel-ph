@@ -25,6 +25,11 @@ SoNLiteralValueGraphNode >> asReducedTypeExpression [
 	^ self isTypeNode ifTrue: [value] ifFalse: [type]
 ]
 
+{ #category : 'as yet unclassified' }
+SoNLiteralValueGraphNode >> evaluateWithContext: evaluationContext [
+	^ evaluationContext setValue: value andAdvancePC: 1
+]
+
 { #category : 'testing' }
 SoNLiteralValueGraphNode >> isConstantDataNode [
 	^ true

@@ -3,12 +3,37 @@ Class {
 	#superclass : 'Object',
 	#instVars : [
 		'regions',
-		'instructions'
+		'instructions',
+		'enumeratedInstructions'
 	],
 	#category : 'Sysmel-MiddleEnd-SeaOfNodesGraph',
 	#package : 'Sysmel-MiddleEnd',
 	#tag : 'SeaOfNodesGraph'
 }
+
+{ #category : 'accessing' }
+SysmelScheduledRegionsAndInstructionsAlgorithm >> enumeratedInstructions [
+	enumeratedInstructions := OrderedCollection new.
+	regions do: [ :eachRegion |
+		eachRegion earlyInstructionSchedule do: [ :eachInstruction |
+			enumeratedInstructions add: eachInstruction.
+			eachInstruction index: enumeratedInstructions size
+		]
+	].
+	^ enumeratedInstructions
+]
+
+{ #category : 'as yet unclassified' }
+SysmelScheduledRegionsAndInstructionsAlgorithm >> evaluateWithArguments: arguments [
+	| evaluationContext result |
+	evaluationContext := SysmelEvaluationContext new
+		arguments: arguments;
+		instructions: self enumeratedInstructions;
+		pc: 1;
+		yourself.
+		
+	^ result := evaluationContext run.
+]
 
 { #category : 'accessing' }
 SysmelScheduledRegionsAndInstructionsAlgorithm >> instructions [

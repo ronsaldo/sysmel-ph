@@ -32,6 +32,17 @@ SoNSendMessageGraphNode >> dataDependenciesDo: aBlock [
 	arguments do: aBlock.
 ]
 
+{ #category : 'as yet unclassified' }
+SoNSendMessageGraphNode >> evaluateWithContext: evaluationContext [
+	| evalReceiver evalSelector evalArguments result |
+	evalReceiver := evaluationContext evaluateNodeValue: receiver.
+	evalSelector := evaluationContext evaluateNodeValue: selector.
+	evalArguments := evaluationContext evaluateNodesValue: arguments.
+	
+	result := evalReceiver perform: evalSelector withArguments: evalArguments.
+	^ evaluationContext setValue: result andAdvancePC: 1
+]
+
 { #category : 'testing' }
 SoNSendMessageGraphNode >> isPinnedInstruction [
 	^ true
