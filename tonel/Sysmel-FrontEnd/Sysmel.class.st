@@ -49,6 +49,13 @@ Sysmel >> parseAndEvaluateFile: aFileReference [
 ]
 
 { #category : 'parsing' }
+Sysmel >> parseAndEvaluateModule: aFileReference [
+	self assert: aFileReference isDirectory.
+	self halt
+	
+]
+
+{ #category : 'parsing' }
 Sysmel >> parseAndEvaluateSourceCode: sourceCode [
 	| ast environment topLevelSeaOfNode |
 	ast := SysmelParser new parseSourceCode: sourceCode.

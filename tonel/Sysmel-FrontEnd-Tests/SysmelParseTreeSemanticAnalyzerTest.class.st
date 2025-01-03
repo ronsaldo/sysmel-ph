@@ -24,11 +24,6 @@ SysmelParseTreeSemanticAnalyzerTest >> parseAndAnalyse: sourceString [
 ]
 
 { #category : 'parsing' }
-SysmelParseTreeSemanticAnalyzerTest >> parseAndAnalyseASG: sourceString [
-	^ (self parseAndAnalyse: sourceString) dataResult
-]
-
-{ #category : 'parsing' }
 SysmelParseTreeSemanticAnalyzerTest >> parseSourceString: sourceString [
 	| sourceCode |
 	sourceCode := SysmelSourceCode new
@@ -53,22 +48,22 @@ SysmelParseTreeSemanticAnalyzerTest >> setUp [
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testApplication [ 
-	| asg region seaOfNodes |
+	| asg region seaOfNodes applicationNode |
 	seaOfNodes := self parseAndAnalyse: 'Object()'.
-	asg := seaOfNodes dataResult.
 	region := seaOfNodes startingRegion.
+	applicationNode := region instructions first. 
 	
-	self assert: asg isApplicationGraphNode.
-	self assert: asg functional isLiteralValueGraphNode.
-	self assert: asg arguments size equals: 0.
+	self assert: applicationNode isApplicationGraphNode.
+	self assert: applicationNode functional isLiteralValueGraphNode.
+	self assert: applicationNode arguments size equals: 0.
 ]
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testAssignment [ 
 	| asg region seaOfNodes |
 	seaOfNodes := self parseAndAnalyse: ':!x := 42. x := 5'.
-	asg := seaOfNodes dataResult.
 	region := seaOfNodes startingRegion.
+	asg := region instructions first.
 	
 	self assert: asg isSequencingGraphNode.
 	self assert: asg elements size equals: 2.
@@ -82,7 +77,7 @@ SysmelParseTreeSemanticAnalyzerTest >> testAssignment [
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testAssociation [ 
 	| asg |
-	asg := self parseAndAnalyseASG: '1 : 2'.
+	asg := self parseAndAnalyse: '1 : 2'.
 	
 	self assert: asg isAssociationGraphNode.
 	self assert: asg key isLiteralValueGraphNode.
@@ -95,7 +90,7 @@ SysmelParseTreeSemanticAnalyzerTest >> testAssociation [
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testBinaryExpressionSequence [
 	| asg |
-	asg := self parseAndAnalyseASG: '1+2'.
+	asg := self parseAndAnalyse: '1+2'.
 	self assert: asg isSendMessageGraphNode.
 	self assert: asg receiver value equals: 1.
 	self assert: asg selector value equals: #+.
@@ -105,7 +100,7 @@ SysmelParseTreeSemanticAnalyzerTest >> testBinaryExpressionSequence [
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testBindableAssignment [ 
 	| asg |
-	asg := self parseAndAnalyseASG: ':x := 42'.
+	asg := self parseAndAnalyse: ':x := 42'.
 	self assert: asg isLiteralValueGraphNode.
 	self assert: asg value equals: 42.
 	self assert: asg type equals: Integer.
@@ -181,13 +176,14 @@ SysmelParseTreeSemanticAnalyzerTest >> testFunctionalType [
 SysmelParseTreeSemanticAnalyzerTest >> testIfStatement [
 	| asg |
 	asg := self parseAndAnalyse: 'if: true then: 1 else: 2'.
-	self assert: asg dataResult isPhiGraphNode.
+	self assert: asg regions size equals: 4.
+	
 ]
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testIntrinsicIdentifierReference [ 
 	| asg |
-	asg := self parseAndAnalyseASG: 'Object'.
+	asg := self parseAndAnalyse: 'Object'.
 	self assert: asg isLiteralValueGraphNode.
 	self assert: asg value equals: Object.
 	self assert: asg type equals: Object class.
@@ -204,7 +200,7 @@ SysmelParseTreeSemanticAnalyzerTest >> testLambdaFunction [
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testLexicalBlock [ 
 	| asg |
-	asg := self parseAndAnalyseASG: '{42}'.
+	asg := self parseAndAnalyse: '{42}'.
 	self assert: asg isLiteralValueGraphNode.
 	self assert: asg value equals: 42.
 	self assert: asg type equals: Integer.
@@ -213,7 +209,7 @@ SysmelParseTreeSemanticAnalyzerTest >> testLexicalBlock [
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testLiteralCharacter [ 
 	| asg |
-	asg := self parseAndAnalyseASG: '''A'''.
+	asg := self parseAndAnalyse: '''A'''.
 	self assert: asg isLiteralValueGraphNode.
 	self assert: asg value equals: $A.
 	self assert: asg type equals: Character.
@@ -222,7 +218,7 @@ SysmelParseTreeSemanticAnalyzerTest >> testLiteralCharacter [
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testLiteralFloat [
 	| asg |
-	asg := self parseAndAnalyseASG: '42.5'.
+	asg := self parseAndAnalyse: '42.5'.
 	self assert: asg isLiteralValueGraphNode.
 	self assert: asg value equals: 42.5.
 	self assert: asg type equals: Float.
@@ -231,7 +227,7 @@ SysmelParseTreeSemanticAnalyzerTest >> testLiteralFloat [
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testLiteralInteger [
 	| asg |
-	asg := self parseAndAnalyseASG: '42'.
+	asg := self parseAndAnalyse: '42'.
 	self assert: asg isLiteralValueGraphNode.
 	self assert: asg value equals: 42.
 	self assert: asg type equals: Integer.
@@ -240,7 +236,7 @@ SysmelParseTreeSemanticAnalyzerTest >> testLiteralInteger [
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testLiteralInteger2 [
 	| asg |
-	asg := self parseAndAnalyseASG: '42. 5'.
+	asg := self parseAndAnalyse: '42. 5'.
 	self assert: asg isSequencingGraphNode.
 	self assert: asg elements size equals: 2.
 	
@@ -254,7 +250,7 @@ SysmelParseTreeSemanticAnalyzerTest >> testLiteralInteger2 [
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testLiteralString [
 	| asg |
-	asg := self parseAndAnalyseASG: '"Hello World"'.
+	asg := self parseAndAnalyse: '"Hello World"'.
 	self assert: asg isLiteralValueGraphNode.
 	self assert: asg value equals: 'Hello World'.
 	self assert: asg type equals: String.
@@ -263,7 +259,7 @@ SysmelParseTreeSemanticAnalyzerTest >> testLiteralString [
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testLiteralSymbol [
 	| asg |
-	asg := self parseAndAnalyseASG: '#helloSymbol'.
+	asg := self parseAndAnalyse: '#helloSymbol'.
 	self assert: asg isLiteralValueGraphNode.
 	self assert: asg value equals: #helloSymbol.
 	self assert: asg type equals: Symbol.
@@ -276,10 +272,10 @@ SysmelParseTreeSemanticAnalyzerTest >> testMessageCascade [
 	regions := seaOfNodes startingRegion .
 	self assert: regions instructions size equals: 2.
 	self assert: regions instructions first isSendMessageGraphNode.
-	self assert: regions instructions first selector equals: #negated.
+	self assert: regions instructions first selector value equals: #negated.
 
 	self assert: regions instructions second isSendMessageGraphNode.
-	self assert: regions instructions second selector equals: #yourself.
+	self assert: regions instructions second selector value equals: #yourself.
 ]
 
 { #category : 'tests' }
@@ -293,7 +289,7 @@ SysmelParseTreeSemanticAnalyzerTest >> testNamedFunction [
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testTuple [
 	| asg |
-	asg := self parseAndAnalyseASG: '()'.
+	asg := self parseAndAnalyse: '()'.
 	self assert: asg isTupleGraphNode.
 	self assert: asg elements size equals: 0
 ]
@@ -301,7 +297,7 @@ SysmelParseTreeSemanticAnalyzerTest >> testTuple [
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testTuple1 [
 	| asg |
-	asg := self parseAndAnalyseASG: '42,'.
+	asg := self parseAndAnalyse: '42,'.
 	self assert: asg isTupleGraphNode.
 	self assert: asg elements size equals: 1
 ]
@@ -309,7 +305,7 @@ SysmelParseTreeSemanticAnalyzerTest >> testTuple1 [
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testTuple2 [
 	| asg |
-	asg := self parseAndAnalyseASG: '42, 5'.
+	asg := self parseAndAnalyse: '42, 5'.
 	self assert: asg isTupleGraphNode.
 	self assert: asg elements size equals: 2
 ]
@@ -317,7 +313,7 @@ SysmelParseTreeSemanticAnalyzerTest >> testTuple2 [
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testUnaryMessageSend [
 	| asg |
-	asg := self parseAndAnalyseASG: '1 negated'.
+	asg := self parseAndAnalyse: '1 negated'.
 	self assert: asg isSendMessageGraphNode.
 	self assert: asg receiver value equals: 1.
 	self assert: asg selector value equals: #negated.

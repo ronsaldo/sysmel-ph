@@ -399,7 +399,7 @@ SysmelParseTreeSemanticAnalyzer >> visitIfConditionNode: node [
 
 { #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitLambdaNode: node [
-	| functionalEnvironment typedArguments typedArgument analyzedResultTypeExpression name typedPi typeUniverse fixpointBinding body bodyType bodyRegion bodyEndingRegion |
+	| functionalEnvironment typedArguments typedArgument analyzedResultTypeExpression name typedPi typeUniverse fixpointBinding body bodyType bodyRegion bodyEndingRegion returnNode |
 	functionalEnvironment := SysmelFunctionalAnalysisEnvironment parent: environment.
 	typedArguments := OrderedCollection new.
 	node arguments do: [ :eachArgument |
@@ -464,6 +464,13 @@ SysmelParseTreeSemanticAnalyzer >> visitLambdaNode: node [
 		self halt
 	].
 
+	"Return"
+	returnNode := SoNReturnNode new
+		sourcePosition: node sourcePosition;
+		type: body type;
+		value: body;
+		yourself.
+
 	"Make the typed lambda node"	
 	^ SoNLambdaNode new
 		sourcePosition: node sourcePosition;
@@ -472,10 +479,9 @@ SysmelParseTreeSemanticAnalyzer >> visitLambdaNode: node [
 		arguments: typedArguments;
 		isVariadic: node isVariadic;
 		captureBindings: functionalEnvironment captureBindings;
-		body: body;
+		body: returnNode;
 		callingConvention: node callingConvention;
 		seaOfNodesCode: (SeaOfNodesCode new
-			dataResult: body;
 			startingRegion: bodyRegion;
 			endingRegions: { bodyEndingRegion };
 			yourself)
