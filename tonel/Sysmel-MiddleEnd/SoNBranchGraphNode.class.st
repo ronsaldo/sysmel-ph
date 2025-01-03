@@ -22,7 +22,17 @@ SoNBranchGraphNode >> destination: anObject [
 ]
 
 { #category : 'testing' }
+SoNBranchGraphNode >> isBasicBlockTerminator [
+	^ true
+]
+
+{ #category : 'testing' }
 SoNBranchGraphNode >> isControlFlowNode [
+	^ true
+]
+
+{ #category : 'testing' }
+SoNBranchGraphNode >> isPinnedInstruction [
 	^ true
 ]
 

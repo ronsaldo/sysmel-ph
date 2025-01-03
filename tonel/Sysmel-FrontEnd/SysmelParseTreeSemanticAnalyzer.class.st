@@ -327,6 +327,10 @@ SysmelParseTreeSemanticAnalyzer >> visitIfConditionNode: node [
 		trueResult := trueResultAndEndingRegion first.
 		trueEndingRegion := trueResultAndEndingRegion second.
 		
+		trueEndingRegion addInstruction: (SoNBranchGraphNode new
+			sourcePosition: node sourcePosition;
+			destination: mergeRegion;
+			yourself).
 		trueEndingRegion addSuccessor: mergeRegion.
 		mergeRegion addPredecessor: trueEndingRegion.
 	] ifNil: [
@@ -345,6 +349,10 @@ SysmelParseTreeSemanticAnalyzer >> visitIfConditionNode: node [
 		falseResult := falseResultAndEndingRegion first.
 		falseEndingRegion := falseResultAndEndingRegion second.
 		
+		falseEndingRegion addInstruction: (SoNBranchGraphNode new
+			sourcePosition: node sourcePosition;
+			destination: mergeRegion;
+			yourself).
 		falseEndingRegion addSuccessor: mergeRegion.
 		mergeRegion addPredecessor: falseRegion.
 	] ifNil: [

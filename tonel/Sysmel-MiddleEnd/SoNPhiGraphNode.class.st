@@ -14,6 +14,11 @@ SoNPhiGraphNode >> isPhiGraphNode [
 	^ true
 ]
 
+{ #category : 'testing' }
+SoNPhiGraphNode >> isPinnedInstruction [
+	^ true
+]
+
 { #category : 'accessing' }
 SoNPhiGraphNode >> type [
 

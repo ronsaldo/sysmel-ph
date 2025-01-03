@@ -26,3 +26,8 @@ SysmelVoidType class >> uniqueInstance [
 SysmelVoidType >> isVoid [
 	^ true
 ]
+
+{ #category : 'printing' }
+SysmelVoidType >> printOn: aStream [
+	aStream nextPutAll: 'void'
+]

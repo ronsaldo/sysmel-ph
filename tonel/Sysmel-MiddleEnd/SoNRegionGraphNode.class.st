@@ -5,9 +5,12 @@ Class {
 		'mergePhi',
 		'phiCopy',
 		'instructions',
+		'terminatorInstruction',
+		'earlyInstructionSchedule',
 		'nextRegions',
 		'immediateDominator',
-		'previousRegions'
+		'previousRegions',
+		'dominatorTreeDepth'
 	],
 	#category : 'Sysmel-MiddleEnd-SeaOfNodesGraph',
 	#package : 'Sysmel-MiddleEnd',
@@ -15,8 +18,19 @@ Class {
 }
 
 { #category : 'adding' }
+SoNRegionGraphNode >> addEarlyScheduledInstruction: anInstruction [
+	earlyInstructionSchedule add: anInstruction.
+]
+
+{ #category : 'adding' }
 SoNRegionGraphNode >> addInstruction: anInstruction [
+	anInstruction isBasicBlockTerminator ifTrue: [
+		anInstruction ownerRegion: self.
+		^ terminatorInstruction := anInstruction.
+	].
+
 	anInstruction isConstantDataNode ifFalse: [
+		anInstruction ownerRegion: self.
 		instructions add: anInstruction.
 	].
 	^ anInstruction
@@ -24,12 +38,14 @@ SoNRegionGraphNode >> addInstruction: anInstruction [
 
 { #category : 'adding' }
 SoNRegionGraphNode >> addMergePhi: node [
-	mergePhi add: node
+	mergePhi add: node.
+	node ownerRegion: self.
 ]
 
 { #category : 'adding' }
 SoNRegionGraphNode >> addPhiCopy: node [
-	phiCopy add: node
+	phiCopy add: node.
+	node ownerRegion: self.
 ]
 
 { #category : 'adding' }
@@ -40,6 +56,33 @@ SoNRegionGraphNode >> addPredecessor: aRegion [
 { #category : 'adding' }
 SoNRegionGraphNode >> addSuccessor: aRegion [
 	nextRegions add: aRegion
+]
+
+{ #category : 'enumerating' }
+SoNRegionGraphNode >> allInstructionsDo: aBlock [
+	mergePhi do: aBlock.
+	instructions do: aBlock.
+	phiCopy do: aBlock.
+	terminatorInstruction ifNotNil: [ aBlock value: terminatorInstruction ].
+]
+
+{ #category : 'enumerating' }
+SoNRegionGraphNode >> allInstructionsReverseDo: aBlock [
+	terminatorInstruction ifNotNil: [ aBlock value: terminatorInstruction ].
+	phiCopy do: aBlock.
+	instructions do: aBlock.
+	mergePhi do: aBlock.
+
+]
+
+{ #category : 'accessing' }
+SoNRegionGraphNode >> dominatorTreeDepth [
+	^ dominatorTreeDepth ifNil: [
+		dominatorTreeDepth := 0.
+		immediateDominator ifNotNil: [
+			dominatorTreeDepth := dominatorTreeDepth + immediateDominator dominatorTreeDepth 
+		]
+	]
 ]
 
 { #category : 'accessing' }
@@ -62,6 +105,7 @@ SoNRegionGraphNode >> initialize [
 	previousRegions := OrderedCollection new.
 	instructions := OrderedCollection new.
 	phiCopy := OrderedCollection new.
+	earlyInstructionSchedule := OrderedCollection new.
 ]
 
 { #category : 'accessing' }
@@ -103,6 +147,18 @@ SoNRegionGraphNode >> previousRegions [
 SoNRegionGraphNode >> previousRegions: anObject [
 
 	previousRegions := anObject
+]
+
+{ #category : 'accessing' }
+SoNRegionGraphNode >> terminatorInstruction [
+
+	^ terminatorInstruction
+]
+
+{ #category : 'accessing' }
+SoNRegionGraphNode >> terminatorInstruction: anObject [
+	terminatorInstruction := anObject.
+	terminatorInstruction ownerRegion: self
 ]
 
 { #category : 'accessing' }

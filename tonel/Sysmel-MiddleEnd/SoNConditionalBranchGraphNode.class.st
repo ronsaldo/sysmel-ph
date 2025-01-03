@@ -24,6 +24,11 @@ SoNConditionalBranchGraphNode >> condition: anObject [
 	condition addUser: self
 ]
 
+{ #category : 'as yet unclassified' }
+SoNConditionalBranchGraphNode >> dataDependenciesDo: aBlock [
+	aBlock value: condition.
+]
+
 { #category : 'accessing' }
 SoNConditionalBranchGraphNode >> falseDestination [
 
@@ -37,7 +42,17 @@ SoNConditionalBranchGraphNode >> falseDestination: anObject [
 ]
 
 { #category : 'testing' }
+SoNConditionalBranchGraphNode >> isBasicBlockTerminator [
+	^ true
+]
+
+{ #category : 'testing' }
 SoNConditionalBranchGraphNode >> isControlFlowNode [
+	^ true
+]
+
+{ #category : 'testing' }
+SoNConditionalBranchGraphNode >> isPinnedInstruction [
 	^ true
 ]
 

@@ -10,6 +10,11 @@ Class {
 }
 
 { #category : 'parsing' }
+SeaOfNodesCodeTest >> parseAndCompileString: string [
+	^ (Sysmel moduleNamed: #Test) parseAndCompileString: string.
+]
+
+{ #category : 'parsing' }
 SeaOfNodesCodeTest >> parseAndEvaluateString: string [
 	^ (Sysmel moduleNamed: #Test) parseAndEvaluateString: string.
 ]
@@ -17,7 +22,7 @@ SeaOfNodesCodeTest >> parseAndEvaluateString: string [
 { #category : 'tests' }
 SeaOfNodesCodeTest >> testConstant [
 	| seaOfNodes |
-	seaOfNodes := self parseAndEvaluateString: '42'.
+	seaOfNodes := self parseAndCompileString: '42'.
 	self assert: seaOfNodes dataResult type equals: Integer.
 	self assert: seaOfNodes dataResult value equals: 42.
 	self assert: seaOfNodes startingRegion isEmpty.
@@ -26,7 +31,7 @@ SeaOfNodesCodeTest >> testConstant [
 { #category : 'tests' }
 SeaOfNodesCodeTest >> testEmpty [
 	| seaOfNodes |
-	seaOfNodes := self parseAndEvaluateString: ''.
+	seaOfNodes := self parseAndCompileString: ''.
 	self assert: seaOfNodes dataResult type isVoidType.
 	self assert: seaOfNodes startingRegion isEmpty.
 ]
@@ -34,7 +39,7 @@ SeaOfNodesCodeTest >> testEmpty [
 { #category : 'tests' }
 SeaOfNodesCodeTest >> testIfThenElse [
 	| seaOfNodes |
-	seaOfNodes := self parseAndEvaluateString: 'if: true then: 1u32 else: 0u32'.
+	seaOfNodes := self parseAndCompileString: 'if: true then: 1u32 else: 0u32'.
 	self assert: seaOfNodes dataResult type equals: SysmelType UInt32.
 	self halt.
 ]
@@ -42,7 +47,7 @@ SeaOfNodesCodeTest >> testIfThenElse [
 { #category : 'tests' }
 SeaOfNodesCodeTest >> testPrimitiveIntegers [
 	| seaOfNodes |
-	seaOfNodes := self parseAndEvaluateString: '56u32'.
+	seaOfNodes := self parseAndCompileString: '56u32'.
 	self assert: seaOfNodes dataResult type equals: SysmelType UInt32.
 	self assert: seaOfNodes startingRegion isEmpty.
 ]
@@ -50,7 +55,7 @@ SeaOfNodesCodeTest >> testPrimitiveIntegers [
 { #category : 'tests' }
 SeaOfNodesCodeTest >> testPrimitiveIntegersArithmetic [
 	| seaOfNodes |
-	seaOfNodes := self parseAndEvaluateString: '56u32 + 48u32'.
+	seaOfNodes := self parseAndCompileString: '56u32 + 48u32'.
 	self assert: seaOfNodes dataResult type equals: SysmelType UInt32.
 	self assert: seaOfNodes startingRegion isEmpty.
 ]

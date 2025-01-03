@@ -19,6 +19,26 @@ Sysmel >> moduleNamed: aModuleName [
 ]
 
 { #category : 'parsing' }
+Sysmel >> parseAndCompileSourceCode: sourceCode [
+	| ast environment topLevelSeaOfNode |
+	ast := SysmelParser new parseSourceCode: sourceCode.
+	environment := module makeEnvironmentFor: ast.
+	
+	topLevelSeaOfNode := SysmelParseTreeSemanticAnalyzer new
+			analyzeAST: ast withEnvironment: environment region: SoNRegionGraphNode new.
+	^ topLevelSeaOfNode scheduleInstructions
+]
+
+{ #category : 'parsing' }
+Sysmel >> parseAndCompileString: sourceString [
+	| sourceCode |
+	sourceCode := SysmelSourceCode new
+		text: sourceString;
+		yourself.
+	^ self parseAndCompileSourceCode: sourceCode
+]
+
+{ #category : 'parsing' }
 Sysmel >> parseAndEvaluateFile: aFileReference [
 	^self parseAndEvaluateSourceCode: (SysmelSourceCode new
 			language: #sysmel;

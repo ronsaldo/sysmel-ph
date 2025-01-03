@@ -10,13 +10,18 @@ Class {
 }
 
 { #category : 'as yet unclassified' }
-SoNLoadValueGraphNode >> dataDependencies [
-	^ pointer
+SoNLoadValueGraphNode >> dataDependenciesDo: aBlock [
+	aBlock value pointer
 ]
 
 { #category : 'testing' }
 SoNLoadValueGraphNode >> isLoadValueGraphNode [
 	^ true
+]
+
+{ #category : 'testing' }
+SoNLoadValueGraphNode >> isPinnedInstruction [
+	^ false
 ]
 
 { #category : 'accessing' }

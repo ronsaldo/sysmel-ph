@@ -29,6 +29,11 @@ SoNPhiCopyGraphNode >> isPhiCopyGraphNode [
 	^ false
 ]
 
+{ #category : 'testing' }
+SoNPhiCopyGraphNode >> isPinnedInstruction [
+	^ true
+]
+
 { #category : 'accessing' }
 SoNPhiCopyGraphNode >> type [
 

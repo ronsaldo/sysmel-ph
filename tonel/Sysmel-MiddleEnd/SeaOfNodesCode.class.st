@@ -45,7 +45,7 @@ SeaOfNodesCode >> scheduleAndEvaluate [
 
 { #category : 'as yet unclassified' }
 SeaOfNodesCode >> scheduleInstructions [
-	instructionSchedule ifNil: [
+	^ instructionSchedule ifNil: [
 		instructionSchedule := SysmelGlobalCodeMotionAlgorithm new runOn: self
 	]
 	

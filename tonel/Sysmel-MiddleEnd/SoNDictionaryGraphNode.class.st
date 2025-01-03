@@ -10,8 +10,8 @@ Class {
 }
 
 { #category : 'as yet unclassified' }
-SoNDictionaryGraphNode >> dataDependencies [
-	^ elements
+SoNDictionaryGraphNode >> dataDependenciesDo: aBlock [
+	elements do: aBlock
 ]
 
 { #category : 'accessing' }

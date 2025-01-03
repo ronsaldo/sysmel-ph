@@ -26,8 +26,15 @@ SoNSendMessageGraphNode >> arguments: anObject [
 ]
 
 { #category : 'as yet unclassified' }
-SoNSendMessageGraphNode >> dataDependencies [
-	^ {receiver . selector} , arguments 
+SoNSendMessageGraphNode >> dataDependenciesDo: aBlock [
+	aBlock value: receiver.
+	aBlock value: selector.
+	arguments do: aBlock.
+]
+
+{ #category : 'testing' }
+SoNSendMessageGraphNode >> isPinnedInstruction [
+	^ true
 ]
 
 { #category : 'testing' }

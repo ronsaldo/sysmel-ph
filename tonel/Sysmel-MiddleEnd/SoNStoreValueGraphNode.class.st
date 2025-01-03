@@ -11,8 +11,9 @@ Class {
 }
 
 { #category : 'as yet unclassified' }
-SoNStoreValueGraphNode >> dataDependencies [
-	^ { pointer . value }
+SoNStoreValueGraphNode >> dataDependenciesDo: aBlock [
+	aBlock value: pointer.
+	aBlock value: value.
 ]
 
 { #category : 'testing' }

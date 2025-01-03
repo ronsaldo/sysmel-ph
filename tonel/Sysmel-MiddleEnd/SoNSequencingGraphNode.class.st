@@ -11,8 +11,8 @@ Class {
 }
 
 { #category : 'as yet unclassified' }
-SoNSequencingGraphNode >> dataDependencies [
-	^ elements
+SoNSequencingGraphNode >> dataDependenciesDo: aBlock [
+	elements do: aBlock
 ]
 
 { #category : 'accessing' }

@@ -25,8 +25,9 @@ SoNApplicationGraphNode >> arguments: aListOfArguments [
 ]
 
 { #category : 'as yet unclassified' }
-SoNApplicationGraphNode >> dataDependencies [
-	^ {functional } , arguments
+SoNApplicationGraphNode >> dataDependenciesDo: aBlock [
+	aBlock functional.
+	arguments do: aBlock
 ]
 
 { #category : 'accessing' }

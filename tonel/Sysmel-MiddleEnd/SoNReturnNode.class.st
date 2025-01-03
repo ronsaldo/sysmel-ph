@@ -11,8 +11,18 @@ Class {
 }
 
 { #category : 'as yet unclassified' }
-SoNReturnNode >> dataDependencies [
-	^ value ifNotNil: [{ value }] ifNil: [ #() ]
+SoNReturnNode >> dataDependenciesDo: aBlock [
+	value ifNotNil: [ aBlock value: value ]
+]
+
+{ #category : 'testing' }
+SoNReturnNode >> isBasicBlockTerminator [
+	^ true
+]
+
+{ #category : 'testing' }
+SoNReturnNode >> isPinnedInstruction [
+	^ true
 ]
 
 { #category : 'accessing' }

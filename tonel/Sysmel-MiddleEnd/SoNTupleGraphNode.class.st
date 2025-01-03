@@ -11,8 +11,8 @@ Class {
 }
 
 { #category : 'as yet unclassified' }
-SoNTupleGraphNode >> dataDependencies [
-	^ elements
+SoNTupleGraphNode >> dataDependenciesDo: aBlock [
+	elements do: aBlock
 ]
 
 { #category : 'accessing' }

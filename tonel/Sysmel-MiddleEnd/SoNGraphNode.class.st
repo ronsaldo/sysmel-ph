@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'sourcePosition',
 		'users',
-		'userSet'
+		'userSet',
+		'ownerRegion'
 	],
 	#category : 'Sysmel-MiddleEnd-SeaOfNodesGraph',
 	#package : 'Sysmel-MiddleEnd',
@@ -36,7 +37,14 @@ SoNGraphNode >> asReducedTypeExpression [
 
 { #category : 'as yet unclassified' }
 SoNGraphNode >> dataDependencies [
-	^ #()
+	| myDependencies |
+	myDependencies := OrderedCollection new.
+	self dataDependenciesDo: [ :each | myDependencies add: each ].
+	^ myDependencies
+]
+
+{ #category : 'as yet unclassified' }
+SoNGraphNode >> dataDependenciesDo: aBlock [
 ]
 
 { #category : 'initialization' }
@@ -58,6 +66,11 @@ SoNGraphNode >> isApplicationGraphNode [
 
 { #category : 'testing' }
 SoNGraphNode >> isAssociationGraphNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SoNGraphNode >> isBasicBlockTerminator [
 	^ false
 ]
 
@@ -107,6 +120,11 @@ SoNGraphNode >> isPiNode [
 ]
 
 { #category : 'testing' }
+SoNGraphNode >> isPinnedInstruction [
+	^ false
+]
+
+{ #category : 'testing' }
 SoNGraphNode >> isSendMessageGraphNode [
 	^ false
 ]
@@ -134,6 +152,16 @@ SoNGraphNode >> isTupleGraphNode [
 { #category : 'testing' }
 SoNGraphNode >> isTypeNode [
 	^ false
+]
+
+{ #category : 'accessing' }
+SoNGraphNode >> ownerRegion [
+	^ ownerRegion
+]
+
+{ #category : 'accessing' }
+SoNGraphNode >> ownerRegion: aRegion [
+	ownerRegion := aRegion
 ]
 
 { #category : 'accessing' }
