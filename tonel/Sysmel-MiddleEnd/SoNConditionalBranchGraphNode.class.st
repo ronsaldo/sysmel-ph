@@ -20,8 +20,8 @@ SoNConditionalBranchGraphNode >> condition [
 
 { #category : 'accessing' }
 SoNConditionalBranchGraphNode >> condition: anObject [
-
-	condition := anObject
+	condition := anObject.
+	condition addUser: self
 ]
 
 { #category : 'accessing' }

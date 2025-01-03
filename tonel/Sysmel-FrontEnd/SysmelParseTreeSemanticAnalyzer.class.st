@@ -26,6 +26,7 @@ SysmelParseTreeSemanticAnalyzer >> analyzeAST: ast withEnvironment: newEnvironme
 	^ SeaOfNodesCode new
 		dataResult: asg;
 		startingRegion: region;
+		endingRegions: { currentRegion }
 		yourself
 ]
 
@@ -375,7 +376,7 @@ SysmelParseTreeSemanticAnalyzer >> visitIfConditionNode: node [
 
 { #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitLambdaNode: node [
-	| functionalEnvironment typedArguments typedArgument analyzedResultTypeExpression name typedPi typeUniverse fixpointBinding body bodyType bodyRegion |
+	| functionalEnvironment typedArguments typedArgument analyzedResultTypeExpression name typedPi typeUniverse fixpointBinding body bodyType bodyRegion bodyEndingRegion |
 	functionalEnvironment := SysmelFunctionalAnalysisEnvironment parent: environment.
 	typedArguments := OrderedCollection new.
 	node arguments do: [ :eachArgument |
@@ -426,7 +427,11 @@ SysmelParseTreeSemanticAnalyzer >> visitLambdaNode: node [
 	bodyRegion := SoNRegionGraphNode new
 		sourcePosition: node sourcePosition;
 		yourself.
-	body := self withEnvironment: functionalEnvironment region: bodyRegion do: [ self visitNode: node body withExpectedTypeExpression: analyzedResultTypeExpression ].
+	bodyEndingRegion := bodyRegion.
+	body := self withEnvironment: functionalEnvironment region: bodyRegion do: 
+		[ | bodyValue | bodyValue := self visitNode: node body withExpectedTypeExpression: analyzedResultTypeExpression.
+		bodyEndingRegion := currentRegion.
+		bodyValue].
 	
 	"Compute the lambda type"
 	bodyType := body type.
@@ -449,6 +454,7 @@ SysmelParseTreeSemanticAnalyzer >> visitLambdaNode: node [
 		seaOfNodesCode: (SeaOfNodesCode new
 			dataResult: body;
 			startingRegion: bodyRegion;
+			endingRegions: { bodyEndingRegion };
 			yourself)
 		yourself
 ]

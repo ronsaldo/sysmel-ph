@@ -27,8 +27,8 @@ SoNLoadValueGraphNode >> pointer [
 
 { #category : 'accessing' }
 SoNLoadValueGraphNode >> pointer: anObject [
-
-	pointer := anObject
+	pointer := anObject.
+	pointer addUser: self
 ]
 
 { #category : 'accessing' }

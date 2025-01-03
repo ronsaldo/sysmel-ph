@@ -29,7 +29,8 @@ SoNStoreValueGraphNode >> pointer [
 { #category : 'accessing' }
 SoNStoreValueGraphNode >> pointer: anObject [
 
-	pointer := anObject
+	pointer := anObject.
+	pointer addUser: self
 ]
 
 { #category : 'accessing' }
@@ -46,5 +47,6 @@ SoNStoreValueGraphNode >> value [
 { #category : 'accessing' }
 SoNStoreValueGraphNode >> value: anObject [
 
-	value := anObject
+	value := anObject.
+	value addUser: self.
 ]

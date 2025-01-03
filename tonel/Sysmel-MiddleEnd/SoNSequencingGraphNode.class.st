@@ -24,7 +24,8 @@ SoNSequencingGraphNode >> elements [
 { #category : 'accessing' }
 SoNSequencingGraphNode >> elements: anObject [
 
-	elements := anObject
+	elements := anObject.
+	elements do: [ :each | each addUser: self ]
 ]
 
 { #category : 'testing' }

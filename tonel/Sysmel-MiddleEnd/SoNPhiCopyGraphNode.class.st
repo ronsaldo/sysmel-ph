@@ -20,7 +20,8 @@ SoNPhiCopyGraphNode >> destination [
 { #category : 'accessing' }
 SoNPhiCopyGraphNode >> destination: anObject [
 
-	destination := anObject
+	destination := anObject.
+	destination addUser: self
 ]
 
 { #category : 'testing' }
@@ -49,5 +50,6 @@ SoNPhiCopyGraphNode >> value [
 { #category : 'accessing' }
 SoNPhiCopyGraphNode >> value: anObject [
 
-	value := anObject
+	value := anObject.
+	value addUser: self
 ]

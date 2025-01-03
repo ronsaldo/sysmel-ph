@@ -21,9 +21,10 @@ SoNDictionaryGraphNode >> elements [
 ]
 
 { #category : 'accessing' }
-SoNDictionaryGraphNode >> elements: anObject [
-
-	elements := anObject
+SoNDictionaryGraphNode >> elements: aListOfElements [
+	elements := aListOfElements.
+	elements do: [ :each | each addUser: self ]
+	
 ]
 
 { #category : 'testing' }

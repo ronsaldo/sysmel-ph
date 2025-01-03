@@ -30,13 +30,13 @@ Sysmel >> parseAndEvaluateFile: aFileReference [
 
 { #category : 'parsing' }
 Sysmel >> parseAndEvaluateSourceCode: sourceCode [
-	| ast environment astAndRegion |
+	| ast environment topLevelSeaOfNode |
 	ast := SysmelParser new parseSourceCode: sourceCode.
 	environment := module makeEnvironmentFor: ast.
 	
-	astAndRegion := SysmelParseTreeSemanticAnalyzer new
+	topLevelSeaOfNode := SysmelParseTreeSemanticAnalyzer new
 			analyzeAST: ast withEnvironment: environment region: SoNRegionGraphNode new.
-	^ astAndRegion
+	^ topLevelSeaOfNode scheduleAndEvaluate
 ]
 
 { #category : 'parsing' }

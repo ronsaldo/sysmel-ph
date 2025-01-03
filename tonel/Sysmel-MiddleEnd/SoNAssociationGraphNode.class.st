@@ -31,7 +31,8 @@ SoNAssociationGraphNode >> key [
 { #category : 'accessing' }
 SoNAssociationGraphNode >> key: anObject [
 
-	key := anObject
+	key := anObject.
+	key addUser: self
 ]
 
 { #category : 'accessing' }
@@ -55,5 +56,6 @@ SoNAssociationGraphNode >> value [
 { #category : 'accessing' }
 SoNAssociationGraphNode >> value: anObject [
 
-	value := anObject
+	value := anObject.
+	value addUser: self
 ]

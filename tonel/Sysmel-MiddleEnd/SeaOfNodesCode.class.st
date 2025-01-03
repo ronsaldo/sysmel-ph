@@ -7,6 +7,7 @@ Class {
 	#instVars : [
 		'dataResult',
 		'startingRegion',
+		'endingRegions',
 		'allRegions'
 	],
 	#category : 'Sysmel-MiddleEnd-SeaOfNodesGraph',
@@ -32,6 +33,18 @@ SeaOfNodesCode >> dataResult: anObject [
 	dataResult := anObject
 ]
 
+{ #category : 'accessing' }
+SeaOfNodesCode >> endingRegions [
+
+	^ endingRegions
+]
+
+{ #category : 'accessing' }
+SeaOfNodesCode >> endingRegions: anObject [
+
+	endingRegions := anObject
+]
+
 { #category : 'as yet unclassified' }
 SeaOfNodesCode >> findDataDependencies [
 	| visitedSet |
@@ -51,6 +64,18 @@ SeaOfNodesCode >> findRegions [
 		]
 	].
 	^ allRegions
+]
+
+{ #category : 'as yet unclassified' }
+SeaOfNodesCode >> scheduleAndEvaluate [
+	self scheduleInstructions.
+	self halt
+]
+
+{ #category : 'as yet unclassified' }
+SeaOfNodesCode >> scheduleInstructions [
+	self findRegions.
+	
 ]
 
 { #category : 'accessing' }

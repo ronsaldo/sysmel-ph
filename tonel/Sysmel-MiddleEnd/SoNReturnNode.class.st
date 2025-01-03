@@ -35,6 +35,6 @@ SoNReturnNode >> value [
 
 { #category : 'accessing' }
 SoNReturnNode >> value: anObject [
-
-	value := anObject
+	value := anObject.
+	value ifNotNil: [ value addUser: self ]
 ]

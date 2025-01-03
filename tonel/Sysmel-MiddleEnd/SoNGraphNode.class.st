@@ -2,12 +2,27 @@ Class {
 	#name : 'SoNGraphNode',
 	#superclass : 'SysmelProgramEntity',
 	#instVars : [
-		'sourcePosition'
+		'sourcePosition',
+		'users',
+		'userSet'
 	],
 	#category : 'Sysmel-MiddleEnd-SeaOfNodesGraph',
 	#package : 'Sysmel-MiddleEnd',
 	#tag : 'SeaOfNodesGraph'
 }
+
+{ #category : 'as yet unclassified' }
+SoNGraphNode >> addUser: anUserInstruction [
+	(userSet includes: [anUserInstruction]) ifFalse: [ 
+		users add: anUserInstruction.
+		userSet add: anUserInstruction
+	]
+]
+
+{ #category : 'as yet unclassified' }
+SoNGraphNode >> allUsers [
+	^ users
+]
 
 { #category : 'converting' }
 SoNGraphNode >> asConstantValueForPureEvaluation [
@@ -22,6 +37,13 @@ SoNGraphNode >> asReducedTypeExpression [
 { #category : 'as yet unclassified' }
 SoNGraphNode >> dataDependencies [
 	^ #()
+]
+
+{ #category : 'initialization' }
+SoNGraphNode >> initialize [
+	super initialize.
+	users := OrderedCollection new.
+	userSet := IdentitySet new.
 ]
 
 { #category : 'testing' }

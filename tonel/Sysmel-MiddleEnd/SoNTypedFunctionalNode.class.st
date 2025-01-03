@@ -24,7 +24,8 @@ SoNTypedFunctionalNode >> arguments [
 { #category : 'accessing' }
 SoNTypedFunctionalNode >> arguments: anObject [
 
-	arguments := anObject
+	arguments := anObject.
+	arguments do: [ :each |each addUser: self ]
 ]
 
 { #category : 'accessing' }
@@ -36,7 +37,8 @@ SoNTypedFunctionalNode >> body [
 { #category : 'accessing' }
 SoNTypedFunctionalNode >> body: anObject [
 
-	body := anObject
+	body := anObject.
+	body addUser: self
 ]
 
 { #category : 'accessing' }

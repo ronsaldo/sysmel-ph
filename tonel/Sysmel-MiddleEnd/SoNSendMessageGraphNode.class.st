@@ -21,7 +21,8 @@ SoNSendMessageGraphNode >> arguments [
 { #category : 'accessing' }
 SoNSendMessageGraphNode >> arguments: anObject [
 
-	arguments := anObject
+	arguments := anObject.
+	arguments do: [ :each| each addUser: self ]
 ]
 
 { #category : 'as yet unclassified' }
@@ -43,7 +44,8 @@ SoNSendMessageGraphNode >> receiver [
 { #category : 'accessing' }
 SoNSendMessageGraphNode >> receiver: anObject [
 
-	receiver := anObject
+	receiver := anObject.
+	receiver addUser: self
 ]
 
 { #category : 'accessing' }
@@ -55,7 +57,7 @@ SoNSendMessageGraphNode >> selector [
 { #category : 'accessing' }
 SoNSendMessageGraphNode >> selector: anObject [
 
-	selector := anObject
+	selector := anObject.
 ]
 
 { #category : 'accessing' }

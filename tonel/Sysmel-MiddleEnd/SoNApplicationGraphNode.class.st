@@ -18,9 +18,10 @@ SoNApplicationGraphNode >> arguments [
 ]
 
 { #category : 'accessing' }
-SoNApplicationGraphNode >> arguments: anObject [
-
-	arguments := anObject
+SoNApplicationGraphNode >> arguments: aListOfArguments [
+	arguments := aListOfArguments.
+	aListOfArguments do: [ :each | each addUser: self ]
+	
 ]
 
 { #category : 'as yet unclassified' }
@@ -35,9 +36,9 @@ SoNApplicationGraphNode >> functional [
 ]
 
 { #category : 'accessing' }
-SoNApplicationGraphNode >> functional: anObject [
-
-	functional := anObject
+SoNApplicationGraphNode >> functional: aFunctionalObject [
+	functional := aFunctionalObject.
+	aFunctionalObject addUser: self
 ]
 
 { #category : 'testing' }
