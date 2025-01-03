@@ -38,8 +38,8 @@ SysmelGlobalCodeMotionAlgorithm >> findRegionsOf: aSeaOfNodeCode [
 ]
 
 { #category : 'running' }
-SysmelGlobalCodeMotionAlgorithm >> runOn: sSeaOfNodesCode [
-	regions := self findRegionsOf: sSeaOfNodesCode.
-	instructions := self findInstructionOf: sSeaOfNodesCode.
+SysmelGlobalCodeMotionAlgorithm >> runOn: aSeaOfNodesCode [
+	regions := self findRegionsOf: aSeaOfNodesCode.
+	instructions := self findInstructionOf: aSeaOfNodesCode.
 	self halt
 ]

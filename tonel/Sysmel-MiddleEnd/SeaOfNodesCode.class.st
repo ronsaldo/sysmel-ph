@@ -5,7 +5,6 @@ Class {
 	#name : 'SeaOfNodesCode',
 	#superclass : 'Object',
 	#instVars : [
-		'dataResult',
 		'startingRegion',
 		'endingRegions',
 		'instructionSchedule'
@@ -14,18 +13,6 @@ Class {
 	#package : 'Sysmel-MiddleEnd',
 	#tag : 'SeaOfNodesGraph'
 }
-
-{ #category : 'accessing' }
-SeaOfNodesCode >> dataResult [
-
-	^ dataResult
-]
-
-{ #category : 'accessing' }
-SeaOfNodesCode >> dataResult: anObject [
-
-	dataResult := anObject
-]
 
 { #category : 'accessing' }
 SeaOfNodesCode >> endingRegions [

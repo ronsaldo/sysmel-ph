@@ -18,13 +18,18 @@ SysmelParseTreeSemanticAnalyzer >> analyzeAST: ast withEnvironment: newEnvironme
 
 { #category : 'as yet unclassified' }
 SysmelParseTreeSemanticAnalyzer >> analyzeAST: ast withEnvironment: newEnvironment region: region andExpectedType: anExpectedType [
-	| asg |
+	| asg returnInstruction |
 	environment := newEnvironment.
 	expectedType := anExpectedType.
 	currentRegion := region.
 	asg := self visitNode: ast.
+	
+	returnInstruction := SoNReturnNode new
+		type: asg type;
+		value: asg;
+		yourself.
+	currentRegion addInstruction: returnInstruction.
 	^ SeaOfNodesCode new
-		dataResult: asg;
 		startingRegion: region;
 		endingRegions: { currentRegion }
 		yourself
