@@ -302,7 +302,7 @@ SysmelParseTreeSemanticAnalyzer >> visitIdentifierReferenceNode: node [
 
 { #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitIfConditionNode: node [
-	| analyzedCondition analyzedTrueResult analyzedFalseResult trueRegion falseRegion mergeRegion trueResult falseResult trueResultType falseResultType mergePhi startingRegion |
+	| analyzedCondition analyzedTrueResult analyzedFalseResult trueRegion falseRegion mergeRegion trueResult falseResult trueResultType falseResultType mergePhi startingRegion trueResultAndEndingRegion trueEndingRegion falseResultAndEndingRegion falseEndingRegion |
 	analyzedCondition := self visitNode: node condition withExpectedType: Boolean.
 	trueRegion := nil.
 	trueResult := nil.
@@ -318,7 +318,12 @@ SysmelParseTreeSemanticAnalyzer >> visitIfConditionNode: node [
 			yourself.
 		currentRegion addSuccessor: trueRegion.
 		
-		trueResult := self visitNode: action withRegion: trueRegion.
+		trueResultAndEndingRegion:= self visitNode: action withRegion: trueRegion.
+		trueResult := trueResultAndEndingRegion first.
+		trueEndingRegion := trueResultAndEndingRegion second.
+		
+		trueEndingRegion addSuccessor: mergeRegion.
+		mergeRegion addPredecessor: trueEndingRegion.
 	] ifNil: [
 		currentRegion addSuccessor: mergeRegion.
 		mergeRegion addPredecessor: currentRegion.
@@ -331,7 +336,12 @@ SysmelParseTreeSemanticAnalyzer >> visitIfConditionNode: node [
 			yourself.
 		currentRegion addSuccessor: falseRegion.
 
-		falseResult := self visitNode: action withRegion: falseRegion.
+		falseResultAndEndingRegion := self visitNode: action withRegion: falseRegion.
+		falseResult := falseResultAndEndingRegion first.
+		falseEndingRegion := falseResultAndEndingRegion second.
+		
+		falseEndingRegion addSuccessor: mergeRegion.
+		mergeRegion addPredecessor: falseRegion.
 	] ifNil: [
 		currentRegion addSuccessor: mergeRegion.
 		mergeRegion addPredecessor: currentRegion.
@@ -635,7 +645,7 @@ SysmelParseTreeSemanticAnalyzer >> visitNode: aNode withRegion: aRegionOfCode [
 	| oldRegion |
 	oldRegion := currentRegion.
 	currentRegion := aRegionOfCode.
-	^ [ self visitNode: aNode ] ensure: [ currentRegion := oldRegion ]
+	^ [ {self visitNode: aNode . currentRegion } ] ensure: [ currentRegion := oldRegion ]
 ]
 
 { #category : 'visiting' }

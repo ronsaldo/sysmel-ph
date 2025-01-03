@@ -32,6 +32,14 @@ SeaOfNodesCodeTest >> testEmpty [
 ]
 
 { #category : 'tests' }
+SeaOfNodesCodeTest >> testIfThenElse [
+	| seaOfNodes |
+	seaOfNodes := self parseAndEvaluateString: 'if: true then: 1u32 else: 0u32'.
+	self assert: seaOfNodes dataResult type equals: SysmelType UInt32.
+	self halt.
+]
+
+{ #category : 'tests' }
 SeaOfNodesCodeTest >> testPrimitiveIntegers [
 	| seaOfNodes |
 	seaOfNodes := self parseAndEvaluateString: '56u32'.

@@ -8,18 +8,12 @@ Class {
 		'dataResult',
 		'startingRegion',
 		'endingRegions',
-		'allRegions'
+		'instructionSchedule'
 	],
 	#category : 'Sysmel-MiddleEnd-SeaOfNodesGraph',
 	#package : 'Sysmel-MiddleEnd',
 	#tag : 'SeaOfNodesGraph'
 }
-
-{ #category : 'accessing' }
-SeaOfNodesCode >> allRegions [
-	allRegions ifNil: [ self findRegions ].
-	^ allRegions
-]
 
 { #category : 'accessing' }
 SeaOfNodesCode >> dataResult [
@@ -41,7 +35,6 @@ SeaOfNodesCode >> endingRegions [
 
 { #category : 'accessing' }
 SeaOfNodesCode >> endingRegions: anObject [
-
 	endingRegions := anObject
 ]
 
@@ -53,17 +46,8 @@ SeaOfNodesCode >> findDataDependencies [
 ]
 
 { #category : 'as yet unclassified' }
-SeaOfNodesCode >> findRegions [
-	| seenRegionSet |
-	allRegions := OrderedCollection new.
-	seenRegionSet := Set new.
-	startingRegion withAllSuccessorsDo: [ :each |
-		(seenRegionSet includes: each) ifFalse: [ 
-			seenRegionSet add: each.
-			allRegions add: each
-		]
-	].
-	^ allRegions
+SeaOfNodesCode >> instructionSchedule [
+	^ instructionSchedule
 ]
 
 { #category : 'as yet unclassified' }
@@ -74,7 +58,9 @@ SeaOfNodesCode >> scheduleAndEvaluate [
 
 { #category : 'as yet unclassified' }
 SeaOfNodesCode >> scheduleInstructions [
-	self findRegions.
+	instructionSchedule ifNil: [
+		instructionSchedule := SysmelGlobalCodeMotionAlgorithm new runOn: self
+	]
 	
 ]
 
