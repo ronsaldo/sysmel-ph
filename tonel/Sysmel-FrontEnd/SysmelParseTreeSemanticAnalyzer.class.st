@@ -567,7 +567,11 @@ SysmelParseTreeSemanticAnalyzer >> visitMessageCascadeNode: node [
 		lastResult := messageSend := SoNSendMessageGraphNode new
 			sourcePosition: eachMessage sourcePosition;
 			receiver: receiver;
-			selector: selector;
+			selector: (SoNLiteralValueGraphNode new
+						sourcePosition: node sourcePosition;
+						value: selector;
+						type: Symbol;
+						yourself);
 			arguments: arguments;
 			yourself.
 		currentRegion addInstruction: messageSend
@@ -627,7 +631,11 @@ SysmelParseTreeSemanticAnalyzer >> visitMessageSendNode: node [
 	instruction := SoNSendMessageGraphNode new
 						sourcePosition: node sourcePosition;
 						receiver: receiver;
-						selector: selector;
+						selector: (SoNLiteralValueGraphNode new
+							sourcePosition: node sourcePosition;
+							value: selector;
+							type: Symbol;
+							yourself)
 						arguments: arguments;
 						type: resultType;
 						yourself.
