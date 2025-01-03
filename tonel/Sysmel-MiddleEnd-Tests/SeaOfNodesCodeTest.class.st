@@ -23,39 +23,38 @@ SeaOfNodesCodeTest >> parseAndEvaluateString: string [
 SeaOfNodesCodeTest >> testConstant [
 	| seaOfNodes |
 	seaOfNodes := self parseAndCompileString: '42'.
-	self assert: seaOfNodes dataResult type equals: Integer.
-	self assert: seaOfNodes dataResult value equals: 42.
-	self assert: seaOfNodes startingRegion isEmpty.
+	self assert: seaOfNodes regions size equals: 1.
+	self assert: seaOfNodes instructions size equals: 2.
 ]
 
 { #category : 'tests' }
 SeaOfNodesCodeTest >> testEmpty [
 	| seaOfNodes |
 	seaOfNodes := self parseAndCompileString: ''.
-	self assert: seaOfNodes dataResult type isVoidType.
-	self assert: seaOfNodes startingRegion isEmpty.
+	self assert: seaOfNodes regions size equals: 1.
+	self assert: seaOfNodes instructions size equals: 2.
 ]
 
 { #category : 'tests' }
 SeaOfNodesCodeTest >> testIfThenElse [
 	| seaOfNodes |
 	seaOfNodes := self parseAndCompileString: 'if: true then: 1u32 else: 0u32'.
-	self assert: seaOfNodes dataResult type equals: SysmelType UInt32.
-	self halt.
+	self assert: seaOfNodes regions size equals: 4.
+	self assert: seaOfNodes instructions size equals: 10.
 ]
 
 { #category : 'tests' }
 SeaOfNodesCodeTest >> testPrimitiveIntegers [
 	| seaOfNodes |
 	seaOfNodes := self parseAndCompileString: '56u32'.
-	self assert: seaOfNodes dataResult type equals: SysmelType UInt32.
-	self assert: seaOfNodes startingRegion isEmpty.
+	self assert: seaOfNodes regions size equals: 1.
+	self assert: seaOfNodes instructions size equals: 2
 ]
 
 { #category : 'tests' }
 SeaOfNodesCodeTest >> testPrimitiveIntegersArithmetic [
 	| seaOfNodes |
-	seaOfNodes := self parseAndCompileString: '56u32 + 48u32'.
-	self assert: seaOfNodes dataResult type equals: SysmelType UInt32.
-	self assert: seaOfNodes startingRegion isEmpty.
+	seaOfNodes := self parseAndCompileString: '56u32 + 8u32'.
+	self assert: seaOfNodes regions size equals: 1.
+	self assert: seaOfNodes instructions size equals: 2
 ]

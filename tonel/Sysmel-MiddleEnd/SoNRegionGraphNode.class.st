@@ -10,7 +10,8 @@ Class {
 		'nextRegions',
 		'immediateDominator',
 		'previousRegions',
-		'dominatorTreeDepth'
+		'dominatorTreeDepth',
+		'lateInstructionSchedule'
 	],
 	#category : 'Sysmel-MiddleEnd-SeaOfNodesGraph',
 	#package : 'Sysmel-MiddleEnd',
@@ -34,6 +35,11 @@ SoNRegionGraphNode >> addInstruction: anInstruction [
 		instructions add: anInstruction.
 	].
 	^ anInstruction
+]
+
+{ #category : 'adding' }
+SoNRegionGraphNode >> addLateScheduledInstruction: anInstruction [
+	lateInstructionSchedule add: anInstruction.
 ]
 
 { #category : 'adding' }
@@ -80,9 +86,14 @@ SoNRegionGraphNode >> dominatorTreeDepth [
 	^ dominatorTreeDepth ifNil: [
 		dominatorTreeDepth := 0.
 		immediateDominator ifNotNil: [
-			dominatorTreeDepth := dominatorTreeDepth + immediateDominator dominatorTreeDepth 
+			dominatorTreeDepth := dominatorTreeDepth + immediateDominator dominatorTreeDepth + 1
 		]
 	]
+]
+
+{ #category : 'accessing' }
+SoNRegionGraphNode >> earlyInstructionSchedule [
+	^ earlyInstructionSchedule
 ]
 
 { #category : 'accessing' }
@@ -106,6 +117,7 @@ SoNRegionGraphNode >> initialize [
 	instructions := OrderedCollection new.
 	phiCopy := OrderedCollection new.
 	earlyInstructionSchedule := OrderedCollection new.
+	lateInstructionSchedule := OrderedCollection new.
 ]
 
 { #category : 'accessing' }
@@ -123,6 +135,11 @@ SoNRegionGraphNode >> instructions: anObject [
 { #category : 'testing' }
 SoNRegionGraphNode >> isEmpty [
 	^ instructions isEmpty and: [ phiCopy isEmpty and: [ mergePhi isEmpty ] ]
+]
+
+{ #category : 'accessing' }
+SoNRegionGraphNode >> lateInstructionSchedule [
+	^ lateInstructionSchedule
 ]
 
 { #category : 'accessing' }

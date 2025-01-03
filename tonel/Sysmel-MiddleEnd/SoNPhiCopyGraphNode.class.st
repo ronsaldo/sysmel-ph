@@ -11,6 +11,11 @@ Class {
 	#tag : 'SeaOfNodesGraph'
 }
 
+{ #category : 'as yet unclassified' }
+SoNPhiCopyGraphNode >> dataDependenciesDo: aBlock [
+	aBlock value: value.
+]
+
 { #category : 'accessing' }
 SoNPhiCopyGraphNode >> destination [
 
