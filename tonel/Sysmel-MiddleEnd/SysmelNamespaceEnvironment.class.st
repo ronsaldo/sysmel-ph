@@ -14,6 +14,11 @@ SysmelNamespaceEnvironment >> getNamespace [
 	^ namespace
 ]
 
+{ #category : 'as yet unclassified' }
+SysmelNamespaceEnvironment >> lookupLocalSymbol: symbol [
+	^ namespace lookChildNamed: symbol
+]
+
 { #category : 'accessing' }
 SysmelNamespaceEnvironment >> namespace [
 

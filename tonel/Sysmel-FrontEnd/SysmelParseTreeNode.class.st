@@ -18,6 +18,11 @@ SysmelParseTreeNode >> accept: visitor [
 ]
 
 { #category : 'converting' }
+SysmelParseTreeNode >> asChainOfUnaryIdentifiers [
+	^ self error: 'Not a valid expression for getting a chain of unary identifiers.'
+]
+
+{ #category : 'converting' }
 SysmelParseTreeNode >> asMessageSendCascadeReceiverAndFirstMessage [
 	^ { self . nil }
 ]
@@ -139,6 +144,11 @@ SysmelParseTreeNode >> isMessageCascadeNode [
 
 { #category : 'testing' }
 SysmelParseTreeNode >> isMessageSendNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SysmelParseTreeNode >> isNamespaceNode [
 	^ false
 ]
 

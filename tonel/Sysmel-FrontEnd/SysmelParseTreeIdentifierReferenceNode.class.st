@@ -14,6 +14,11 @@ SysmelParseTreeIdentifierReferenceNode >> accept: visitor [
 	^ visitor visitIdentifierReferenceNode: self
 ]
 
+{ #category : 'converting' }
+SysmelParseTreeIdentifierReferenceNode >> asChainOfUnaryIdentifiers [
+	^ { name }
+]
+
 { #category : 'testing' }
 SysmelParseTreeIdentifierReferenceNode >> isIdentifierReferenceNode [
 	^ true

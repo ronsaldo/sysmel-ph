@@ -138,6 +138,12 @@ SysmelParseTreeSequentialVisitor >> visitMessageSendNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeSequentialVisitor >> visitNamespaceNode: node [
+	self visitNode: node body.
+	
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSequentialVisitor >> visitParseErrorNode: node [
 	node innerNodes do: [ :each | self visitNode: each ]
 ]

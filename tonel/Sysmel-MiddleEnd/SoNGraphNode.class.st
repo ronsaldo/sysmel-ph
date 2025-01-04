@@ -123,6 +123,11 @@ SoNGraphNode >> isLoadValueGraphNode [
 ]
 
 { #category : 'testing' }
+SoNGraphNode >> isNamespace [
+	^ false
+]
+
+{ #category : 'testing' }
 SoNGraphNode >> isPhiCopyGraphNode [
 	^ false
 ]

@@ -619,6 +619,14 @@ SysmelParseTreeSemanticAnalyzer >> visitMessageSendNode: node [
 
 	receiver := self visitNodeWithoutTypeCoercion: node receiver.
 	selector := self visitAndEvaluateSymbolValue: node selector.
+	receiver isNamespace ifTrue: [
+		| namespaceChild |
+		namespaceChild := receiver lookChildNamed: selector.
+		namespaceChild ifNil: [
+			self error: ('Failed to find {1} in namespace {2} ' format: {selector, receiver name})
+		].
+		^ namespaceChild
+	].
 	method := receiver type lookupSelector: selector.
 	
 	(method isNotNil and: [method hasPragmaNamed: #sysmelMacro]) ifTrue: [ 
@@ -661,6 +669,18 @@ SysmelParseTreeSemanticAnalyzer >> visitMessageSendNode: node [
 						yourself.
 	currentRegion addInstruction: instruction.
 	^ instruction
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitNamespaceNode: node [
+	| parentNamespace childNamespace namespaceEnvironment definitionEnvironment |
+	parentNamespace := environment getNamespace.
+	childNamespace := parentNamespace getOrCreateSubnamespaceNamed: node name.
+	namespaceEnvironment := (SysmelNamespaceEnvironment parent: environment)
+									namespace: childNamespace;
+									yourself.
+	definitionEnvironment := SysmelLexicalEnvironment parent: namespaceEnvironment.
+	^ self withEnvironment: definitionEnvironment do: [ self visitNode: node body ]
 ]
 
 { #category : 'visiting' }

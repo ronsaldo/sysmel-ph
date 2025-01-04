@@ -12,6 +12,7 @@ SysmelIntrinsicsEnvironment >> buildIntrinsicSymbols [
 	self importIntrinsicValues.
 	self primitiveGlobalMacros.
 	self primitiveTypes.
+	self namespaceMacro
 ]
 
 { #category : 'as yet unclassified' }
@@ -32,6 +33,28 @@ SysmelIntrinsicsEnvironment >> importIntrinsicValues [
 	self addSymbol: #true valueBinding: true.
 	self addSymbol: #void valueBinding: SysmelVoidType uniqueInstance.
 	self addSymbol: #Void valueBinding: SysmelVoidType.
+]
+
+{ #category : 'as yet unclassified' }
+SysmelIntrinsicsEnvironment >> namespaceMacro [
+	self addPrimitiveGlobalMacro: #namespace:definition:
+		type: (SysmelSimpleFunctionType withArguments: 
+		{ #context -> MacroContext .
+		  #name -> SysmelParseTreeNode .
+			#body -> SysmelParseTreeNode} resultType: SysmelParseTreeNode)
+		implementation: [ :macroContext :nameExpression :body | 
+			| names lastNamespaceOrBody |
+			names := nameExpression asChainOfUnaryIdentifiers.
+			lastNamespaceOrBody := body.
+			names reverseDo: [ :eachName |
+				lastNamespaceOrBody := SysmelParseTreeNamespaceNode new
+					sourcePosition: macroContext sourcePosition;
+					name: eachName;
+					body: lastNamespaceOrBody;
+					yourself.
+			].
+			lastNamespaceOrBody
+		].
 ]
 
 { #category : 'as yet unclassified' }

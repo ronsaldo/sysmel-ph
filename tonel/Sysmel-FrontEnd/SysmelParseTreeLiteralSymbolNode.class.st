@@ -14,6 +14,11 @@ SysmelParseTreeLiteralSymbolNode >> accept: visitor [
 	^ visitor visitLiteralSymbolNode: self
 ]
 
+{ #category : 'converting' }
+SysmelParseTreeLiteralSymbolNode >> asChainOfUnaryIdentifiers [
+	^ {self value}
+]
+
 { #category : 'testing' }
 SysmelParseTreeLiteralSymbolNode >> isLiteralSymbolNode [
 	^ true
@@ -21,12 +26,6 @@ SysmelParseTreeLiteralSymbolNode >> isLiteralSymbolNode [
 
 { #category : 'accessing' }
 SysmelParseTreeLiteralSymbolNode >> value [
-	^ value
-]
-
-{ #category : 'accessing' }
-SysmelParseTreeLiteralSymbolNode >> value1 [
-
 	^ value
 ]
 

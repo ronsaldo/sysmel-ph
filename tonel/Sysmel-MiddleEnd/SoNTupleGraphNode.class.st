@@ -28,6 +28,13 @@ SoNTupleGraphNode >> elements: anObject [
 	elements do: [ :each | each addUser: self ]
 ]
 
+{ #category : 'as yet unclassified' }
+SoNTupleGraphNode >> evaluateWithContext: evaluationContext [
+	| tuple |
+	tuple := evaluationContext getActivationValuesForInstructions: elements.
+	^ evaluationContext setValue: tuple andAdvancePC: 1
+]
+
 { #category : 'testing' }
 SoNTupleGraphNode >> isTupleGraphNode [
 	^ true

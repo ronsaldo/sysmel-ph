@@ -125,6 +125,11 @@ SysmelParseTreeVisitor >> visitMessageSendNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeVisitor >> visitNamespaceNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeVisitor >> visitNode: aNode [
 	^ aNode accept: self
 ]

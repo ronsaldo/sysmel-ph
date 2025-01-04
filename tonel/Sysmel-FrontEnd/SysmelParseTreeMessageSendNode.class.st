@@ -29,6 +29,15 @@ SysmelParseTreeMessageSendNode >> arguments: anObject [
 ]
 
 { #category : 'converting' }
+SysmelParseTreeMessageSendNode >> asChainOfUnaryIdentifiers [
+	| receiverChain |
+	arguments isNotEmpty ifTrue: [
+		self error: 'Invalid message send for getting a chain of unary identifiers.'
+	].
+	^ receiver asChainOfUnaryIdentifiers , selector asChainOfUnaryIdentifiers.
+]
+
+{ #category : 'converting' }
 SysmelParseTreeMessageSendNode >> asMessageSendCascadeReceiverAndFirstMessage [
 	| cascaded |
 	cascaded := SysmelParseTreeMessageCascadeMessageNode new
