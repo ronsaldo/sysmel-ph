@@ -1,0 +1,5 @@
+:!myVar := 45.
+Stdio stdout nextPutAll: "myVar: "; print: myVar; lf.
+
+myVar := 25.
+Stdio stdout nextPutAll: "myVar: "; print: myVar; lf.
