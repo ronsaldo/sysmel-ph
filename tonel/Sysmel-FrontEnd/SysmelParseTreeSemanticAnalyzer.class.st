@@ -134,7 +134,7 @@ SysmelParseTreeSemanticAnalyzer >> visitApplicationNode: node [
 
 { #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitAssignmentNode: node [
-	| analyzedValue analyzedStore valueType alloca baseType coercedValue expandedStore lambda functionExpression |
+	| analyzedValue analyzedStore valueType alloca baseType coercedValue expandedStore lambda functionExpression initialStore |
 	expandedStore := self visitNodeForMacroExpansionOnly: node store.
 	expandedStore isFunctionalDependentTypeNode ifTrue: [
 		lambda := SysmelParseTreeFunctionNode new
@@ -176,6 +176,14 @@ SysmelParseTreeSemanticAnalyzer >> visitAssignmentNode: node [
 				type: (SysmelReferenceType withBaseType: valueType);
 				yourself.
 			currentRegion addInstruction: alloca.
+			
+			analyzedValue ifNotNil: [
+				initialStore := SoNStoreValueGraphNode new
+					pointer: alloca;
+					value: analyzedValue;
+					yourself.
+				currentRegion addInstruction: initialStore.
+			].
 			environment addSymbol: name valueBinding: alloca.				
 		] ifFalse: [ 
 			environment addSymbol: name valueBinding: analyzedValue.
@@ -575,7 +583,7 @@ SysmelParseTreeSemanticAnalyzer >> visitMessageCascadeNode: node [
 	node messages do: [ :eachMessage |
 		| selector arguments messageSend|
 		selector := self visitAndEvaluateSymbolValue: eachMessage selector.
-		arguments := eachMessage arguments collect: [ :eachArgument | self visitNode: eachArgument ].
+		arguments := eachMessage arguments collect: [ :eachArgument | self visitNodeLoadingReferences: eachArgument ].
 		lastResult := messageSend := SoNSendMessageGraphNode new
 			sourcePosition: eachMessage sourcePosition;
 			receiver: receiver;
@@ -685,6 +693,24 @@ SysmelParseTreeSemanticAnalyzer >> visitNode: aNode withRegion: aRegionOfCode [
 SysmelParseTreeSemanticAnalyzer >> visitNodeForMacroExpansionOnly: node [
 	self flag: 'TODO: Implement this'.
 	^ node
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitNodeLoadingReferences: node [
+	| visitedNode nodeType decayedNodeType loadInstruction |
+	visitedNode := self visitNode: node.
+	nodeType := visitedNode type.
+	decayedNodeType := nodeType asDecayedSysmelType.
+	nodeType = decayedNodeType ifTrue: [ ^ visitedNode ].
+	nodeType isReferenceLikeType ifTrue: [
+		loadInstruction := SoNLoadValueGraphNode new
+			sourcePosition: node sourcePosition;
+			pointer: visitedNode;
+			yourself.
+		currentRegion addInstruction: loadInstruction.
+		^ loadInstruction
+	].
+	self halt
 ]
 
 { #category : 'visiting' }

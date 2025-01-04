@@ -16,6 +16,20 @@ SoNStoreValueGraphNode >> dataDependenciesDo: aBlock [
 	aBlock value: value.
 ]
 
+{ #category : 'as yet unclassified' }
+SoNStoreValueGraphNode >> evaluateWithContext: evaluationContext [
+	| allocaBox newValue |
+	allocaBox := evaluationContext getActivationValueForInstruction: pointer.
+	newValue := evaluationContext getActivationValueForInstruction: value.
+	allocaBox value: newValue.
+	^ evaluationContext setValue: newValue andAdvancePC: 1
+]
+
+{ #category : 'testing' }
+SoNStoreValueGraphNode >> isPinnedInstruction [
+	^ true
+]
+
 { #category : 'testing' }
 SoNStoreValueGraphNode >> isStoreValueGraphNode [
 	^ true

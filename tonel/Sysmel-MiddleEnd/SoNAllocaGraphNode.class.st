@@ -10,6 +10,13 @@ Class {
 	#tag : 'SeaOfNodesGraph'
 }
 
+{ #category : 'as yet unclassified' }
+SoNAllocaGraphNode >> evaluateWithContext: evaluationContext [
+	| allocaBox |
+	allocaBox := SoNAllocaBox new.
+	^ evaluationContext setValue: allocaBox andAdvancePC: 1
+]
+
 { #category : 'testing' }
 SoNAllocaGraphNode >> isAllocaGraphNode [
 	^ true

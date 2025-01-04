@@ -11,7 +11,14 @@ Class {
 
 { #category : 'as yet unclassified' }
 SoNLoadValueGraphNode >> dataDependenciesDo: aBlock [
-	aBlock value pointer
+	aBlock value: pointer
+]
+
+{ #category : 'as yet unclassified' }
+SoNLoadValueGraphNode >> evaluateWithContext: evaluationContext [
+	| allocaBox |
+	allocaBox := evaluationContext getActivationValueForInstruction: pointer.
+	^ evaluationContext setValue: allocaBox value andAdvancePC: 1
 ]
 
 { #category : 'testing' }
@@ -21,7 +28,7 @@ SoNLoadValueGraphNode >> isLoadValueGraphNode [
 
 { #category : 'testing' }
 SoNLoadValueGraphNode >> isPinnedInstruction [
-	^ false
+	^ true
 ]
 
 { #category : 'accessing' }
