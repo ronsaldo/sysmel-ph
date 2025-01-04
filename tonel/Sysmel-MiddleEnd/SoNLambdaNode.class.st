@@ -21,6 +21,11 @@ SoNLambdaNode >> evaluateWithContext: evaluationContext [
 	^ evaluationContext setValue: self andAdvancePC: 1
 ]
 
+{ #category : 'as yet unclassified' }
+SoNLambdaNode >> findAllExportableObjects [
+	^ { self }
+]
+
 { #category : 'testing' }
 SoNLambdaNode >> isLambdaNode [
 	^ true

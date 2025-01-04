@@ -37,6 +37,16 @@ SoNSequencingGraphNode >> evaluateWithContext: evaluationContext [
 	^ evaluationContext setValue: result andAdvancePC: 1
 ]
 
+{ #category : 'as yet unclassified' }
+SoNSequencingGraphNode >> findAllExportableObjects [
+	| foundObjects |
+	foundObjects := OrderedCollection new.
+	elements do: [ :each |
+		foundObjects addAll: each findAllExportableObjects
+	].
+	^ foundObjects
+]
+
 { #category : 'testing' }
 SoNSequencingGraphNode >> isSequencingGraphNode [
 	^ true

@@ -3,7 +3,8 @@ Class {
 	#superclass : 'SoNGraphNode',
 	#instVars : [
 		'valueType',
-		'type'
+		'type',
+		'exportableName'
 	],
 	#category : 'Sysmel-MiddleEnd-SeaOfNodesGraph',
 	#package : 'Sysmel-MiddleEnd',
@@ -15,6 +16,18 @@ SoNAllocaGraphNode >> evaluateWithContext: evaluationContext [
 	| allocaBox |
 	allocaBox := SoNAllocaBox new.
 	^ evaluationContext setValue: allocaBox andAdvancePC: 1
+]
+
+{ #category : 'accessing' }
+SoNAllocaGraphNode >> exportableName [
+
+	^ exportableName
+]
+
+{ #category : 'accessing' }
+SoNAllocaGraphNode >> exportableName: anObject [
+
+	exportableName := anObject
 ]
 
 { #category : 'testing' }

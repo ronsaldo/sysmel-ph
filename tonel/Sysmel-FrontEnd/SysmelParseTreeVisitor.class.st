@@ -155,6 +155,11 @@ SysmelParseTreeVisitor >> visitPiNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeVisitor >> visitPublicNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeVisitor >> visitQuasiQuoteNode: node [
 	self subclassResponsibility
 ]

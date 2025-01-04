@@ -163,6 +163,11 @@ SysmelParseTreeNode >> isPiNode [
 ]
 
 { #category : 'testing' }
+SysmelParseTreeNode >> isPublicNode [
+	^ false
+]
+
+{ #category : 'testing' }
 SysmelParseTreeNode >> isQuasiQuoteNode [
 	^ false
 ]

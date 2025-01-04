@@ -155,6 +155,11 @@ SysmelParseTreeSequentialVisitor >> visitPiNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeSequentialVisitor >> visitPublicNode: node [
+	self visitNode: node body
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSequentialVisitor >> visitQuasiQuoteNode: node [
 	self visitNode: node term
 ]

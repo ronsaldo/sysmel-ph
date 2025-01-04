@@ -71,6 +71,11 @@ SoNTypedFunctionalNode >> dataDependenciesDo: aBlock [
 ]
 
 { #category : 'accessing' }
+SoNTypedFunctionalNode >> exportableName [
+	^ name
+]
+
+{ #category : 'accessing' }
 SoNTypedFunctionalNode >> isVariadic [
 
 	^ isVariadic

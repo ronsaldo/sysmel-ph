@@ -55,6 +55,17 @@ SysmelIntrinsicsEnvironment >> namespaceMacro [
 			].
 			lastNamespaceOrBody
 		].
+	
+	self addPrimitiveGlobalMacro: #public:
+		type: (SysmelSimpleFunctionType withArguments: 
+		{ #context -> MacroContext .
+		  #exportedObject -> SysmelParseTreeNode} resultType: SysmelParseTreeNode)
+		implementation: [ :macroContext :exportedObject | 
+			SysmelParseTreePublicNode new
+				sourcePosition: macroContext sourcePosition;
+				exportedObject: exportedObject;
+				yourself
+		].
 ]
 
 { #category : 'as yet unclassified' }

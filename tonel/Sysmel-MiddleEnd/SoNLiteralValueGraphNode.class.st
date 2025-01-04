@@ -3,7 +3,8 @@ Class {
 	#superclass : 'SoNGraphNode',
 	#instVars : [
 		'value',
-		'type'
+		'type',
+		'exportableName'
 	],
 	#category : 'Sysmel-MiddleEnd-SeaOfNodesGraph',
 	#package : 'Sysmel-MiddleEnd',
@@ -28,6 +29,25 @@ SoNLiteralValueGraphNode >> asReducedTypeExpression [
 { #category : 'as yet unclassified' }
 SoNLiteralValueGraphNode >> evaluateWithContext: evaluationContext [
 	^ evaluationContext setValue: value andAdvancePC: 1
+]
+
+{ #category : 'accessing' }
+SoNLiteralValueGraphNode >> exportableName [
+
+	^ exportableName
+]
+
+{ #category : 'accessing' }
+SoNLiteralValueGraphNode >> exportableName: anObject [
+
+	exportableName := anObject
+]
+
+{ #category : 'as yet unclassified' }
+SoNLiteralValueGraphNode >> findAllExportableObjects [
+	^ exportableName
+		ifNotNil: [ { self } ]
+		ifNil: [ #() ]
 ]
 
 { #category : 'testing' }

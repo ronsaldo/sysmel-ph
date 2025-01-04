@@ -53,6 +53,11 @@ SoNGraphNode >> evaluateWithContext: evaluationContext [
 	self subclassResponsibility
 ]
 
+{ #category : 'as yet unclassified' }
+SoNGraphNode >> findAllExportableObjects [
+	^ #()
+]
+
 { #category : 'accessing' }
 SoNGraphNode >> index [
 

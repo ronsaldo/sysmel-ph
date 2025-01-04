@@ -174,6 +174,7 @@ SysmelParseTreeSemanticAnalyzer >> visitAssignmentNode: node [
 				sourcePosition: bindableName sourcePosition;
 				valueType: valueType;
 				type: (SysmelReferenceType withBaseType: valueType);
+				exportableName: name;
 				yourself.
 			currentRegion addInstruction: alloca.
 			
@@ -187,6 +188,7 @@ SysmelParseTreeSemanticAnalyzer >> visitAssignmentNode: node [
 			environment addSymbol: name valueBinding: alloca.				
 		] ifFalse: [ 
 			environment addSymbol: name valueBinding: analyzedValue.
+			analyzedValue exportableName: name
 		].
 		^ analyzedValue
 	].
@@ -790,6 +792,19 @@ SysmelParseTreeSemanticAnalyzer >> visitPiNode: node [
 		callingConvention: node callingConvention;
 		yourself.
 	^ self reducePiNode: piNode
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitPublicNode: node [
+	| ownerNamespace exportedObject rawExportedObject |
+	ownerNamespace := environment getNamespace.
+	rawExportedObject := self visitNode: node exportedObject.
+	exportedObject := rawExportedObject findAllExportableObjects.
+	exportedObject ifEmpty: [ ^ rawExportedObject ].
+	exportedObject do: [ :eachObject |
+		ownerNamespace exportChild: eachObject withName: eachObject exportableName.
+	].
+	^ exportedObject last
 ]
 
 { #category : 'visiting' }
