@@ -43,6 +43,7 @@ SysmelEvaluationContext >> evaluateNodesValue: nodes [
 
 { #category : 'as yet unclassified' }
 SysmelEvaluationContext >> getActivationValueForInstruction: anInstruction [
+	anInstruction isGlobalProgramEntity ifTrue: [ ^ anInstruction ].
 		^ activationMemory at: anInstruction index
 ]
 
