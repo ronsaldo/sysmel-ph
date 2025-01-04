@@ -1,0 +1,9 @@
+namespace: Testing Example definition: {
+    :square(:(Integer)x :: Integer) := x*x.
+    Stdio stdout print: square(4); lf
+}.
+
+Testing Example
+
+##Testing Example square(4)
+##Stdio stdout print: square(4); lf
