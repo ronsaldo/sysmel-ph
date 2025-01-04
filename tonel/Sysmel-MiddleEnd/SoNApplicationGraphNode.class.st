@@ -26,8 +26,13 @@ SoNApplicationGraphNode >> arguments: aListOfArguments [
 
 { #category : 'as yet unclassified' }
 SoNApplicationGraphNode >> dataDependenciesDo: aBlock [
-	aBlock functional.
+	aBlock value: functional.
 	arguments do: aBlock
+]
+
+{ #category : 'as yet unclassified' }
+SoNApplicationGraphNode >> evaluateWithContext: evaluationContext [
+	self halt
 ]
 
 { #category : 'accessing' }

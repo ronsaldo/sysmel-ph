@@ -67,7 +67,7 @@ SoNTypedFunctionalNode >> captureBindings: anObject [
 
 { #category : 'as yet unclassified' }
 SoNTypedFunctionalNode >> dataDependenciesDo: aBlock [
-	aBlock value: captureBindings
+	captureBindings do: aBlock
 ]
 
 { #category : 'accessing' }

@@ -83,12 +83,13 @@ SoNRegionGraphNode >> allInstructionsReverseDo: aBlock [
 
 { #category : 'accessing' }
 SoNRegionGraphNode >> dominatorTreeDepth [
-	^ dominatorTreeDepth ifNil: [
+	dominatorTreeDepth ifNil: [
 		dominatorTreeDepth := 0.
 		immediateDominator ifNotNil: [
 			dominatorTreeDepth := dominatorTreeDepth + immediateDominator dominatorTreeDepth + 1
 		]
-	]
+	].
+	^ dominatorTreeDepth
 ]
 
 { #category : 'accessing' }

@@ -253,13 +253,17 @@ SysmelParseTreeSemanticAnalyzer >> visitDictionaryNode: node [
 
 { #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitFunctionNode: functionNode [
-	| nameExpression functionalType lambda |
+	| functionalType lambda lambdaAnalyzed |
 	functionalType	:= self visitNodeForMacroExpansionOnly: functionNode functionalType.
 	functionalType isFunctionalDependentTypeNode ifFalse: [
 		self error: 'Expected a function type expression.'
 	].
 	lambda := functionalType constructLambdaWithName: functionNode nameExpression body: functionNode body isFixpoint: functionNode isFixpoint.
-	^ self visitNode: lambda
+	lambdaAnalyzed := self visitNode: lambda.
+	lambdaAnalyzed name ifNotNil: [
+		environment addSymbol: lambdaAnalyzed name valueBinding: lambdaAnalyzed
+	].
+	^ lambdaAnalyzed
 ]
 
 { #category : 'visiting' }

@@ -9,6 +9,11 @@ Class {
 	#tag : 'SeaOfNodesGraph'
 }
 
+{ #category : 'as yet unclassified' }
+SoNLambdaNode >> evaluateWithContext: evaluationContext [
+	^ evaluationContext setValue: self andAdvancePC: 1
+]
+
 { #category : 'testing' }
 SoNLambdaNode >> isLambdaNode [
 	^ true
