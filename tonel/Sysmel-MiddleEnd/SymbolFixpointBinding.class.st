@@ -2,7 +2,8 @@ Class {
 	#name : 'SymbolFixpointBinding',
 	#superclass : 'SymbolBinding',
 	#instVars : [
-		'typeExpression'
+		'typeExpression',
+		'ownerFixpointValue'
 	],
 	#category : 'Sysmel-MiddleEnd-Environment',
 	#package : 'Sysmel-MiddleEnd',
@@ -11,7 +12,20 @@ Class {
 
 { #category : 'as yet unclassified' }
 SymbolFixpointBinding >> evaluateASGIn: evalSourcePosition [
-	^ self halt
+	self assert: ownerFixpointValue isNotNil.
+	^ ownerFixpointValue
+]
+
+{ #category : 'accessing' }
+SymbolFixpointBinding >> ownerFixpointValue [
+
+	^ ownerFixpointValue
+]
+
+{ #category : 'accessing' }
+SymbolFixpointBinding >> ownerFixpointValue: anObject [
+
+	ownerFixpointValue := anObject
 ]
 
 { #category : 'accessing' }

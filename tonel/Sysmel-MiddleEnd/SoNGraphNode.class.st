@@ -170,6 +170,18 @@ SoNGraphNode >> ownerRegion: aRegion [
 	ownerRegion := aRegion
 ]
 
+{ #category : 'initialization' }
+SoNGraphNode >> setOwnerRegionIndex [
+	ownerRegion ifNil: [ ^ self ].
+	(ownerRegion firstIndex isNil or: [ ownerRegion firstIndex > index ]) ifTrue: [
+		ownerRegion firstIndex: index
+	].
+	(ownerRegion lastIndex isNil or: [ ownerRegion lastIndex < index ]) ifTrue: [
+		ownerRegion lastIndex: index
+	].
+
+]
+
 { #category : 'accessing' }
 SoNGraphNode >> sourcePosition [
 

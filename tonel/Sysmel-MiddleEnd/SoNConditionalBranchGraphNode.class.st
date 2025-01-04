@@ -29,6 +29,18 @@ SoNConditionalBranchGraphNode >> dataDependenciesDo: aBlock [
 	aBlock value: condition.
 ]
 
+{ #category : 'as yet unclassified' }
+SoNConditionalBranchGraphNode >> evaluateWithContext: evaluationContext [
+	| conditionValue destinationToTake |
+	conditionValue := evaluationContext getActivationValueForInstruction: condition.
+	
+	destinationToTake := conditionValue == false
+		ifTrue: [ trueDestination ]
+		ifFalse: [ falseDestination ].
+	
+	evaluationContext pc: destinationToTake firstIndex.
+]
+
 { #category : 'accessing' }
 SoNConditionalBranchGraphNode >> falseDestination [
 

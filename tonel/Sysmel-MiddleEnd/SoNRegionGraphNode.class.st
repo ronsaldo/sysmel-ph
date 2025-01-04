@@ -11,7 +11,9 @@ Class {
 		'immediateDominator',
 		'previousRegions',
 		'dominatorTreeDepth',
-		'lateInstructionSchedule'
+		'lateInstructionSchedule',
+		'firstIndex',
+		'lastIndex'
 	],
 	#category : 'Sysmel-MiddleEnd-SeaOfNodesGraph',
 	#package : 'Sysmel-MiddleEnd',
@@ -98,6 +100,18 @@ SoNRegionGraphNode >> earlyInstructionSchedule [
 ]
 
 { #category : 'accessing' }
+SoNRegionGraphNode >> firstIndex [
+
+	^ firstIndex
+]
+
+{ #category : 'accessing' }
+SoNRegionGraphNode >> firstIndex: anObject [
+
+	firstIndex := anObject
+]
+
+{ #category : 'accessing' }
 SoNRegionGraphNode >> immediateDominator [
 
 	^ immediateDominator
@@ -136,6 +150,18 @@ SoNRegionGraphNode >> instructions: anObject [
 { #category : 'testing' }
 SoNRegionGraphNode >> isEmpty [
 	^ instructions isEmpty and: [ phiCopy isEmpty and: [ mergePhi isEmpty ] ]
+]
+
+{ #category : 'accessing' }
+SoNRegionGraphNode >> lastIndex [
+
+	^ lastIndex
+]
+
+{ #category : 'accessing' }
+SoNRegionGraphNode >> lastIndex: anObject [
+
+	lastIndex := anObject
 ]
 
 { #category : 'accessing' }

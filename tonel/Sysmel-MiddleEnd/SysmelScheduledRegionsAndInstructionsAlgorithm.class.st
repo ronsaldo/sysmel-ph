@@ -17,7 +17,8 @@ SysmelScheduledRegionsAndInstructionsAlgorithm >> enumeratedInstructions [
 	regions do: [ :eachRegion |
 		eachRegion earlyInstructionSchedule do: [ :eachInstruction |
 			enumeratedInstructions add: eachInstruction.
-			eachInstruction index: enumeratedInstructions size
+			eachInstruction index: enumeratedInstructions size.
+			eachInstruction setOwnerRegionIndex
 		]
 	].
 	^ enumeratedInstructions

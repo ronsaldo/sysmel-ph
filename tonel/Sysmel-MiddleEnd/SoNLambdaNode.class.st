@@ -2,7 +2,8 @@ Class {
 	#name : 'SoNLambdaNode',
 	#superclass : 'SoNTypedFunctionalNode',
 	#instVars : [
-		'seaOfNodesCode'
+		'seaOfNodesCode',
+		'fixpointBinding'
 	],
 	#category : 'Sysmel-MiddleEnd-SeaOfNodesGraph',
 	#package : 'Sysmel-MiddleEnd',
@@ -24,6 +25,18 @@ SoNLambdaNode >> evaluateWithContext: evaluationContext [
 { #category : 'as yet unclassified' }
 SoNLambdaNode >> findAllExportableObjects [
 	^ { self }
+]
+
+{ #category : 'accessing' }
+SoNLambdaNode >> fixpointBinding [
+
+	^ fixpointBinding
+]
+
+{ #category : 'accessing' }
+SoNLambdaNode >> fixpointBinding: aFixpointBinding [
+	fixpointBinding := aFixpointBinding.
+	fixpointBinding ownerFixpointValue: self
 ]
 
 { #category : 'testing' }

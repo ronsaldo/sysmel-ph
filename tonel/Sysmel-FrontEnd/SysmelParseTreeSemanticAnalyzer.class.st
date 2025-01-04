@@ -414,7 +414,7 @@ SysmelParseTreeSemanticAnalyzer >> visitIfConditionNode: node [
 
 { #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitLambdaNode: node [
-	| functionalEnvironment typedArguments typedArgument analyzedResultTypeExpression name typedPi typeUniverse fixpointBinding body bodyType bodyRegion bodyEndingRegion returnNode |
+	| functionalEnvironment typedArguments typedArgument analyzedResultTypeExpression name typedPi typeUniverse fixpointBinding body bodyType bodyRegion bodyEndingRegion returnNode lambdaValue |
 	functionalEnvironment := SysmelFunctionalAnalysisEnvironment parent: environment.
 	typedArguments := OrderedCollection new.
 	node arguments doWithIndex: [ :eachArgument :eachArgumentIndex|
@@ -461,6 +461,16 @@ SysmelParseTreeSemanticAnalyzer >> visitLambdaNode: node [
 		functionalEnvironment := functionalEnvironment withFixpointBinding: fixpointBinding
 	].
 	
+	lambdaValue := SoNLambdaNode new
+		sourcePosition: node sourcePosition;
+		name: name;
+		type: typedPi;
+		arguments: typedArguments;
+		isVariadic: node isVariadic;
+		captureBindings: functionalEnvironment captureBindings;
+		fixpointBinding: functionalEnvironment fixpointBinding;
+		yourself.
+		
 	"Analyze the body"
 	bodyRegion := SoNRegionGraphNode new
 		sourcePosition: node sourcePosition;
@@ -488,13 +498,7 @@ SysmelParseTreeSemanticAnalyzer >> visitLambdaNode: node [
 	bodyEndingRegion addInstruction: returnNode.
 
 	"Make the typed lambda node"	
-	^ SoNLambdaNode new
-		sourcePosition: node sourcePosition;
-		name: name;
-		type: typedPi;
-		arguments: typedArguments;
-		isVariadic: node isVariadic;
-		captureBindings: functionalEnvironment captureBindings;
+	^ lambdaValue
 		body: returnNode;
 		callingConvention: node callingConvention;
 		seaOfNodesCode: (SeaOfNodesCode new
@@ -629,7 +633,7 @@ SysmelParseTreeSemanticAnalyzer >> visitMessageSendNode: node [
 		].
 		^ namespaceChild
 	].
-	method := receiver type lookupSelector: selector.
+	method := receiver type ifNotNil:[:type | type lookupSelector: selector].
 	
 	(method isNotNil and: [method hasPragmaNamed: #sysmelMacro]) ifTrue: [ 
 		self halt
@@ -689,8 +693,12 @@ SysmelParseTreeSemanticAnalyzer >> visitNamespaceNode: node [
 SysmelParseTreeSemanticAnalyzer >> visitNode: node withExpectedType: anExpectedType [
 	| visitedNode |
 	visitedNode := self visitNode: node.
-	(visitedNode type isSubtypeOf: anExpectedType) ifFalse: [
-		self error: node sourcePosition printString , 'Cannot coerce node through subtyping.'
+	visitedNode type isGradualType ifTrue: [
+		self flag: 'Todo: insert an unmarshalling node.'
+	] ifFalse: [
+		(visitedNode type isSubtypeOf: anExpectedType) ifFalse: [
+			self error: node sourcePosition printString , 'Cannot coerce node through subtyping.'
+		].
 	].
 	^ visitedNode
 ]

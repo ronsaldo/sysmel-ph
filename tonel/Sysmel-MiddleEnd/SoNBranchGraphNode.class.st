@@ -21,6 +21,11 @@ SoNBranchGraphNode >> destination: anObject [
 	destination := anObject
 ]
 
+{ #category : 'as yet unclassified' }
+SoNBranchGraphNode >> evaluateWithContext: evaluationContext [
+	evaluationContext pc: destination firstIndex.
+]
+
 { #category : 'testing' }
 SoNBranchGraphNode >> isBasicBlockTerminator [
 	^ true
