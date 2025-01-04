@@ -1,0 +1,7 @@
+:factorial(:(Integer)n :: Integer) := {
+    if: n <= 0
+    then: 1
+    else: factorial(n-1) * n
+}.
+
+Stdio stdout print: factorial(100); lf.
