@@ -24,6 +24,13 @@ SoNArgumentGraphNode >> binding: anObject [
 	binding := anObject
 ]
 
+{ #category : 'as yet unclassified' }
+SoNArgumentGraphNode >> evaluateWithContext: evaluationContext [
+	| argumentValue |
+	argumentValue := evaluationContext arguments at: self binding index.
+	^ evaluationContext setValue: argumentValue andAdvancePC: 1
+]
+
 { #category : 'initialization' }
 SoNArgumentGraphNode >> initialize [
 	^ super initialize.

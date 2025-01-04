@@ -13,8 +13,7 @@ Class {
 SoNLambdaNode >> evaluateWithArguments: evalArguments [
 	| scheduledLambdaInstructions result |
 	scheduledLambdaInstructions := seaOfNodesCode scheduleInstructions.
-	result := scheduledLambdaInstructions evaluateWithArguments: evalArguments.
-	self halt
+	^ scheduledLambdaInstructions evaluateWithArguments: evalArguments.
 ]
 
 { #category : 'as yet unclassified' }

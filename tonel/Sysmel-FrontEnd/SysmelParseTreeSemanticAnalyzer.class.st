@@ -36,7 +36,7 @@ SysmelParseTreeSemanticAnalyzer >> analyzeAST: ast withEnvironment: newEnvironme
 ]
 
 { #category : 'as yet unclassified' }
-SysmelParseTreeSemanticAnalyzer >> analyzeArgumentNode: node [
+SysmelParseTreeSemanticAnalyzer >> analyzeArgumentNode: node withIndex: eachArgumentIndex [
 	| name typeExpression binding |
 	self assert: node isBindableNameNode.
 	name := self evaluateOptionalSymbol: node nameExpression.
@@ -49,6 +49,7 @@ SysmelParseTreeSemanticAnalyzer >> analyzeArgumentNode: node [
 	binding := SymbolArgumentBinding new
 		sourcePosition: node sourcePosition;
 		name: name;
+		index: eachArgumentIndex;
 		typeExpression: typeExpression;
 		isImplicit: node isImplicit;
 		yourself.
@@ -406,10 +407,10 @@ SysmelParseTreeSemanticAnalyzer >> visitLambdaNode: node [
 	| functionalEnvironment typedArguments typedArgument analyzedResultTypeExpression name typedPi typeUniverse fixpointBinding body bodyType bodyRegion bodyEndingRegion returnNode |
 	functionalEnvironment := SysmelFunctionalAnalysisEnvironment parent: environment.
 	typedArguments := OrderedCollection new.
-	node arguments do: [ :eachArgument |
+	node arguments doWithIndex: [ :eachArgument :eachArgumentIndex|
 		typedArgument := 
 			self withEnvironment: functionalEnvironment
-			do: [ self analyzeArgumentNode: eachArgument ].
+			do: [ self analyzeArgumentNode: eachArgument withIndex: eachArgumentIndex ].
 		functionalEnvironment := functionalEnvironment withArgumentBinding: typedArgument binding.
 		typedArguments add: typedArgument
 	]. 
@@ -474,6 +475,7 @@ SysmelParseTreeSemanticAnalyzer >> visitLambdaNode: node [
 		type: body type;
 		value: body;
 		yourself.
+	bodyEndingRegion addInstruction: returnNode.
 
 	"Make the typed lambda node"	
 	^ SoNLambdaNode new
@@ -714,8 +716,8 @@ SysmelParseTreeSemanticAnalyzer >> visitPiNode: node [
 	| functionalEnvironment typedArguments typedArgument body typeUniverse piNode |
 	functionalEnvironment := SysmelFunctionalAnalysisEnvironment parent: environment.
 	typedArguments := OrderedCollection new.
-	node arguments do: [ :argumentNode |
-		typedArgument := self withEnvironment: functionalEnvironment do: [self analyzeArgumentNode: argumentNode].
+	node arguments doWithIndex: [ :argumentNode :argumentIndex |
+		typedArgument := self withEnvironment: functionalEnvironment do: [self analyzeArgumentNode: argumentNode withIndex: argumentIndex].
 		functionalEnvironment := functionalEnvironment withArgumentBinding: typedArgument binding.
 		typedArguments add: typedArgument.
 	].

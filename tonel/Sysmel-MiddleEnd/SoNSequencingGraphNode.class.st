@@ -30,7 +30,11 @@ SoNSequencingGraphNode >> elements: anObject [
 
 { #category : 'as yet unclassified' }
 SoNSequencingGraphNode >> evaluateWithContext: evaluationContext [
-	self halt.
+	| result |
+	result := elements
+		ifEmpty: [ nil ]
+		ifNotEmpty: [ evaluationContext getActivationValueForInstruction: elements last ].
+	^ evaluationContext setValue: result andAdvancePC: 1
 ]
 
 { #category : 'testing' }

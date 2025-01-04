@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'typeExpression',
 		'isImplicit',
-		'isExistential'
+		'isExistential',
+		'index'
 	],
 	#category : 'Sysmel-MiddleEnd-Environment',
 	#package : 'Sysmel-MiddleEnd',
@@ -20,6 +21,18 @@ SymbolArgumentBinding >> evaluateASGIn: evalSourcePosition [
 		isImplicit: isImplicit;
 		isExistential: isExistential;
 		yourself
+]
+
+{ #category : 'accessing' }
+SymbolArgumentBinding >> index [
+
+	^ index
+]
+
+{ #category : 'accessing' }
+SymbolArgumentBinding >> index: anObject [
+
+	index := anObject
 ]
 
 { #category : 'accessing' }
