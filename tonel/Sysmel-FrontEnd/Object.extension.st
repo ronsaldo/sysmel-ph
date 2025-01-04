@@ -6,6 +6,11 @@ Object >> asSysmelType [
 ]
 
 { #category : '*Sysmel-FrontEnd' }
+Object >> isGradualType [
+	^ false
+]
+
+{ #category : '*Sysmel-FrontEnd' }
 Object >> isValidSysmelType [
 	^ false
 ]

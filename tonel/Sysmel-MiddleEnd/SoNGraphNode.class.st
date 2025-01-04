@@ -66,6 +66,11 @@ SoNGraphNode >> isApplicationGraphNode [
 ]
 
 { #category : 'testing' }
+SoNGraphNode >> isArgumentNode [
+	^ false
+]
+
+{ #category : 'testing' }
 SoNGraphNode >> isAssociationGraphNode [
 	^ false
 ]
@@ -173,10 +178,11 @@ SoNGraphNode >> ownerRegion: aRegion [
 { #category : 'initialization' }
 SoNGraphNode >> setOwnerRegionIndex [
 	ownerRegion ifNil: [ ^ self ].
-	(ownerRegion firstIndex isNil or: [ ownerRegion firstIndex > index ]) ifTrue: [
+	
+	(ownerRegion firstIndex isNil or: [ index < ownerRegion firstIndex ]) ifTrue: [
 		ownerRegion firstIndex: index
 	].
-	(ownerRegion lastIndex isNil or: [ ownerRegion lastIndex < index ]) ifTrue: [
+	(ownerRegion lastIndex isNil or: [ index > ownerRegion lastIndex ]) ifTrue: [
 		ownerRegion lastIndex: index
 	].
 

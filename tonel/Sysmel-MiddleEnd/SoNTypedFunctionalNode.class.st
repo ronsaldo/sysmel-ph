@@ -66,6 +66,14 @@ SoNTypedFunctionalNode >> captureBindings: anObject [
 ]
 
 { #category : 'as yet unclassified' }
+SoNTypedFunctionalNode >> computeResultTypeWithAnalyzedArguments: analyzedArguments [
+	body isLiteralValueGraphNode ifTrue: [ ^ body value ].
+	
+	self flag: 'Support dependent types here.'.
+	self halt
+]
+
+{ #category : 'as yet unclassified' }
 SoNTypedFunctionalNode >> dataDependenciesDo: aBlock [
 	captureBindings do: aBlock
 ]

@@ -36,6 +36,19 @@ SeaOfNodesCodeTest >> testEmpty [
 ]
 
 { #category : 'tests' }
+SeaOfNodesCodeTest >> testFactorial [
+	| seaOfNodes factorialFunction factorialResult |
+	seaOfNodes := self parseAndCompileString: ':factorial(:(Integer)n :: Integer) := {
+    if: n <= 0
+    then: 1
+    else: factorial(n-1)*n
+}.'.
+	factorialFunction := seaOfNodes evaluateWithArguments: #().
+	factorialResult := factorialFunction evaluateWithArguments: #(10).
+	self halt.
+]
+
+{ #category : 'tests' }
 SeaOfNodesCodeTest >> testIfThenElse [
 	| seaOfNodes |
 	seaOfNodes := self parseAndCompileString: 'if: true then: 1u32 else: 0u32'.

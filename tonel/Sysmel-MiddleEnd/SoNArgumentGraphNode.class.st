@@ -38,6 +38,11 @@ SoNArgumentGraphNode >> initialize [
 	isExistential := false.
 ]
 
+{ #category : 'testing' }
+SoNArgumentGraphNode >> isArgumentNode [
+	^ true
+]
+
 { #category : 'accessing' }
 SoNArgumentGraphNode >> isExistential [
 

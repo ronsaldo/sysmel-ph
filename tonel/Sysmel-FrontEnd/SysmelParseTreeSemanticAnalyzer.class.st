@@ -73,6 +73,14 @@ SysmelParseTreeSemanticAnalyzer >> coerceNode: aNode into: targetType [
 ]
 
 { #category : 'as yet unclassified' }
+SysmelParseTreeSemanticAnalyzer >> computeMergeTypeFor: trueResultType and: falseResultType [
+	trueResultType = falseResultType ifTrue: [ trueResultType ].
+	(trueResultType isGradualType or: [ falseResultType isGradualType ])
+		ifTrue: [ ^ SysmelTypeGradual uniqueInstance ].
+	^ SysmelVoidType
+]
+
+{ #category : 'as yet unclassified' }
 SysmelParseTreeSemanticAnalyzer >> evaluateOptionalSymbol: aNode [
 	| symbolNode |
 	aNode ifNil: [ ^ nil ].
@@ -103,7 +111,7 @@ SysmelParseTreeSemanticAnalyzer >> visitAndEvaluateType: aNode [
 
 { #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitApplicationNode: node [
-	| analyzedFunctional analyzedFunctionalType analyzedArguments application isMacro macroArguments macroResult |
+	| analyzedFunctional analyzedFunctionalType analyzedArguments application isMacro macroArguments macroResult analyzedResultType |
 	analyzedFunctional := self visitNode: node functional.
 	analyzedFunctionalType := analyzedFunctional type.
 	isMacro := analyzedFunctional value isSysmelMacro.
@@ -123,10 +131,12 @@ SysmelParseTreeSemanticAnalyzer >> visitApplicationNode: node [
 		self visitNode: arg
 	].
 
+	analyzedResultType := analyzedFunctionalType computeResultTypeWithAnalyzedArguments: analyzedArguments.
 	application := SoNApplicationGraphNode new
 		sourcePosition: node sourcePosition;
 		functional: analyzedFunctional;
 		arguments: analyzedArguments;
+		type: analyzedResultType;
 		yourself.
 	currentRegion addInstruction: application.
 	^ application
@@ -322,7 +332,7 @@ SysmelParseTreeSemanticAnalyzer >> visitIdentifierReferenceNode: node [
 
 { #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitIfConditionNode: node [
-	| analyzedCondition analyzedTrueResult analyzedFalseResult trueRegion falseRegion mergeRegion trueResult falseResult trueResultType falseResultType mergePhi startingRegion trueResultAndEndingRegion trueEndingRegion falseResultAndEndingRegion falseEndingRegion |
+	| analyzedCondition analyzedTrueResult analyzedFalseResult trueRegion falseRegion mergeRegion trueResult falseResult trueResultType falseResultType mergePhi startingRegion trueResultAndEndingRegion trueEndingRegion falseResultAndEndingRegion falseEndingRegion mergeResultType |
 	analyzedCondition := self visitNode: node condition withExpectedType: Boolean.
 	trueRegion := nil.
 	trueResult := nil.
@@ -390,24 +400,26 @@ SysmelParseTreeSemanticAnalyzer >> visitIfConditionNode: node [
 
 	trueResultType := trueResult type asDecayedSysmelType .
 	falseResultType := falseResult type asDecayedSysmelType .
-	trueResultType = falseResultType ifTrue: [
+	mergeResultType := self computeMergeTypeFor: trueResultType and: falseResultType.
+
+	mergeResultType isVoidType ifFalse: [
 		mergePhi := SoNPhiGraphNode new
 							sourcePosition: node sourcePosition;
-							type: falseResultType;
+							type: mergeResultType;
 							yourself.
 		mergeRegion addMergePhi: mergePhi.
 		trueRegion addPhiCopy: (SoNPhiCopyGraphNode new
 			value: trueResult;
-			type: trueResultType;
+			type: mergeResultType;
 			destination: mergePhi;
 			yourself).
 		falseRegion addPhiCopy: (SoNPhiCopyGraphNode new
 			value: falseResult;
-			type: falseResultType;
+			type: mergeResultType;
 			destination: mergePhi;
 			yourself).
 		^ mergePhi
-	] ifFalse: [
+	] ifTrue: [
 		^ SoNLiteralValueGraphNode voidValue
 	]
 ]

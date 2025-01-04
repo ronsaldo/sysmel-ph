@@ -33,6 +33,10 @@ SysmelEvaluationContext >> arguments: anObject [
 
 { #category : 'as yet unclassified' }
 SysmelEvaluationContext >> evaluateNodeValue: node [
+	node isArgumentNode ifTrue: [ 
+		^ activationMemory at: node binding index
+	].
+	node isLiteralValueGraphNode ifTrue: [ ^ node value ].
 	^ activationMemory at: node index
 ]
 
@@ -44,7 +48,8 @@ SysmelEvaluationContext >> evaluateNodesValue: nodes [
 { #category : 'as yet unclassified' }
 SysmelEvaluationContext >> getActivationValueForInstruction: anInstruction [
 	anInstruction isGlobalProgramEntity ifTrue: [ ^ anInstruction ].
-		^ activationMemory at: anInstruction index
+	anInstruction isLambdaNode ifTrue: [ ^ anInstruction ].
+	^ activationMemory at: anInstruction index
 ]
 
 { #category : 'as yet unclassified' }

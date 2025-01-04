@@ -133,6 +133,11 @@ SysmelType class >> UInt8 [
 			yourself]
 ]
 
+{ #category : 'testing' }
+SysmelType class >> isVoidType [
+	^ false
+]
+
 { #category : 'converting' }
 SysmelType >> asDecayedSysmelType [
 	^ self
@@ -160,6 +165,11 @@ SysmelType >> isValidSysmelType [
 
 { #category : 'testing' }
 SysmelType >> isVoid [
+	^ false
+]
+
+{ #category : 'testing' }
+SysmelType >> isVoidType [
 	^ false
 ]
 

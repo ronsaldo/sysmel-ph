@@ -28,6 +28,11 @@ SysmelSimpleFunctionType >> argumentTypes [
 	^ argumentTypes
 ]
 
+{ #category : 'as yet unclassified' }
+SysmelSimpleFunctionType >> computeResultTypeWithAnalyzedArguments: arguments [
+	^ self resultType
+]
+
 { #category : 'initialization' }
 SysmelSimpleFunctionType >> initializeWithArguments: argumentAndNames resultType: theResult [
 	argumentNames := argumentAndNames collect: [ :each | each key ].

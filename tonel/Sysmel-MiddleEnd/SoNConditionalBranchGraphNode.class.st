@@ -35,8 +35,8 @@ SoNConditionalBranchGraphNode >> evaluateWithContext: evaluationContext [
 	conditionValue := evaluationContext getActivationValueForInstruction: condition.
 	
 	destinationToTake := conditionValue == false
-		ifTrue: [ trueDestination ]
-		ifFalse: [ falseDestination ].
+		ifTrue: [ falseDestination ]
+		ifFalse: [ trueDestination ].
 	
 	evaluationContext pc: destinationToTake firstIndex.
 ]
