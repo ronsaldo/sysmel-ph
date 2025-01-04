@@ -3,8 +3,6 @@ Class {
 	#superclass : 'SysmelProgramEntity',
 	#instVars : [
 		'sourcePosition',
-		'users',
-		'userSet',
 		'ownerRegion',
 		'index'
 	],
@@ -12,19 +10,6 @@ Class {
 	#package : 'Sysmel-MiddleEnd',
 	#tag : 'SeaOfNodesGraph'
 }
-
-{ #category : 'as yet unclassified' }
-SoNGraphNode >> addUser: anUserInstruction [
-	(userSet includes: [anUserInstruction]) ifFalse: [ 
-		users add: anUserInstruction.
-		userSet add: anUserInstruction
-	]
-]
-
-{ #category : 'as yet unclassified' }
-SoNGraphNode >> allUsers [
-	^ users
-]
 
 { #category : 'converting' }
 SoNGraphNode >> asConstantValueForPureEvaluation [
@@ -70,13 +55,6 @@ SoNGraphNode >> index: anObject [
 	index := anObject
 ]
 
-{ #category : 'initialization' }
-SoNGraphNode >> initialize [
-	super initialize.
-	users := OrderedCollection new.
-	userSet := IdentitySet new.
-]
-
 { #category : 'testing' }
 SoNGraphNode >> isAllocaGraphNode [
 	^ false
@@ -113,6 +91,11 @@ SoNGraphNode >> isDictionaryGraphNode [
 ]
 
 { #category : 'testing' }
+SoNGraphNode >> isGlobalProgramEntity [
+	^ false
+]
+
+{ #category : 'testing' }
 SoNGraphNode >> isLambdaNode [
 	^ false
 ]
@@ -144,11 +127,6 @@ SoNGraphNode >> isPhiGraphNode [
 
 { #category : 'testing' }
 SoNGraphNode >> isPiNode [
-	^ false
-]
-
-{ #category : 'testing' }
-SoNGraphNode >> isPinnedInstruction [
 	^ false
 ]
 

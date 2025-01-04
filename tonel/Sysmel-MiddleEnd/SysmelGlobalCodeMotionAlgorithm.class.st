@@ -107,6 +107,7 @@ SysmelGlobalCodeMotionAlgorithm >> scheduleEarly [
 { #category : 'as yet unclassified' }
 SysmelGlobalCodeMotionAlgorithm >> scheduleEarly: instruction visitedSet: visited [
 	| root |
+	instruction isGlobalProgramEntity ifTrue: [ ^ self ].
 	instruction isPinnedInstruction ifTrue: [ ^ self ].
 	(visited includes: instruction) ifTrue: [ ^ self ].
 	visited add: instruction.
@@ -115,9 +116,11 @@ SysmelGlobalCodeMotionAlgorithm >> scheduleEarly: instruction visitedSet: visite
 	instruction ownerRegion: root.
 
 	instruction dataDependenciesDo: [ :eachDependency |
-		self scheduleEarly: eachDependency visitedSet: visited.
-		instruction ownerRegion dominatorTreeDepth < eachDependency ownerRegion dominatorTreeDepth ifTrue: [ 
-			instruction ownerRegion: eachDependency ownerRegion
+		eachDependency isGlobalProgramEntity ifFalse: [
+			self scheduleEarly: eachDependency visitedSet: visited.
+			instruction ownerRegion dominatorTreeDepth < eachDependency ownerRegion dominatorTreeDepth ifTrue: [ 
+				instruction ownerRegion: eachDependency ownerRegion
+			]
 		]
 	].
 	instruction ownerRegion addEarlyScheduledInstruction: instruction.
