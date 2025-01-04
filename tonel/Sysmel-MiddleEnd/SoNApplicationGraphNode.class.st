@@ -32,7 +32,11 @@ SoNApplicationGraphNode >> dataDependenciesDo: aBlock [
 
 { #category : 'as yet unclassified' }
 SoNApplicationGraphNode >> evaluateWithContext: evaluationContext [
-	self halt
+	| evalFunctional evalArguments result |
+	evalFunctional := evaluationContext getActivationValueForInstruction: functional. 
+	evalArguments := evaluationContext getActivationValuesForInstructions: arguments.
+	result := evalFunctional evaluateWithArguments: evalArguments.
+	^ evaluationContext setValue: result andAdvancePC: 1
 ]
 
 { #category : 'accessing' }

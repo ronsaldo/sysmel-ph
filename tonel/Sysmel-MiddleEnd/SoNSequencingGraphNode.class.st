@@ -28,6 +28,11 @@ SoNSequencingGraphNode >> elements: anObject [
 	elements do: [ :each | each addUser: self ]
 ]
 
+{ #category : 'as yet unclassified' }
+SoNSequencingGraphNode >> evaluateWithContext: evaluationContext [
+	self halt.
+]
+
 { #category : 'testing' }
 SoNSequencingGraphNode >> isSequencingGraphNode [
 	^ true

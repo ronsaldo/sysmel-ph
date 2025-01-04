@@ -10,6 +10,14 @@ Class {
 }
 
 { #category : 'as yet unclassified' }
+SoNLambdaNode >> evaluateWithArguments: evalArguments [
+	| scheduledLambdaInstructions result |
+	scheduledLambdaInstructions := seaOfNodesCode scheduleInstructions.
+	result := scheduledLambdaInstructions evaluateWithArguments: evalArguments.
+	self halt
+]
+
+{ #category : 'as yet unclassified' }
 SoNLambdaNode >> evaluateWithContext: evaluationContext [
 	^ evaluationContext setValue: self andAdvancePC: 1
 ]

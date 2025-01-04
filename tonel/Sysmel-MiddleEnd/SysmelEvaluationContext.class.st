@@ -41,6 +41,16 @@ SysmelEvaluationContext >> evaluateNodesValue: nodes [
 	^ nodes collect: [ :each | self evaluateNodeValue: each ]
 ]
 
+{ #category : 'as yet unclassified' }
+SysmelEvaluationContext >> getActivationValueForInstruction: anInstruction [
+		^ activationMemory at: anInstruction index
+]
+
+{ #category : 'as yet unclassified' }
+SysmelEvaluationContext >> getActivationValuesForInstructions: someInstructions [
+	^ someInstructions collect: [ :each | self getActivationValueForInstruction: each ]
+]
+
 { #category : 'initialization' }
 SysmelEvaluationContext >> hasReturned [
 	^ hasReturned
