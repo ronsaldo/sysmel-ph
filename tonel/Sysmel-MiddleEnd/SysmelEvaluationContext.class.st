@@ -16,7 +16,7 @@ Class {
 
 { #category : 'initialization' }
 SysmelEvaluationContext >> advancePC: advanceCount [
-	^ pc := pc + advanceCount
+	^ self pc: pc + advanceCount
 ]
 
 { #category : 'as yet unclassified' }
@@ -91,9 +91,9 @@ SysmelEvaluationContext >> pc [
 ]
 
 { #category : 'accessing' }
-SysmelEvaluationContext >> pc: anObject [
-
-	pc := anObject
+SysmelEvaluationContext >> pc: aProgramCounter [
+	self assert: aProgramCounter isInteger.
+	pc := aProgramCounter
 ]
 
 { #category : 'initialization' }
@@ -124,7 +124,7 @@ SysmelEvaluationContext >> run [
 { #category : 'initialization' }
 SysmelEvaluationContext >> setValue: value andAdvancePC: advanceCount [
 	activationMemory at: pc put: value.
-	^ pc := pc + advanceCount
+	^ self pc: pc + advanceCount
 ]
 
 { #category : 'initialization' }

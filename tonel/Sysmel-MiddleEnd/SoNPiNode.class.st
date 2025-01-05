@@ -10,3 +10,8 @@ Class {
 SoNPiNode >> isPiNode [
 	^ true
 ]
+
+{ #category : 'testing' }
+SoNPiNode >> isReferenceLikeType [
+	^ false
+]

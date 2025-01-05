@@ -75,3 +75,21 @@ SeaOfNodesCodeTest >> testPrimitiveIntegersArithmetic [
 	self assert: seaOfNodes regions size equals: 1.
 	self assert: seaOfNodes instructions size equals: 2
 ]
+
+{ #category : 'tests' }
+SeaOfNodesCodeTest >> testWhileDo [
+	| seaOfNodes result |
+	seaOfNodes := self parseAndCompileString: ':!i := 0. while: (i < 10) do: { i := i + 1 }. i'.
+	result := seaOfNodes evaluateWithArguments: #().
+	self assert: result equals: 10.
+
+]
+
+{ #category : 'tests' }
+SeaOfNodesCodeTest >> testWhileDoContinueWith [
+	| seaOfNodes result |
+	seaOfNodes := self parseAndCompileString: ':!i := 0. while: (i < 10) do: {  } continueWith: (i := i + 1). i '.
+	result := seaOfNodes evaluateWithArguments: #().
+	self assert: result equals: 10.
+
+]

@@ -25,7 +25,7 @@ Sysmel >> parseAndCompileSourceCode: sourceCode [
 	environment := module makeEnvironmentFor: ast.
 	
 	topLevelSeaOfNode := SysmelParseTreeSemanticAnalyzer new
-			analyzeAST: ast withEnvironment: environment region: SoNRegionGraphNode new.
+			analyzeAST: ast withEnvironment: environment region: (SoNRegionGraphNode new name: #entry; yourself).
 	^ topLevelSeaOfNode scheduleInstructions
 ]
 
@@ -62,7 +62,7 @@ Sysmel >> parseAndEvaluateSourceCode: sourceCode [
 	environment := module makeEnvironmentFor: ast.
 	
 	topLevelSeaOfNode := SysmelParseTreeSemanticAnalyzer new
-			analyzeAST: ast withEnvironment: environment region: SoNRegionGraphNode new.
+			analyzeAST: ast withEnvironment: environment region: (SoNRegionGraphNode new name: #entry; yourself).
 	^ topLevelSeaOfNode scheduleAndEvaluate
 ]
 

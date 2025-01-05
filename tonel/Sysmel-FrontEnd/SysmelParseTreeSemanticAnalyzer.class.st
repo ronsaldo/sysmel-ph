@@ -18,12 +18,20 @@ SysmelParseTreeSemanticAnalyzer >> analyzeAST: ast withEnvironment: newEnvironme
 
 { #category : 'as yet unclassified' }
 SysmelParseTreeSemanticAnalyzer >> analyzeAST: ast withEnvironment: newEnvironment region: region andExpectedType: anExpectedType [
-	| asg returnInstruction |
+	| asg returnInstruction resultLoad |
 	environment := newEnvironment.
 	expectedType := anExpectedType.
 	currentRegion := region.
 	asg := self visitNode: ast.
 	
+	asg type isReferenceLikeType ifTrue: [
+		resultLoad := SoNLoadValueGraphNode new
+				sourcePosition: ast sourcePosition;
+				pointer: asg;
+				yourself.
+		currentRegion addInstruction: resultLoad.
+		asg := resultLoad
+	].
 	returnInstruction := SoNReturnNode new
 		type: asg type;
 		value: asg;
@@ -66,6 +74,8 @@ SysmelParseTreeSemanticAnalyzer >> analyzeArgumentNode: node withIndex: eachArgu
 SysmelParseTreeSemanticAnalyzer >> coerceNode: aNode into: targetType [
 	targetType ifNil: [ ^ aNode ].
 	aNode type = targetType ifTrue: [ ^ aNode ].
+	(aNode type isGradualType or: [ targetType isGradualType ]) ifTrue: [ ^ aNode ].
+	
 	targetType isVoid ifTrue: [ ^ aNode ].
 	self error: ('{1} Cannot coerce from {2} into {3}' format: {
 		aNode sourcePosition printString . aNode type printString. targetType printString
@@ -338,10 +348,11 @@ SysmelParseTreeSemanticAnalyzer >> visitIfConditionNode: node [
 	trueResult := nil.
 	falseRegion := nil.
 	falseResult := nil.
-	mergeRegion := SoNRegionGraphNode new.
+	mergeRegion := SoNRegionGraphNode new name: #ifMerge; yourself.
 	mergeRegion immediateDominator: currentRegion.
 	analyzedTrueResult := node trueResult ifNotNil: [:action |
 		trueRegion := SoNRegionGraphNode new
+			name: #ifTrue;
 			addPredecessor: currentRegion;
 			addSuccessor: mergeRegion;
 			immediateDominator: currentRegion;
@@ -364,6 +375,7 @@ SysmelParseTreeSemanticAnalyzer >> visitIfConditionNode: node [
 	].
 	analyzedFalseResult := node falseResult ifNotNil: [:action|
 		falseRegion := SoNRegionGraphNode new
+			name: #ifFalse:;
 			addPredecessor: currentRegion;
 			addSuccessor: mergeRegion;
 			immediateDominator: currentRegion;
@@ -484,6 +496,7 @@ SysmelParseTreeSemanticAnalyzer >> visitLambdaNode: node [
 		
 	"Analyze the body"
 	bodyRegion := SoNRegionGraphNode new
+		name: #lambdaEntry;
 		sourcePosition: node sourcePosition;
 		yourself.
 	bodyEndingRegion := bodyRegion.
@@ -491,6 +504,17 @@ SysmelParseTreeSemanticAnalyzer >> visitLambdaNode: node [
 		[ | bodyValue | bodyValue := self visitNode: node body withExpectedTypeExpression: analyzedResultTypeExpression.
 		bodyEndingRegion := currentRegion.
 		bodyValue].
+
+	"Decay the references."
+	body type isReferenceLikeType ifTrue: [
+		| resultLoad |
+		resultLoad := SoNLoadValueGraphNode new
+				sourcePosition: body sourcePosition;
+				pointer: body type;
+				yourself.
+		bodyEndingRegion addInstruction: resultLoad.
+		body := resultLoad.
+	].
 	
 	"Compute the lambda type"
 	bodyType := body type.
@@ -636,6 +660,19 @@ SysmelParseTreeSemanticAnalyzer >> visitMessageSendNode: node [
 
 	receiver := self visitNodeWithoutTypeCoercion: node receiver.
 	selector := self visitAndEvaluateSymbolValue: node selector.
+	receiver type isReferenceLikeType ifTrue: [
+		(receiver type supportsSelector: selector) ifTrue: [
+			self halt.
+		] ifFalse: [
+			| loadedReceiver |
+			loadedReceiver := SoNLoadValueGraphNode new
+				sourcePosition: node sourcePosition;
+				pointer: receiver;
+				yourself.
+			currentRegion addInstruction: loadedReceiver.
+			receiver := loadedReceiver
+		]
+	].
 	receiver isNamespace ifTrue: [
 		| namespaceChild |
 		namespaceChild := receiver lookChildNamed: selector.
@@ -895,6 +932,70 @@ SysmelParseTreeSemanticAnalyzer >> visitTypeExpression: aTypeExpression [
 	].
 
 	self halt
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitWhileLoopNode: node [
+	| headerRegion bodyRegion continueRegion mergeRegion analyzedCondition |
+	headerRegion := SoNRegionGraphNode new name: #whileHeader; yourself.
+	headerRegion immediateDominator: currentRegion.
+
+	bodyRegion := SoNRegionGraphNode new name: #whileBody; yourself.
+	bodyRegion immediateDominator: headerRegion.
+
+	continueRegion := SoNRegionGraphNode new name: #whileContinue; yourself.
+	continueRegion immediateDominator: bodyRegion.
+		
+	mergeRegion := SoNRegionGraphNode new name: #whileMerge; yourself.
+	mergeRegion immediateDominator: headerRegion.
+	
+	headerRegion
+		mergeRegion: mergeRegion;
+		continueRegion: continueRegion.
+		
+	
+	"Enter to the loop header."
+	currentRegion addInstruction: (SoNBranchGraphNode new
+		destination: headerRegion;
+		yourself).
+		
+	currentRegion := headerRegion.
+	
+	"Loop condition."
+	analyzedCondition := node condition ifNotNil: [self visitNode: node condition withExpectedType: Boolean].
+	currentRegion addInstruction: (SoNConditionalBranchGraphNode new
+		condition: analyzedCondition; 
+		trueDestination: bodyRegion;
+		falseDestination: mergeRegion;
+		yourself).
+
+	headerRegion
+		mergeRegion: mergeRegion;
+		continueRegion: continueRegion;
+		addSuccessor: bodyRegion;
+		addSuccessor: mergeRegion.
+			
+	"Compile the body."
+	currentRegion := bodyRegion.
+	self visitNode: node body.
+
+	"Enter the continue branch."
+	currentRegion addInstruction: (SoNBranchGraphNode new
+		destination: continueRegion;
+		yourself).
+	continueRegion immediateDominator: currentRegion.
+	currentRegion := continueRegion.
+	self visitOptionalNode: node continueExpression.
+
+	"Loop back"
+	currentRegion addInstruction: (SoNBranchGraphNode new
+		destination: headerRegion;
+		yourself).
+	headerRegion addPredecessor: currentRegion.
+		
+	currentRegion := mergeRegion.
+	
+	^ SoNLiteralValueGraphNode voidValue
 ]
 
 { #category : 'as yet unclassified' }

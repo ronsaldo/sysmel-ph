@@ -30,6 +30,34 @@ SysmelPrimitiveIntegerTypeValue >> / operand [
 	^ primitiveType fromInteger: self asInteger // operand asInteger
 ]
 
+{ #category : 'arithmetic' }
+SysmelPrimitiveIntegerTypeValue >> < operand [
+	<pure>
+	<resultType: #Boolean>
+	^ self value < operand value 
+]
+
+{ #category : 'arithmetic' }
+SysmelPrimitiveIntegerTypeValue >> <= operand [
+	<pure>
+	<resultType: #Boolean>
+	^ self value <= operand value 
+]
+
+{ #category : 'arithmetic' }
+SysmelPrimitiveIntegerTypeValue >> > operand [
+	<pure>
+	<resultType: #Boolean>
+	^ self value > operand value 
+]
+
+{ #category : 'arithmetic' }
+SysmelPrimitiveIntegerTypeValue >> >= operand [
+	<pure>
+	<resultType: #Boolean>
+	^ self value >= operand value 
+]
+
 { #category : 'converting' }
 SysmelPrimitiveIntegerTypeValue >> asInteger [
 	^ value asInteger

@@ -2,6 +2,7 @@ Class {
 	#name : 'SoNRegionGraphNode',
 	#superclass : 'SoNGraphNode',
 	#instVars : [
+		'name',
 		'mergePhi',
 		'phiCopy',
 		'instructions',
@@ -9,6 +10,8 @@ Class {
 		'earlyInstructionSchedule',
 		'nextRegions',
 		'immediateDominator',
+		'mergeRegion',
+		'continueRegion',
 		'previousRegions',
 		'dominatorTreeDepth',
 		'lateInstructionSchedule',
@@ -81,6 +84,18 @@ SoNRegionGraphNode >> allInstructionsReverseDo: aBlock [
 	instructions do: aBlock.
 	mergePhi do: aBlock.
 
+]
+
+{ #category : 'accessing' }
+SoNRegionGraphNode >> continueRegion [
+
+	^ continueRegion
+]
+
+{ #category : 'accessing' }
+SoNRegionGraphNode >> continueRegion: anObject [
+
+	continueRegion := anObject
 ]
 
 { #category : 'accessing' }
@@ -170,6 +185,30 @@ SoNRegionGraphNode >> lateInstructionSchedule [
 ]
 
 { #category : 'accessing' }
+SoNRegionGraphNode >> mergeRegion [
+
+	^ mergeRegion
+]
+
+{ #category : 'accessing' }
+SoNRegionGraphNode >> mergeRegion: anObject [
+
+	mergeRegion := anObject
+]
+
+{ #category : 'accessing' }
+SoNRegionGraphNode >> name [
+
+	^ name
+]
+
+{ #category : 'accessing' }
+SoNRegionGraphNode >> name: anObject [
+
+	name := anObject
+]
+
+{ #category : 'accessing' }
 SoNRegionGraphNode >> nextRegions [
 
 	^ nextRegions
@@ -191,6 +230,12 @@ SoNRegionGraphNode >> previousRegions [
 SoNRegionGraphNode >> previousRegions: anObject [
 
 	previousRegions := anObject
+]
+
+{ #category : 'printing' }
+SoNRegionGraphNode >> printOn: aStream [
+	aStream nextPutAll: 'Region'.
+	name ifNotNil: [ aStream space; nextPutAll: name]
 ]
 
 { #category : 'accessing' }

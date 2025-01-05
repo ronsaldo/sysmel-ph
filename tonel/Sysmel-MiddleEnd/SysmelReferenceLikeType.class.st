@@ -15,3 +15,8 @@ SysmelReferenceLikeType >> asDecayedSysmelType [
 SysmelReferenceLikeType >> isReferenceLikeType [
 	^ true
 ]
+
+{ #category : 'as yet unclassified' }
+SysmelReferenceLikeType >> supportsSelector: aSelector [
+	^ #(address) includes: aSelector
+]
