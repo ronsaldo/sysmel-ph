@@ -29,6 +29,14 @@ SoNPhiCopyGraphNode >> destination: anObject [
 	destination addUser: self
 ]
 
+{ #category : 'as yet unclassified' }
+SoNPhiCopyGraphNode >> evaluateWithContext: evaluationContext [
+	| phiValue |
+	phiValue := evaluationContext getActivationValueForInstruction: value.
+	evaluationContext setValue: phiValue inIndex: destination index.
+	^ evaluationContext setValue: phiValue value andAdvancePC: 1
+]
+
 { #category : 'testing' }
 SoNPhiCopyGraphNode >> isPhiCopyGraphNode [
 	^ false

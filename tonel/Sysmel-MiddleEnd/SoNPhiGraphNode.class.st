@@ -9,6 +9,11 @@ Class {
 	#tag : 'SeaOfNodesGraph'
 }
 
+{ #category : 'as yet unclassified' }
+SoNPhiGraphNode >> evaluateWithContext: evaluationContext [
+	^ evaluationContext advancePC: 1
+]
+
 { #category : 'testing' }
 SoNPhiGraphNode >> isPhiGraphNode [
 	^ true

@@ -14,6 +14,11 @@ Class {
 	#tag : 'SeaOfNodesGraph'
 }
 
+{ #category : 'initialization' }
+SysmelEvaluationContext >> advancePC: advanceCount [
+	^ pc := pc + advanceCount
+]
+
 { #category : 'as yet unclassified' }
 SysmelEvaluationContext >> allocateActivationMemory [
 	activationMemory := Array new: instructions size.
@@ -49,6 +54,7 @@ SysmelEvaluationContext >> evaluateNodesValue: nodes [
 SysmelEvaluationContext >> getActivationValueForInstruction: anInstruction [
 	anInstruction isGlobalProgramEntity ifTrue: [ ^ anInstruction ].
 	anInstruction isLambdaNode ifTrue: [ ^ anInstruction ].
+	anInstruction isLiteralValueGraphNode ifTrue: [ ^ anInstruction value ].
 	^ activationMemory at: anInstruction index
 ]
 
@@ -119,4 +125,9 @@ SysmelEvaluationContext >> run [
 SysmelEvaluationContext >> setValue: value andAdvancePC: advanceCount [
 	activationMemory at: pc put: value.
 	^ pc := pc + advanceCount
+]
+
+{ #category : 'initialization' }
+SysmelEvaluationContext >> setValue: value inIndex: index [
+	activationMemory at: index put: value.
 ]
