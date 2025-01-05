@@ -1,0 +1,5 @@
+:!i := 0i32.
+while: (i < 10i32) do: {
+    Stdio stdout nextPutAll: i printString; nextPutAll: "\n".
+    i := i + 1i32
+ } continueWith: (i := i + 1i32)
