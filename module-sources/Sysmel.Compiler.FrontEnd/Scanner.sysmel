@@ -16,10 +16,13 @@ class: ScannerState with: #{
     || '_' = c.
 :isIdentifierMiddle(:(Character)c :: Boolean) := isIdentifierStart(c) || isDigit(c).
 
-##skipWhite(state).
+:skipWhite(:(ScannerState)state :: Void) := {
+
+    void
+}.
 
 :scanSingleToken(:(ScannerState)state :: Token) := {
-    ##:skipWhite(state).
+    skipWhite(state).
 
     Token()
 }.
@@ -37,6 +40,18 @@ public:(
         tokens
     }.
 
-)
+    :scanString(:(String)string :: OrderedCollection) := {
+        :sourceCode := SourceCode#{
+            directory: ".".
+            language: "sysmel".
+            name: "test".
+            text: string.
+        }.
+        scanSourceCode(sourceCode)
+    }.
+).
+
+Stdio stdout print: scanString("1 + 1"); lf.
 
 }.
+
