@@ -174,6 +174,11 @@ SysmelType >> isTupleType [
 ]
 
 { #category : 'testing' }
+SysmelType >> isTypeNode [
+	^ true
+]
+
+{ #category : 'testing' }
 SysmelType >> isValidSysmelType [
 	^ true
 ]

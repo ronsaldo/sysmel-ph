@@ -11,6 +11,11 @@ Class {
 	#tag : 'TypeSystem'
 }
 
+{ #category : 'converting' }
+SysmelStructType >> asReducedTypeExpression [
+	^ self
+]
+
 { #category : 'as yet unclassified' }
 SysmelStructType >> evaluateASGIn: sourcePosition [
 	^ self

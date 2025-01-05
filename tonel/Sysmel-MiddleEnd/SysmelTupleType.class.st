@@ -10,6 +10,14 @@ Class {
 }
 
 { #category : 'accessing' }
+SysmelTupleType >> defaultValue [
+	^ SysmelPrimitiveTupleTypeValue new
+		value: (elements collect: [:each | each defaultValue]);
+		primitiveType: self;
+		yourself
+]
+
+{ #category : 'accessing' }
 SysmelTupleType >> elements [
 
 	^ elements

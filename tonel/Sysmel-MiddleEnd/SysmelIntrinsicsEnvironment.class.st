@@ -48,7 +48,7 @@ SysmelIntrinsicsEnvironment >> importIntrinsicClasses [
 	ClassDescription . Class . Metaclass . MacroContext.
 	PrimitiveMacroMethod . PrimitiveMethod . Magnitude . Character.
 	Number . Integer . Float . Collection . SequenceableCollection.
-	ArrayedCollection . Array . ByteArray . String . Symbol . Stream.
+	ArrayedCollection .OrderedCollection. Array . ByteArray . String . Symbol . Stream.
 	BinaryFileStream . Stdio . TestCase} do: [ :eachClass |
 		self addSymbol: eachClass name valueBinding: eachClass
 	]

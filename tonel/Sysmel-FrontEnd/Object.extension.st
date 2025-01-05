@@ -12,6 +12,11 @@ Object >> computeResultTypeWithAnalyzedArguments: analyzedArguments [
 ]
 
 { #category : '*Sysmel-FrontEnd' }
+Object >> defaultValue [
+	^ nil
+]
+
+{ #category : '*Sysmel-FrontEnd' }
 Object >> isGradualType [
 	^ false
 ]

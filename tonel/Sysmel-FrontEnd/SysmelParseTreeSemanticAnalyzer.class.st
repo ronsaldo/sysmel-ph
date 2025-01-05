@@ -217,7 +217,9 @@ SysmelParseTreeSemanticAnalyzer >> visitAssignmentNode: node [
 			environment addSymbol: name valueBinding: alloca.				
 		] ifFalse: [ 
 			environment addSymbol: name valueBinding: analyzedValue.
-			analyzedValue exportableName: name
+			(analyzedValue class lookupSelector: #exportableName:) ifNotNil: [ 
+				analyzedValue exportableName: name
+			]
 		].
 		^ analyzedValue
 	].
