@@ -35,6 +35,7 @@ SysmelStructType >> fieldNames: anObject [
 
 { #category : 'initialization' }
 SysmelStructType >> initialize [
+	super initialize.
 	nameToIndexMap := Dictionary new.
 ]
 
