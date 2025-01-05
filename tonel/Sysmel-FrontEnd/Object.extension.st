@@ -11,6 +11,11 @@ Object >> isGradualType [
 ]
 
 { #category : '*Sysmel-FrontEnd' }
+Object >> isReferenceLikeType [
+	^ false
+]
+
+{ #category : '*Sysmel-FrontEnd' }
 Object >> isValidSysmelType [
 	^ false
 ]
