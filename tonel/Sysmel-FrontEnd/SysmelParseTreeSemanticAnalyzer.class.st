@@ -136,6 +136,15 @@ SysmelParseTreeSemanticAnalyzer >> visitApplicationNode: node [
 		macroResult := macro evaluateWithContext: macroContext andArguments: macroArguments.
 		^ self visitNode: macroResult
 	].
+
+	analyzedFunctional value isValidSysmelType ifTrue: [
+		^ self visitNode: (SysmelParseTreeInstantiateTypeNode new
+			sourcePosition: node sourcePosition;
+			type: analyzedFunctional value;
+			constructorValues: node arguments;
+			yourself
+		)
+	].
 	
 	analyzedArguments := node arguments collectWithIndex: [ :arg :index |
 		self visitNode: arg
@@ -478,6 +487,24 @@ SysmelParseTreeSemanticAnalyzer >> visitIfConditionNode: node [
 	] ifTrue: [
 		^ SoNLiteralValueGraphNode voidValue
 	]
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitInstantiateTypeNode: node [
+	| constructorArguments structOrTuple analyzedConstructorArguments |
+	node type isTupleType ifFalse: [ self error: 'Only structs and tuples are supported right now.' ].
+	constructorArguments := node constructorValues.
+	(constructorArguments size = 1 and: [ constructorArguments first isDictionaryNode ]) ifTrue: [ 
+	].
+
+	analyzedConstructorArguments := constructorArguments collect: [ :each | self visitNode: each ].
+	^ (node type isStructType
+		ifTrue: [ SoNStructGraphNode ]
+		ifFalse: [SoNTupleGraphNode] ) new
+		sourcePosition: node sourcePosition;
+		elements: analyzedConstructorArguments;
+		processConstructionElements;
+		type: node type.
 ]
 
 { #category : 'visiting' }
@@ -951,19 +978,63 @@ SysmelParseTreeSemanticAnalyzer >> visitSigmaNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitStructElements: dictionary [
+	| extractedElements |
+	self assert: dictionary isDictionaryNode.
+	extractedElements := OrderedCollection new.
+	
+	dictionary elements doWithIndex: [:association :index |
+		| elementName elementType |
+		elementName := self visitAndEvaluateSymbolValue: association key.
+		association value ifNil: [
+			elementType := SysmelTypeGradual uniqueInstance.
+		] ifNotNil: [
+			| visitedValue |
+			visitedValue := self visitNode: association value.
+			self assert: visitedValue isLiteralValueGraphNode.
+			elementType := visitedValue value.
+		].
+		
+		extractedElements add: elementName -> elementType
+	].
+	^ extractedElements
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitStructNode: node [
+	| parentNamespace parsedElement optionalSupertype structType |
+	parentNamespace := environment getNamespace.
+	optionalSupertype := node supertype ifNotNil: [(self visitTypeExpression: node supertype) value].
+	parsedElement := self visitStructElements: node elements.
+	self assert: node name isSymbol.
+	
+	structType := SysmelStructType new
+		optionalName: node name;
+		supertype: optionalSupertype;
+		namedElements: parsedElement;
+		yourself.
+	parentNamespace exportChild: structType withName: structType optionalName.
+	^SoNLiteralValueGraphNode new
+		sourcePosition: node sourcePosition;
+		value: structType;
+		type: (SysmelTypeUniverse withIndex: 0);
+		yourself
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitTupleNode: node [
 	| analyzedElements analyzedElementTypes tupleType |
 	analyzedElements := node elements collect: [ :each | self visitNodeWithValueDecay: each ].
 	analyzedElements size >= 1 ifTrue: [
 		(analyzedElements allSatisfy: [ :each | each isValidSysmelType ]) ifTrue: [
-			^ SysmelProductType new
+			^ SysmelTupleType new
 				sourcePosition: node sourcePosition;
 				elements: analyzedElements;
 				yourself
 		].
 	].
 	analyzedElementTypes := analyzedElements collect: [ :each | each type ].
-	tupleType := SysmelProductType new
+	tupleType := SysmelTupleType new
 			sourcePosition: node sourcePosition;
 			elements: analyzedElementTypes;
 			yourself.

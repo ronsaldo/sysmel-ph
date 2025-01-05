@@ -14,6 +14,11 @@ SysmelTypeGradual class >> uniqueInstance [
 	^ uniqueInstance ifNil: [ uniqueInstance := self new ]
 ]
 
+{ #category : 'accessing' }
+SysmelTypeGradual >> defaultValue [
+	^ nil
+]
+
 { #category : 'testing' }
 SysmelTypeGradual >> isGradualType [
 	^ true

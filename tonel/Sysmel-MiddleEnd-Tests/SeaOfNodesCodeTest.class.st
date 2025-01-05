@@ -92,6 +92,72 @@ SeaOfNodesCodeTest >> testPrimitiveIntegersArithmetic [
 ]
 
 { #category : 'tests' }
+SeaOfNodesCodeTest >> testStruct [
+	| seaOfNodes result |
+	seaOfNodes := self parseAndCompileString: 'struct: Pair with: #{
+		First: Int32.
+		Second: Int16
+	}.
+'.
+	result := seaOfNodes evaluateWithArguments: #().
+	self assert: result isStructType .
+	self assert: result fieldNames first equals: #First.
+	self assert: result fieldNames second equals: #Second.
+
+]
+
+{ #category : 'tests' }
+SeaOfNodesCodeTest >> testStructInstance [
+	| seaOfNodes result |
+	seaOfNodes := self parseAndCompileString: 'struct: Pair with: #{
+		First: Int32.
+		Second: Int16
+	}.
+	
+	Pair()
+'.
+	result := seaOfNodes evaluateWithArguments: #().
+	self assert: result isTuplePrimitiveTypeValue .
+	self assert: result value first equals: 0i32.
+	self assert: result value second equals: 0i16.
+
+]
+
+{ #category : 'tests' }
+SeaOfNodesCodeTest >> testStructInstance2 [
+	| seaOfNodes result |
+	seaOfNodes := self parseAndCompileString: 'struct: Pair with: #{
+		First: Int32.
+		Second: Int16
+	}.
+	
+	Pair(1i32 . 2i16)
+'.
+	result := seaOfNodes evaluateWithArguments: #().
+	self assert: result isTuplePrimitiveTypeValue .
+	self assert: result value first equals: 1i32.
+	self assert: result value second equals: 2i16.
+
+]
+
+{ #category : 'tests' }
+SeaOfNodesCodeTest >> testStructInstance3 [
+	| seaOfNodes result |
+	seaOfNodes := self parseAndCompileString: 'struct: Pair with: #{
+		First: Int32.
+		Second: Int16
+	}.
+	
+	Pair#{First: 1i32. Second: 2i16}
+'.
+	result := seaOfNodes evaluateWithArguments: #().
+	self assert: result isStructType .
+	self assert: result elements first equals: 0i32.
+	self assert: result elements second equals: 0i16.
+
+]
+
+{ #category : 'tests' }
 SeaOfNodesCodeTest >> testWhileDo [
 	| seaOfNodes result |
 	seaOfNodes := self parseAndCompileString: ':!i := 0. while: (i < 10) do: { i := i + 1 }. i'.

@@ -12,7 +12,7 @@ Class {
 
 { #category : 'as yet unclassified' }
 SysmelProgramEntity >> addUser: anUserInstruction [
-	(userSet includes: [anUserInstruction]) ifFalse: [ 
+	(userSet includes: anUserInstruction) ifFalse: [ 
 		users add: anUserInstruction.
 		userSet add: anUserInstruction
 	]

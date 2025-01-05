@@ -36,3 +36,8 @@ SysmelTypeUniverse >> index: anObject [
 
 	index := anObject
 ]
+
+{ #category : 'accessing' }
+SysmelTypeUniverse >> type [
+	^ self class withIndex: index + 1
+]

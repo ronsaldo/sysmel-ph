@@ -27,6 +27,11 @@ SysmelPrimitiveTypeValue >> isNamespace [
 	^ false
 ]
 
+{ #category : 'testing' }
+SysmelPrimitiveTypeValue >> isPrimitiveTypeValue [
+	^ true
+]
+
 { #category : 'accessing' }
 SysmelPrimitiveTypeValue >> primitiveType [
 
@@ -37,12 +42,6 @@ SysmelPrimitiveTypeValue >> primitiveType [
 SysmelPrimitiveTypeValue >> primitiveType: anObject [
 
 	primitiveType := anObject
-]
-
-{ #category : 'printing' }
-SysmelPrimitiveTypeValue >> printOn: aStream [
-	value printOn: aStream.
-	aStream nextPutAll: primitiveType literalSuffix
 ]
 
 { #category : 'accessing' }

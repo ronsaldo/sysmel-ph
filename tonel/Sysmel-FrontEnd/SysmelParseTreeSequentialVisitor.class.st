@@ -85,6 +85,12 @@ SysmelParseTreeSequentialVisitor >> visitIfConditionNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeSequentialVisitor >> visitInstantiateTypeNode: node [
+	self visitNode: node type.
+	self visitNodes: node fieldValues.
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSequentialVisitor >> visitLambdaNode: node [
 	self halt
 ]
@@ -194,6 +200,12 @@ SysmelParseTreeSequentialVisitor >> visitSigmaNode: node [
 { #category : 'visiting' }
 SysmelParseTreeSequentialVisitor >> visitSpliceNode: node [
 	self visitNode: node term
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSequentialVisitor >> visitStructNode: node [
+	self visitOptionalNode: node supertype.
+	self visitNode: node elements.
 ]
 
 { #category : 'visiting' }

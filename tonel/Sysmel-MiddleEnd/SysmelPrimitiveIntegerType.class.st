@@ -5,3 +5,8 @@ Class {
 	#package : 'Sysmel-MiddleEnd',
 	#tag : 'TypeSystem'
 }
+
+{ #category : 'accessing' }
+SysmelPrimitiveIntegerType >> defaultValue [
+	^ self fromInteger: 0
+]

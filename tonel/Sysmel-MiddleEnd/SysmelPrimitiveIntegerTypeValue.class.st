@@ -71,3 +71,9 @@ SysmelPrimitiveIntegerTypeValue >> increment [
 		primitiveType: primitiveType;
 		yourself
 ]
+
+{ #category : 'printing' }
+SysmelPrimitiveIntegerTypeValue >> printOn: aStream [
+	value printOn: aStream.
+	aStream nextPutAll: primitiveType literalSuffix
+]

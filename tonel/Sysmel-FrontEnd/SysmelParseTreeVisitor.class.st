@@ -75,6 +75,11 @@ SysmelParseTreeVisitor >> visitIfConditionNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeVisitor >> visitInstantiateTypeNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeVisitor >> visitLambdaNode: node [
 	self subclassResponsibility
 ]
@@ -191,6 +196,11 @@ SysmelParseTreeVisitor >> visitSigmaNode: node [
 
 { #category : 'visiting' }
 SysmelParseTreeVisitor >> visitSpliceNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeVisitor >> visitStructNode: node [
 	self subclassResponsibility
 ]
 

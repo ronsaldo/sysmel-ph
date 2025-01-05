@@ -88,6 +88,11 @@ SysmelParseTreeNode >> isIfConditionNode [
 ]
 
 { #category : 'testing' }
+SysmelParseTreeNode >> isInstantiateTypeNode [
+	^ false
+]
+
+{ #category : 'testing' }
 SysmelParseTreeNode >> isLambdaNode [
 	^ false
 ]
@@ -195,6 +200,11 @@ SysmelParseTreeNode >> isSigmaNode [
 { #category : 'testing' }
 SysmelParseTreeNode >> isSpliceNode [
 	^ false
+]
+
+{ #category : 'testing' }
+SysmelParseTreeNode >> isStructNode [
+	^ true
 ]
 
 { #category : 'testing' }

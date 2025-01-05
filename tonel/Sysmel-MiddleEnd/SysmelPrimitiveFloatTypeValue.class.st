@@ -10,3 +10,9 @@ Class {
 SysmelPrimitiveFloatTypeValue >> asFloat [
 	^ value asFloat
 ]
+
+{ #category : 'printing' }
+SysmelPrimitiveFloatTypeValue >> printOn: aStream [
+	value printOn: aStream.
+	aStream nextPutAll: primitiveType literalSuffix
+]

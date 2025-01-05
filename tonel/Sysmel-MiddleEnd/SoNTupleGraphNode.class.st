@@ -40,6 +40,11 @@ SoNTupleGraphNode >> isTupleGraphNode [
 	^ true
 ]
 
+{ #category : 'as yet unclassified' }
+SoNTupleGraphNode >> processConstructionElements [
+	"Nothing is required here."
+]
+
 { #category : 'accessing' }
 SoNTupleGraphNode >> type [
 	^ type

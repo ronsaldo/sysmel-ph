@@ -17,6 +17,7 @@ SysmelIntrinsicsEnvironment >> buildIntrinsicSymbols [
 	self primitiveTypes.
 	self namespaceMacro.
 	self enumMacro.
+	self structMacro.
 	self sourceFileMacros.
 ]
 
@@ -180,4 +181,41 @@ SysmelIntrinsicsEnvironment >> sourceFileMacros [
 				elements: #();
 				yourself 
 		].
+]
+
+{ #category : 'as yet unclassified' }
+SysmelIntrinsicsEnvironment >> structMacro [
+	self addPrimitiveGlobalMacro: #struct:with:
+		type: (SysmelSimpleFunctionType withArguments: 
+		{ #context -> MacroContext .
+		  #name -> SysmelParseTreeNode .
+			#body -> SysmelParseTreeNode} resultType: SysmelParseTreeNode)
+		implementation: [ :macroContext :nameExpression :elements | 
+			| names name |
+			names := nameExpression asChainOfUnaryIdentifiers.
+			names size ~= 1 ifTrue: [ self error: 'Structs only admit a single token for its name.' ].
+			name := names first.
+			SysmelParseTreeStructNode new
+				sourcePosition: macroContext sourcePosition;
+				name: name;
+				elements: elements;
+				yourself
+			].
+	self addPrimitiveGlobalMacro: #struct:supertype:with:
+		type: (SysmelSimpleFunctionType withArguments: 
+		{ #context -> MacroContext .
+		  #name -> SysmelParseTreeNode .
+			#body -> SysmelParseTreeNode} resultType: SysmelParseTreeNode)
+		implementation: [ :macroContext :nameExpression :supertype :elements | 
+			| names name |
+			names := nameExpression asChainOfUnaryIdentifiers.
+			names size ~= 1 ifTrue: [ self error: 'Structs only admit a single token for its name.' ].
+			name := names first.
+			SysmelParseTreeStructNode new
+				sourcePosition: macroContext sourcePosition;
+				name: name;
+				supertype: supertype;
+				elements: elements;
+				yourself
+			].
 ]

@@ -143,6 +143,11 @@ SysmelType >> asDecayedSysmelType [
 	^ self
 ]
 
+{ #category : 'accessing' }
+SysmelType >> defaultValue [
+	^ self subclassResponsibility
+]
+
 { #category : 'testing' }
 SysmelType >> isGradualType [
 	^ false
@@ -155,6 +160,16 @@ SysmelType >> isPointerLikeType [
 
 { #category : 'testing' }
 SysmelType >> isReferenceLikeType [
+	^ false
+]
+
+{ #category : 'testing' }
+SysmelType >> isStructType [
+	^ false
+]
+
+{ #category : 'testing' }
+SysmelType >> isTupleType [
 	^ false
 ]
 
@@ -206,4 +221,9 @@ SysmelType >> sourcePosition [
 SysmelType >> sourcePosition: anObject [
 
 	sourcePosition := anObject
+]
+
+{ #category : 'accessing' }
+SysmelType >> type [
+	^ SysmelTypeUniverse withIndex: 0
 ]
