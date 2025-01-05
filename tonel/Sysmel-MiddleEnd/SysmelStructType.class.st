@@ -39,6 +39,11 @@ SysmelStructType >> isStructType [
 ]
 
 { #category : 'as yet unclassified' }
+SysmelStructType >> nameToIndex: aName [
+	^ nameToIndexMap at: aName ifAbsent: [ supertype nameToIndex: aName ]
+]
+
+{ #category : 'as yet unclassified' }
 SysmelStructType >> namedElements: aListWithAssociations [
 
 	fieldNames := aListWithAssociations collectWithIndex: [ :each :index |

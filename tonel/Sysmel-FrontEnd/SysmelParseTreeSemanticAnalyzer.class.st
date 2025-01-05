@@ -491,20 +491,20 @@ SysmelParseTreeSemanticAnalyzer >> visitIfConditionNode: node [
 
 { #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitInstantiateTypeNode: node [
-	| constructorArguments structOrTuple analyzedConstructorArguments |
+	| constructorArguments structOrTuple analyzedConstructorArguments hasDictionaryConstruction |
 	node type isTupleType ifFalse: [ self error: 'Only structs and tuples are supported right now.' ].
 	constructorArguments := node constructorValues.
-	(constructorArguments size = 1 and: [ constructorArguments first isDictionaryNode ]) ifTrue: [ 
-	].
-
+	hasDictionaryConstruction := (constructorArguments size = 1 and: [ constructorArguments first isDictionaryNode ]).
 	analyzedConstructorArguments := constructorArguments collect: [ :each | self visitNode: each ].
+
 	^ (node type isStructType
 		ifTrue: [ SoNStructGraphNode ]
 		ifFalse: [SoNTupleGraphNode] ) new
 		sourcePosition: node sourcePosition;
+		type: node type;
 		elements: analyzedConstructorArguments;
-		processConstructionElements;
-		type: node type.
+		hasDictionaryAsInput: hasDictionaryConstruction;
+		yourself
 ]
 
 { #category : 'visiting' }

@@ -36,6 +36,11 @@ SoNTupleGraphNode >> evaluateWithContext: evaluationContext [
 ]
 
 { #category : 'testing' }
+SoNTupleGraphNode >> hasDictionaryAsInput: aBoolean [
+	"Do nothing here."
+]
+
+{ #category : 'testing' }
 SoNTupleGraphNode >> isTupleGraphNode [
 	^ true
 ]
