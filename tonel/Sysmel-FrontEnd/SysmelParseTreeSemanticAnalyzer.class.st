@@ -283,6 +283,51 @@ SysmelParseTreeSemanticAnalyzer >> visitDictionaryNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitEnumElements: dictionary withBaseType: baseType [
+	| extractedElements nextElementValue |
+	self assert: dictionary isDictionaryNode.
+	extractedElements := OrderedCollection new.
+	nextElementValue := baseType zero.
+	dictionary elements doWithIndex: [:association :index |
+		| elementName elementValue |
+		elementName := self visitAndEvaluateSymbolValue: association key.
+		association value ifNil: [
+			elementValue := nextElementValue.
+		] ifNotNil: [
+			| visitedValue |
+			visitedValue := self visitNode: association value.
+			self assert: visitedValue isLiteralValueGraphNode.
+			elementValue := visitedValue value.
+		].
+		
+		nextElementValue := elementValue increment.
+		extractedElements add: elementName -> elementValue
+	].
+	^ extractedElements
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitEnumNode: node [
+	| parentNamespace baseType parsedElement enumType |
+	parentNamespace := environment getNamespace.
+	baseType := (self visitTypeExpression: node baseType) value.
+	parsedElement := self visitEnumElements: node elements withBaseType: baseType.
+	self assert: node name isSymbol.
+	
+	enumType := SysmelEnumType new
+		optionalName: node name;
+		baseType: baseType;
+		elements: parsedElement;
+		yourself.
+	parentNamespace exportChild: enumType withName: enumType optionalName.
+	^SoNLiteralValueGraphNode new
+		sourcePosition: node sourcePosition;
+		value: enumType;
+		type: (SysmelTypeUniverse withIndex: 0);
+		yourself
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitFunctionNode: functionNode [
 	| functionalType lambda lambdaAnalyzed |
 	functionalType	:= self visitNodeForMacroExpansionOnly: functionNode functionalType.
@@ -673,11 +718,18 @@ SysmelParseTreeSemanticAnalyzer >> visitMessageSendNode: node [
 			receiver := loadedReceiver
 		]
 	].
-	receiver isNamespace ifTrue: [
+	receiver isNamespaceLike ifTrue: [
 		| namespaceChild |
 		namespaceChild := receiver lookChildNamed: selector.
 		namespaceChild ifNil: [
-			self error: ('Failed to find {1} in namespace {2} ' format: {selector, receiver name})
+			self error: ('Failed to find {1} in namespace-like {2} ' format: {selector, receiver name})
+		].
+		namespaceChild isNamespace ifFalse: [
+			^ SoNLiteralValueGraphNode new
+				sourcePosition: node sourcePosition;
+				value: namespaceChild;
+				type: namespaceChild type;
+				yourself
 		].
 		^ namespaceChild
 	].

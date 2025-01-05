@@ -50,6 +50,11 @@ SysmelNamespace >> isNamespace [
 	^ true
 ]
 
+{ #category : 'testing' }
+SysmelNamespace >> isNamespaceLike [
+	^ true
+]
+
 { #category : 'as yet unclassified' }
 SysmelNamespace >> lookChildNamed: childName [
 	^ childrenNamespacesMap at: childName

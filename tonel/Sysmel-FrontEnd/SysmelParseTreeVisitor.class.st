@@ -50,6 +50,11 @@ SysmelParseTreeVisitor >> visitDictionaryNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeVisitor >> visitEnumNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeVisitor >> visitFunctionNode: node [
 	self subclassResponsibility
 ]

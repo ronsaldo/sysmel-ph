@@ -36,6 +36,21 @@ SeaOfNodesCodeTest >> testEmpty [
 ]
 
 { #category : 'tests' }
+SeaOfNodesCodeTest >> testEnum [
+	| seaOfNodes result |
+	seaOfNodes := self parseAndCompileString: 'enum: MyEnum type: UInt32 with:  #{
+    First: 1u32.
+    Second:.
+    Third:.
+}.
+	MyEnum Second
+'.
+	result := seaOfNodes evaluateWithArguments: #().
+	self assert: result value equals: 2.
+
+]
+
+{ #category : 'tests' }
 SeaOfNodesCodeTest >> testFactorial [
 	| seaOfNodes factorialFunction factorialResult |
 	seaOfNodes := self parseAndCompileString: ':factorial(:(Integer)n :: Integer) := {

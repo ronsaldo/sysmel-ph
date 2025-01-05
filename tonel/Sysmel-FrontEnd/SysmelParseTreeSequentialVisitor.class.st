@@ -53,6 +53,12 @@ SysmelParseTreeSequentialVisitor >> visitDictionaryNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeSequentialVisitor >> visitEnumNode: node [
+	self visitNode: node baseType.
+	self visitNode: node elements.
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSequentialVisitor >> visitFunctionNode: node [
 	self visitOptionalNode: node nameExpression.
 	self visitNode: node functionalType.

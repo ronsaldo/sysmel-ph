@@ -56,6 +56,11 @@ SysmelPrimitiveType >> normalizeInteger: integer [
 	^ integer bitAnd: (1<<(size * 8)) - 1
 ]
 
+{ #category : 'instance creation' }
+SysmelPrimitiveType >> one [
+	^ self fromInteger: 1
+]
+
 { #category : 'accessing' }
 SysmelPrimitiveType >> size [
 
@@ -66,4 +71,9 @@ SysmelPrimitiveType >> size [
 SysmelPrimitiveType >> size: anObject [
 
 	size := anObject
+]
+
+{ #category : 'instance creation' }
+SysmelPrimitiveType >> zero [
+	^ self fromInteger: 0
 ]

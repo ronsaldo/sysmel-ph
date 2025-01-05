@@ -62,3 +62,12 @@ SysmelPrimitiveIntegerTypeValue >> >= operand [
 SysmelPrimitiveIntegerTypeValue >> asInteger [
 	^ value asInteger
 ]
+
+{ #category : 'accessing' }
+SysmelPrimitiveIntegerTypeValue >> increment [
+	^ self class new
+		sourcePosition: sourcePosition;
+		value: value + 1;
+		primitiveType: primitiveType;
+		yourself
+]

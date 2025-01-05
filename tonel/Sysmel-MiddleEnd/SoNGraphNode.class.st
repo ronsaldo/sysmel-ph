@@ -127,6 +127,11 @@ SoNGraphNode >> isNamespace [
 ]
 
 { #category : 'testing' }
+SoNGraphNode >> isNamespaceLike [
+	^ false
+]
+
+{ #category : 'testing' }
 SoNGraphNode >> isPhiCopyGraphNode [
 	^ false
 ]

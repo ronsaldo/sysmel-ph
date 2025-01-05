@@ -16,7 +16,29 @@ SysmelIntrinsicsEnvironment >> buildIntrinsicSymbols [
 	self primitiveGlobalMacros.
 	self primitiveTypes.
 	self namespaceMacro.
+	self enumMacro.
 	self sourceFileMacros.
+]
+
+{ #category : 'as yet unclassified' }
+SysmelIntrinsicsEnvironment >> enumMacro [
+	self addPrimitiveGlobalMacro: #enum:type:with:
+		type: (SysmelSimpleFunctionType withArguments: 
+		{ #context -> MacroContext .
+		  #name -> SysmelParseTreeNode .
+			#body -> SysmelParseTreeNode} resultType: SysmelParseTreeNode)
+		implementation: [ :macroContext :nameExpression :baseType :elements | 
+			| names name |
+			names := nameExpression asChainOfUnaryIdentifiers.
+			names size ~= 1 ifTrue: [ self error: 'Enums only admit a single token for its name.' ].
+			name := names first.
+			SysmelParseTreeEnumNode new
+				sourcePosition: macroContext sourcePosition;
+				name: name;
+				baseType: baseType;
+				elements: elements;
+				yourself
+			].
 ]
 
 { #category : 'as yet unclassified' }

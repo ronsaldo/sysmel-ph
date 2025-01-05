@@ -22,6 +22,11 @@ SysmelPrimitiveTypeValue >> asSysmelType [
 	^ primitiveType
 ]
 
+{ #category : 'testing' }
+SysmelPrimitiveTypeValue >> isNamespace [
+	^ false
+]
+
 { #category : 'accessing' }
 SysmelPrimitiveTypeValue >> primitiveType [
 
@@ -50,6 +55,11 @@ SysmelPrimitiveTypeValue >> sourcePosition [
 SysmelPrimitiveTypeValue >> sourcePosition: anObject [
 
 	sourcePosition := anObject
+]
+
+{ #category : 'accessing' }
+SysmelPrimitiveTypeValue >> type [
+	^ primitiveType
 ]
 
 { #category : 'accessing' }
