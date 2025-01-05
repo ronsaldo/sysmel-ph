@@ -54,6 +54,10 @@ SeaOfNodesCodeTest >> testIfThenElse [
 	seaOfNodes := self parseAndCompileString: 'if: true then: 1u32 else: 0u32'.
 	result := seaOfNodes evaluateWithArguments: #().
 	self assert: result equals: 1u32.
+	
+	seaOfNodes := self parseAndCompileString: 'if: false then: 1u32 else: 0u32'.
+	result := seaOfNodes evaluateWithArguments: #().
+	self assert: result equals: 0u32.
 ]
 
 { #category : 'tests' }

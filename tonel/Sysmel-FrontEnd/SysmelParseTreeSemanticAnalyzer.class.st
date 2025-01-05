@@ -74,7 +74,7 @@ SysmelParseTreeSemanticAnalyzer >> coerceNode: aNode into: targetType [
 
 { #category : 'as yet unclassified' }
 SysmelParseTreeSemanticAnalyzer >> computeMergeTypeFor: trueResultType and: falseResultType [
-	trueResultType = falseResultType ifTrue: [ trueResultType ].
+	trueResultType = falseResultType ifTrue: [ ^ trueResultType ].
 	(trueResultType isGradualType or: [ falseResultType isGradualType ])
 		ifTrue: [ ^ SysmelTypeGradual uniqueInstance ].
 	^ SysmelVoidType
@@ -401,7 +401,6 @@ SysmelParseTreeSemanticAnalyzer >> visitIfConditionNode: node [
 	trueResultType := trueResult type asDecayedSysmelType .
 	falseResultType := falseResult type asDecayedSysmelType .
 	mergeResultType := self computeMergeTypeFor: trueResultType and: falseResultType.
-
 	mergeResultType isVoidType ifFalse: [
 		mergePhi := SoNPhiGraphNode new
 							sourcePosition: node sourcePosition;

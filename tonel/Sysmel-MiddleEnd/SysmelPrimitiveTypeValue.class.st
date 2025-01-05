@@ -11,6 +11,12 @@ Class {
 	#tag : 'TypeSystem'
 }
 
+{ #category : 'comparing' }
+SysmelPrimitiveTypeValue >> = other [
+	self class == other class ifFalse: [ ^ false ].
+	^ value = other value. 
+]
+
 { #category : 'converting' }
 SysmelPrimitiveTypeValue >> asSysmelType [
 	^ primitiveType
