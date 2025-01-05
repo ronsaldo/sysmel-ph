@@ -1,13 +1,13 @@
 namespace: Sysmel Compiler FrontEnd definition: {
 
-struct: SourceCode with: #{
+class: SourceCode with: #{
     directory: String.
     language: Symbol.
     name: String.
     text: String.
 }.
 
-struct: SourcePosition with: #{
+class: SourcePosition with: #{
     sourceCode: SourceCode.
     startIndex: Int32.
     endIndex: Int32.

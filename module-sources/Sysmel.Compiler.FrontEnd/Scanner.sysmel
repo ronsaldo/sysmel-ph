@@ -1,11 +1,33 @@
 namespace: Sysmel Compiler FrontEnd definition: {
 
-struct: ScannerState with: #{
+class: ScannerState with: #{
     sourceCode: SourceCode.
     position: Int32.
     line: Int32.
     column: Int32.
     isPreviousCR: Boolean.
 }.
+
+:isDigit(:(Character)c :: Boolean) := ('0' <= c) && (c <= '9').
+:isE(:(Character)c :: Boolean) := ('e' = c) || ('E' = c).
+:isIdentifierStart(:(Character)c :: Boolean) := 
+       (('a' <= c) && (c <= 'z'))
+    || (('A' <= c) && (c <= 'Z'))
+    || '_' = c.
+:isIdentifierMiddle(:(Character)c :: Boolean) := isIdentifierStart(c) || isDigit(c).
+
+public:(
+    :scanSourceCode(:(SourceCode)sourceCode :: OrderedCollection) := {
+        :tokens := OrderedCollection new.
+        :state := ScannerState#{
+            sourceCode: sourceCode.
+            position: 0i32.
+            line: 1i32.
+            column: 1i32.
+            isPreviousCR: false.
+        }.
+        tokens
+    }
+)
 
 }.
