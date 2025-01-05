@@ -16,6 +16,14 @@ class: ScannerState with: #{
     || '_' = c.
 :isIdentifierMiddle(:(Character)c :: Boolean) := isIdentifierStart(c) || isDigit(c).
 
+##skipWhite(state).
+
+:scanSingleToken(:(ScannerState)state :: Token) := {
+    ##:skipWhite(state).
+
+    Token()
+}.
+
 public:(
     :scanSourceCode(:(SourceCode)sourceCode :: OrderedCollection) := {
         :tokens := OrderedCollection new.
@@ -27,7 +35,8 @@ public:(
             isPreviousCR: false.
         }.
         tokens
-    }
+    }.
+
 )
 
 }.

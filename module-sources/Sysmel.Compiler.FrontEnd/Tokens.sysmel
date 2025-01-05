@@ -15,7 +15,7 @@ namespace: Sysmel Compiler FrontEnd definition: {
 }.
 
 struct: Token with: #{
-    ##position: SourcePosition.
+    position: SourcePosition.
     kind: TokenKind.
     errorMessage: String
 }.
