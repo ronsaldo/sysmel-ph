@@ -16,7 +16,19 @@ class: ScannerState with: #{
     || '_' = c.
 :isIdentifierMiddle(:(Character)c :: Boolean) := isIdentifierStart(c) || isDigit(c).
 
+:peek(:(ScannerState)state, :(Int32)offset :: Character) := {
+    :peekPosition := state position + offset.
+
+}.
+
+:advance(:(ScannerState)state :: Void) := {
+    
+}.
+
 :skipWhite(:(ScannerState)state :: Void) := {
+    while: (peek(state, 1) <= ' ') do: {
+        advance(state)
+    }.
 
     void
 }.
