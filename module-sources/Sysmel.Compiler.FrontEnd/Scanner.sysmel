@@ -1,5 +1,11 @@
 namespace: Sysmel Compiler FrontEnd definition: {
-    ##Sysmel Compiler FrontEnd TokenKind EndOfSource
-    Stdio stdout print: TokenKind Character; lf.
-    ##Sysmel Compiler
+
+struct: ScannerState with: #{
+    sourceCode: SourceCode.
+    position: Int32.
+    line: Int32.
+    column: Int32.
+    isPreviousCR: Boolean.
+}.
+
 }.

@@ -1,5 +1,6 @@
 namespace: Sysmel Compiler FrontEnd definition: {
-    enum: TokenKind type: Int32 with: #{
+    enum: TokenKind type: Int32 with: 
+#{
     EndOfSource:. Error:.
 
     Character:. Float:. Identifier:. Nat:. Keyword:.
@@ -11,6 +12,12 @@ namespace: Sysmel Compiler FrontEnd definition: {
     Dot:. Ellipsis:. BindOperator:. Quote:. QuasiQuote:. QuasiUnquote:. Splice:.
 
     ByteArrayStart:. DictionaryStart:. LiteralArrayStart:.
+}.
+
+struct: Token with: #{
+    ##position: SourcePosition.
+    kind: TokenKind.
+    errorMessage: String
 }.
 
 }. ## End of namespace Sysmel Compiler FrontEnd

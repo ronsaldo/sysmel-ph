@@ -1,0 +1,20 @@
+namespace: Sysmel Compiler FrontEnd definition: {
+
+struct: SourceCode with: #{
+    directory: String.
+    language: Symbol.
+    name: String.
+    text: String.
+}.
+
+struct: SourcePosition with: #{
+    sourceCode: SourceCode.
+    startIndex: Int32.
+    endIndex: Int32.
+    startLine: Int32.
+    endLine: Int32.
+    startColumn: Int32.
+    endColumn: Int32.
+}.
+
+}. ## End of namespace Sysmel Compiler FrontEnd
