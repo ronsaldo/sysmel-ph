@@ -19,7 +19,6 @@ SoNReturnNode >> dataDependenciesDo: aBlock [
 SoNReturnNode >> evaluateWithContext: evaluationContext [
 	| resultValue |
 	resultValue := evaluationContext evaluateNodeValue: value.
-	
 	^ evaluationContext returnValue: resultValue
 ]
 

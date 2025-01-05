@@ -11,6 +11,11 @@ Class {
 	#tag : 'SeaOfNodesGraph'
 }
 
+{ #category : 'converting' }
+SoNAllocaGraphNode >> asAllocaBoxOrPointer [
+	^ self
+]
+
 { #category : 'as yet unclassified' }
 SoNAllocaGraphNode >> evaluateWithContext: evaluationContext [
 	| allocaBox |

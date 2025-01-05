@@ -17,7 +17,7 @@ SoNLoadValueGraphNode >> dataDependenciesDo: aBlock [
 { #category : 'as yet unclassified' }
 SoNLoadValueGraphNode >> evaluateWithContext: evaluationContext [
 	| allocaBox |
-	allocaBox := evaluationContext getActivationValueForInstruction: pointer.
+	allocaBox := evaluationContext getActivationValueForInstruction: pointer asAllocaBoxOrPointer.
 	^ evaluationContext setValue: allocaBox value andAdvancePC: 1
 ]
 

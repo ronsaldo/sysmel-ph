@@ -12,6 +12,12 @@ Class {
 }
 
 { #category : 'converting' }
+SoNGraphNode >> asAllocaBoxOrPointer [
+	self type isPointerLikeType ifTrue: [ ^ self  ].
+	^ self error: 'Unexpected'
+]
+
+{ #category : 'converting' }
 SoNGraphNode >> asConstantValueForPureEvaluation [
 	^ self error: 'Not a constant value.'
 ]

@@ -11,6 +11,12 @@ Class {
 }
 
 { #category : 'as yet unclassified' }
+SoNSequencingGraphNode >> asAllocaBoxOrPointer [
+	elements last isAllocaGraphNode ifTrue: [ ^ elements last ].
+	^ super asAllocaBoxOrPointer
+]
+
+{ #category : 'as yet unclassified' }
 SoNSequencingGraphNode >> dataDependenciesDo: aBlock [
 	elements do: aBlock
 ]
