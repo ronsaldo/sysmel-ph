@@ -1,0 +1,5 @@
+namespace: Sysmel Compiler FrontEnd definition: {
+    ##Sysmel Compiler FrontEnd TokenKind EndOfSource
+    Stdio stdout print: TokenKind EndOfSource; lf.
+    ##Sysmel Compiler
+}.
