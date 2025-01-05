@@ -14,7 +14,7 @@ Class {
 { #category : 'as yet unclassified' }
 SoNAssociationGraphNode >> dataDependenciesDo: aBlock [
 	aBlock value: key.
-	value ifNotNil: [ aBlock value: key ]
+	value ifNotNil: [ aBlock value: value ]
 ]
 
 { #category : 'testing' }

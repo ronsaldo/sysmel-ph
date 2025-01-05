@@ -381,10 +381,15 @@ SysmelParser >> parseDictionaryAssociation: state [
 	value := nil.
 
 	(state peekKind = SSTKeyword or: [state peekKind = SSTMultiKeyword ] ) ifTrue: [
+		| symbolValue|
 		keyToken := state next.
+		symbolValue := keyToken kind = SSTKeyword
+			ifTrue: [ keyToken getTextValue allButLast asSymbol ]
+			ifFalse: [ keyToken getTextValue asSymbol ].
+		
 		key := SysmelParseTreeLiteralSymbolNode new
 			sourcePosition: keyToken sourcePosition;
-			value: keyToken getTextValue asSymbol;
+			value: symbolValue;
 			yourself.
 			
 		(state peekKind ~= SSTDot and: [ state peekKind ~= SSTRightCurlyBracket ]) ifTrue: [

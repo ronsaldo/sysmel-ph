@@ -6,6 +6,12 @@ Object >> asSysmelType [
 ]
 
 { #category : '*Sysmel-FrontEnd' }
+Object >> computeResultTypeWithAnalyzedArguments: analyzedArguments [
+	^ SysmelTypeGradual uniqueInstance
+
+]
+
+{ #category : '*Sysmel-FrontEnd' }
 Object >> isGradualType [
 	^ false
 ]
@@ -17,5 +23,10 @@ Object >> isReferenceLikeType [
 
 { #category : '*Sysmel-FrontEnd' }
 Object >> isValidSysmelType [
+	^ false
+]
+
+{ #category : '*Sysmel-FrontEnd' }
+Object >> isVoidType [
 	^ false
 ]

@@ -60,209 +60,301 @@ SysmelParseTreeSemanticAnalyzerTest >> testApplication [
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testAssignment [ 
-	| asg region seaOfNodes |
+	| instructions region seaOfNodes |
 	seaOfNodes := self parseAndAnalyse: ':!x := 42. x := 5'.
 	region := seaOfNodes startingRegion.
-	asg := region instructions first.
+	instructions := region instructions.
 	
-	self assert: asg isSequencingGraphNode.
-	self assert: asg elements size equals: 2.
-	self assert: asg elements first isLiteralValueGraphNode.
-	self assert: asg elements first value equals: 42.
+	self assert: instructions first isAllocaGraphNode.
+	self assert: instructions second isStoreValueGraphNode.
+	self assert: instructions third isStoreValueGraphNode.
+	self assert: instructions fourth isSequencingGraphNode.
 
-	self assert: asg elements second isLiteralValueGraphNode.
-	self assert: asg elements second value equals: 5.
 ]
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testAssociation [ 
-	| asg |
+	| asg instructions |
 	asg := self parseAndAnalyse: '1 : 2'.
+	instructions := asg scheduleInstructions enumeratedInstructions.
 	
-	self assert: asg isAssociationGraphNode.
-	self assert: asg key isLiteralValueGraphNode.
-	self assert: asg key value equals: 1.
+	self assert: instructions first isLiteralValueGraphNode.
+	self assert: instructions first value equals: 1.
 
-	self assert: asg value isLiteralValueGraphNode.
-	self assert: asg value value equals: 2.
+	self assert: instructions second isLiteralValueGraphNode.
+	self assert: instructions second value equals: 2.
+
+	self assert: instructions third isAssociationGraphNode.
+	self assert: instructions third key equals: instructions first.
+	self assert: instructions third value equals: instructions second.
+	
 ]
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testBinaryExpressionSequence [
-	| asg |
+	| asg instructions |
 	asg := self parseAndAnalyse: '1+2'.
-	self assert: asg isSendMessageGraphNode.
-	self assert: asg receiver value equals: 1.
-	self assert: asg selector value equals: #+.
-	self assert: asg arguments first value equals: 2
+	instructions := asg scheduleInstructions enumeratedInstructions.
+
+	self assert: instructions first isLiteralValueGraphNode.
+	self assert: instructions first value equals: 1.
+
+	self assert: instructions second isLiteralValueGraphNode.
+	self assert: instructions second value equals: #+.
+
+	self assert: instructions third isLiteralValueGraphNode.
+	self assert: instructions third value equals: 2.
+
+	self assert: instructions fourth isSendMessageGraphNode.
+	self assert: instructions fourth receiver equals: instructions first.
+	self assert: instructions fourth selector equals: instructions second.
+	self assert: instructions fourth arguments equals: {instructions third}.
+
 ]
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testBindableAssignment [ 
-	| asg |
+	| asg instructions |
 	asg := self parseAndAnalyse: ':x := 42'.
-	self assert: asg isLiteralValueGraphNode.
-	self assert: asg value equals: 42.
-	self assert: asg type equals: Integer.
+	instructions := asg scheduleInstructions enumeratedInstructions.
+	self assert: instructions first isLiteralValueGraphNode.
+	self assert: instructions first value equals: 42.
+	self assert: instructions first type equals: Integer.
 ]
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testBindableAssignment2 [
-	| asg |
-	asg := self parseAndAnalyseASG: ':x := 42. x'.
-	self assert: asg isSequencingGraphNode.
-	self assert: asg elements size equals: 2.
-	self assert: asg elements first value equals: 42.
-	self assert: asg elements first type equals: Integer.
-	
-	self assert: asg elements second value equals: 42.
-	self assert: asg elements second type equals: Integer.
+	| asg instructions |
+	asg := self parseAndAnalyse: ':x := 42. x'.
+	instructions := asg scheduleInstructions enumeratedInstructions.
+
+	self assert: instructions first isLiteralValueGraphNode.
+	self assert: instructions first value equals: 42.
 ]
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testDictionary [
-	| asg |
-	asg := self parseAndAnalyseASG: '#{}'.
+	| asg instructions |
+	asg := self parseAndAnalyse: '#{}'.
+	instructions := asg scheduleInstructions enumeratedInstructions.
 	
-	self assert: asg isDictionaryGraphNode.
-	self assert: asg elements size equals: 0.
+	self assert: instructions first isDictionaryGraphNode.
+	self assert: instructions first elements size equals: 0.
 ]
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testDictionary1 [
-	| asg |
-	asg := self parseAndAnalyseASG: '#{First: 1}'.
-	
-	self assert: asg isDictionaryGraphNode.
-	self assert: asg elements size equals: 1.
+	| asg instructions |
+	asg := self parseAndAnalyse: '#{First: 1}'.
+	instructions := asg scheduleInstructions enumeratedInstructions.
+
+	self assert: instructions first isLiteralValueGraphNode.
+	self assert: instructions first value equals: #First.
+
+	self assert: instructions second isLiteralValueGraphNode.
+	self assert: instructions second value equals: 1.
+
+	self assert: instructions third isAssociationGraphNode.
+	self assert: instructions third key equals: instructions first.
+	self assert: instructions third value equals: instructions second.
+		
+	self assert: instructions fourth isDictionaryGraphNode.
+	self assert: instructions fourth elements size equals: 1.
 ]
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testDictionary2 [
-	| asg |
-	asg := self parseAndAnalyseASG: '#{First: 1. Second: 2}'.
-	
-	self assert: asg isDictionaryGraphNode.
-	self assert: asg elements size equals: 2.
+	| asg instructions |
+	asg := self parseAndAnalyse: '#{First: 1. Second: 2}'.
+	instructions := asg scheduleInstructions enumeratedInstructions.
+
+	self assert: instructions first isLiteralValueGraphNode.
+	self assert: instructions first value equals: #First.
+
+	self assert: instructions second isLiteralValueGraphNode.
+	self assert: instructions second value equals: 1.
+
+	self assert: instructions third isAssociationGraphNode.
+	self assert: instructions third key equals: instructions first.
+	self assert: instructions third value equals: instructions second.
+
+	self assert: instructions fourth isLiteralValueGraphNode.
+	self assert: instructions fourth value equals: #Second.
+
+	self assert: instructions fifth isLiteralValueGraphNode.
+	self assert: instructions fifth value equals: 2.
+
+	self assert: instructions sixth isAssociationGraphNode.
+	self assert: instructions sixth key equals: instructions fourth.
+	self assert: instructions sixth value equals: instructions fifth.
+		
+	self assert: instructions seventh isDictionaryGraphNode.
+	self assert: instructions seventh elements size equals: 2.
 ]
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testDictionary3 [
-	| asg |
-	asg := self parseAndAnalyseASG: '#{First: 1. Second: 2. #Third : 3}'.
-	
-	self assert: asg isDictionaryGraphNode.
-	self assert: asg elements size equals: 3.
+	| asg instructions |
+	asg := self parseAndAnalyse: '#{First: 1. Second: 2. #Third : 3}'.
+	instructions := asg scheduleInstructions enumeratedInstructions.
+
+	self assert: instructions first isLiteralValueGraphNode.
+	self assert: instructions first value equals: #First.
+
+	self assert: instructions second isLiteralValueGraphNode.
+	self assert: instructions second value equals: 1.
+
+	self assert: instructions third isAssociationGraphNode.
+	self assert: instructions third key equals: instructions first.
+	self assert: instructions third value equals: instructions second.
+
+	self assert: instructions fourth isLiteralValueGraphNode.
+	self assert: instructions fourth value equals: #Second.
+
+	self assert: instructions fifth isLiteralValueGraphNode.
+	self assert: instructions fifth value equals: 2.
+
+	self assert: instructions sixth isAssociationGraphNode.
+	self assert: instructions sixth key equals: instructions fourth.
+	self assert: instructions sixth value equals: instructions fifth.
+
+	self assert: instructions seventh isLiteralValueGraphNode.
+	self assert: instructions seventh value equals: #Third.
+
+	self assert: instructions eighth isLiteralValueGraphNode.
+	self assert: instructions eighth value equals: 3.
+
+	self assert: instructions ninth isAssociationGraphNode.
+	self assert: instructions ninth key equals: instructions seventh.
+	self assert: instructions ninth value equals: instructions eighth.
+			
+	self assert: (instructions at: 10) isDictionaryGraphNode.
+	self assert: (instructions at: 10) elements size equals: 3.
 ]
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testEmpty [
-	| asg |
-	asg := self parseAndAnalyseASG: ''.
-	self assert: asg isLiteralValueGraphNode.
-	self assert: asg value equals: SysmelVoidType uniqueInstance.
-	self assert: asg type isVoidType.
+	| asg instructions |
+	asg := self parseAndAnalyse: ''.
+	instructions := asg scheduleInstructions enumeratedInstructions.
+	self assert: instructions first isLiteralValueGraphNode.
+	self assert: instructions first value equals: SysmelVoidType uniqueInstance.
+	self assert: instructions first type isVoidType.
 ]
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testFunctionalType [
-	| node |
+	| node instructions |
 	node := self parseAndAnalyse: ':(Integer)x :: Integer'.
-	self assert: node dataResult isPiNode.
-	self assert: node startingRegion isEmpty.
+	instructions := node scheduleInstructions enumeratedInstructions.
+	
+	self assert: instructions first isPiNode.
 ]
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testIfStatement [
-	| asg |
+	| asg instructions |
 	asg := self parseAndAnalyse: 'if: true then: 1 else: 2'.
-	self assert: asg regions size equals: 4.
-	
+	instructions := asg scheduleInstructions enumeratedInstructions.
 ]
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testIntrinsicIdentifierReference [ 
-	| asg |
+	| asg instructions |
 	asg := self parseAndAnalyse: 'Object'.
-	self assert: asg isLiteralValueGraphNode.
-	self assert: asg value equals: Object.
-	self assert: asg type equals: Object class.
+	instructions := asg scheduleInstructions enumeratedInstructions.
+	self assert: instructions first isLiteralValueGraphNode.
+	self assert: instructions first value equals: Object.
+	self assert: instructions first type equals: Object class.
 ]
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testLambdaFunction [
-	| node |
+	| node instructions |
 	node := self parseAndAnalyse: '(:(Integer)x :: Integer) := x*x'.
-	self assert: node dataResult isLambdaNode.
-	self assert: node startingRegion isEmpty.
+	instructions := node scheduleInstructions enumeratedInstructions.
+
+	self assert: instructions first isLambdaNode.
+	self assert: instructions second isBasicBlockTerminator.
 ]
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testLexicalBlock [ 
-	| asg |
+	| asg instructions |
 	asg := self parseAndAnalyse: '{42}'.
-	self assert: asg isLiteralValueGraphNode.
-	self assert: asg value equals: 42.
-	self assert: asg type equals: Integer.
+	instructions := asg scheduleInstructions enumeratedInstructions.
+
+	self assert: instructions first isLiteralValueGraphNode.
+	self assert: instructions first value equals: 42.
+	self assert: instructions first type equals: Integer.
 ]
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testLiteralCharacter [ 
-	| asg |
+	| asg instructions |
 	asg := self parseAndAnalyse: '''A'''.
-	self assert: asg isLiteralValueGraphNode.
-	self assert: asg value equals: $A.
-	self assert: asg type equals: Character.
+	instructions := asg scheduleInstructions enumeratedInstructions.
+	self assert: instructions first isLiteralValueGraphNode.
+	self assert: instructions first value equals: $A.
+	self assert: instructions first type equals: Character.
 ]
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testLiteralFloat [
-	| asg |
+	| asg instructions |
 	asg := self parseAndAnalyse: '42.5'.
-	self assert: asg isLiteralValueGraphNode.
-	self assert: asg value equals: 42.5.
-	self assert: asg type equals: Float.
+	instructions := asg scheduleInstructions enumeratedInstructions.
+	self assert: instructions first isLiteralValueGraphNode.
+	self assert: instructions first value equals: 42.5.
+	self assert: instructions first type equals: Float.
 ]
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testLiteralInteger [
-	| asg |
+	| asg instructions |
 	asg := self parseAndAnalyse: '42'.
-	self assert: asg isLiteralValueGraphNode.
-	self assert: asg value equals: 42.
-	self assert: asg type equals: Integer.
+	instructions := asg scheduleInstructions enumeratedInstructions.
+	self assert: instructions first isLiteralValueGraphNode.
+	self assert: instructions first value equals: 42.
+	self assert: instructions first type equals: Integer.
 ]
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testLiteralInteger2 [
-	| asg |
+	| asg instructions |
 	asg := self parseAndAnalyse: '42. 5'.
-	self assert: asg isSequencingGraphNode.
-	self assert: asg elements size equals: 2.
+	instructions := asg scheduleInstructions enumeratedInstructions.
+
+	self assert: instructions first value equals: 42.
+	self assert: instructions first type equals: Integer.
 	
-	self assert: asg elements first value equals: 42.
-	self assert: asg elements first type equals: Integer.
+	self assert: instructions second value equals: 5.
+	self assert: instructions second type equals: Integer.
+
+	self assert: instructions third isSequencingGraphNode.
+	self assert: instructions third elements size equals: 2.
 	
-	self assert: asg elements second value equals: 5.
-	self assert: asg elements second type equals: Integer.
+
 ]
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testLiteralString [
-	| asg |
+	| asg instructions |
 	asg := self parseAndAnalyse: '"Hello World"'.
-	self assert: asg isLiteralValueGraphNode.
-	self assert: asg value equals: 'Hello World'.
-	self assert: asg type equals: String.
+	instructions := asg scheduleInstructions enumeratedInstructions.
+	self assert: instructions first isLiteralValueGraphNode.
+	self assert: instructions first value equals: 'Hello World'.
+	self assert: instructions first type equals: String.
 ]
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testLiteralSymbol [
-	| asg |
+	| asg instructions |
 	asg := self parseAndAnalyse: '#helloSymbol'.
-	self assert: asg isLiteralValueGraphNode.
-	self assert: asg value equals: #helloSymbol.
-	self assert: asg type equals: Symbol.
+	instructions := asg scheduleInstructions enumeratedInstructions.
+	self assert: instructions first isLiteralValueGraphNode.
+	self assert: instructions first value equals: #helloSymbol.
+	self assert: instructions first type equals: Symbol.
 ]
 
 { #category : 'tests' }
@@ -280,42 +372,71 @@ SysmelParseTreeSemanticAnalyzerTest >> testMessageCascade [
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testNamedFunction [
-	| node |
+	| node instructions |
 	node := self parseAndAnalyse: ':square(:(Integer)x :: Integer) := x*x'.
-	self assert: node dataResult isLambdaNode.
-	self assert: node startingRegion isEmpty.
+	instructions := node scheduleInstructions enumeratedInstructions.
+
+	self assert: instructions first isLambdaNode.
+	self assert: instructions second isBasicBlockTerminator.
 ]
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testTuple [
-	| asg |
+	| asg instructions |
 	asg := self parseAndAnalyse: '()'.
-	self assert: asg isTupleGraphNode.
-	self assert: asg elements size equals: 0
+	instructions := asg scheduleInstructions enumeratedInstructions.
+
+	self assert: instructions first isTupleGraphNode.
+	self assert: instructions first elements size equals: 0
 ]
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testTuple1 [
-	| asg |
+	| asg instructions |
 	asg := self parseAndAnalyse: '42,'.
-	self assert: asg isTupleGraphNode.
-	self assert: asg elements size equals: 1
+	instructions := asg scheduleInstructions enumeratedInstructions.
+	
+	self assert: instructions first isLiteralValueGraphNode .
+	self assert: instructions first value equals: 42.
+	
+	self assert: instructions second isTupleGraphNode.
+	self assert: instructions second elements size equals: 1.
+	self assert: instructions second elements first equals: instructions first
 ]
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testTuple2 [
-	| asg |
+	| asg instructions |
 	asg := self parseAndAnalyse: '42, 5'.
-	self assert: asg isTupleGraphNode.
-	self assert: asg elements size equals: 2
+	instructions := asg scheduleInstructions enumeratedInstructions.
+	
+	self assert: instructions first isLiteralValueGraphNode .
+	self assert: instructions first value equals: 42.
+
+	self assert: instructions second isLiteralValueGraphNode .
+	self assert: instructions second value equals: 5.
+	
+	self assert: instructions third isTupleGraphNode.
+	self assert: instructions third elements size equals: 2.
+	self assert: instructions third elements first equals: instructions first
 ]
 
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testUnaryMessageSend [
-	| asg |
+	| asg instructions |
 	asg := self parseAndAnalyse: '1 negated'.
-	self assert: asg isSendMessageGraphNode.
-	self assert: asg receiver value equals: 1.
-	self assert: asg selector value equals: #negated.
-	self assert: asg arguments size equals: 0
+	instructions := asg scheduleInstructions enumeratedInstructions.
+
+	self assert: instructions first isLiteralValueGraphNode.
+	self assert: instructions first value equals: 1.
+	self assert: instructions first type equals: Integer.
+
+	self assert: instructions second isLiteralValueGraphNode.
+	self assert: instructions second value equals: #negated.
+	self assert: instructions second type equals: Symbol.
+	
+	self assert: instructions third isSendMessageGraphNode.
+	self assert: instructions third receiver value equals: 1.
+	self assert: instructions third selector value equals: #negated.
+	self assert: instructions third arguments size equals: 0
 ]

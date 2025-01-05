@@ -35,8 +35,10 @@ SoNLambdaNode >> fixpointBinding [
 
 { #category : 'accessing' }
 SoNLambdaNode >> fixpointBinding: aFixpointBinding [
-	fixpointBinding := aFixpointBinding.
-	fixpointBinding ownerFixpointValue: self
+	aFixpointBinding ifNotNil: [
+		fixpointBinding := aFixpointBinding.
+		fixpointBinding ownerFixpointValue: self
+	]
 ]
 
 { #category : 'testing' }
