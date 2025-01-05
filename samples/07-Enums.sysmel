@@ -1,0 +1,8 @@
+enum: MyEnum type: UInt32 with:  #{
+    First: 1u32.
+    Second:.
+    Third:.
+
+}.
+
+Stdio stdout print: MyEnum Third; lf
