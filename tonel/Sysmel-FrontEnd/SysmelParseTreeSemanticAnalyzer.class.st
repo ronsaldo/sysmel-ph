@@ -991,8 +991,12 @@ SysmelParseTreeSemanticAnalyzer >> visitStructElements: dictionary [
 		] ifNotNil: [
 			| visitedValue |
 			visitedValue := self visitNode: association value.
-			self assert: visitedValue isLiteralValueGraphNode.
-			elementType := visitedValue value.
+			visitedValue isValidSysmelType ifTrue: [
+				elementType := visitedValue
+			] ifFalse: [ 
+				self assert: visitedValue isLiteralValueGraphNode.
+				elementType := visitedValue value.
+			]
 		].
 		
 		extractedElements add: elementName -> elementType
