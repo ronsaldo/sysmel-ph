@@ -15,7 +15,8 @@ Sysmel class >> moduleNamed: aModuleName [
 
 { #category : 'as yet unclassified' }
 Sysmel >> moduleNamed: aModuleName [
-	module := SysmelModule named: aModuleName
+	module := SysmelModule named: aModuleName.
+	module sysmelFrontEnd: self
 ]
 
 { #category : 'parsing' }
@@ -50,8 +51,11 @@ Sysmel >> parseAndEvaluateFile: aFileReference [
 
 { #category : 'parsing' }
 Sysmel >> parseAndEvaluateModule: aFileReference [
+	| moduleStartingSource |
 	self assert: aFileReference isDirectory.
-	self halt
+	moduleStartingSource := aFileReference / 'module.sysmel'.
+	moduleStartingSource exists ifFalse: [ self error: 'Module is missing the module.sysmel entry point.' ].
+	self parseAndEvaluateFile: moduleStartingSource
 	
 ]
 

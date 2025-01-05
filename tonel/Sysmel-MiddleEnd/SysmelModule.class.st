@@ -9,7 +9,8 @@ Class {
 		'empty',
 		'intrinsicsEnvironment',
 		'moduleEnvironment',
-		'namespaceEnvironment'
+		'namespaceEnvironment',
+		'sysmelFrontEnd'
 	],
 	#category : 'Sysmel-MiddleEnd-Module',
 	#package : 'Sysmel-MiddleEnd',
@@ -61,4 +62,16 @@ SysmelModule >> makeEnvironmentFor: ast [
 	^ (SysmelLexicalEnvironment parent: self getOrCreateBasicEnvironment)
 		sourcePosition: ast sourcePosition;
 		yourself
+]
+
+{ #category : 'accessing' }
+SysmelModule >> sysmelFrontEnd [
+
+	^ sysmelFrontEnd
+]
+
+{ #category : 'accessing' }
+SysmelModule >> sysmelFrontEnd: anObject [
+
+	sysmelFrontEnd := anObject
 ]

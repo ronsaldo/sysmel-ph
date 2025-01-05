@@ -1,6 +1,9 @@
 Class {
 	#name : 'SysmelIntrinsicsEnvironment',
 	#superclass : 'SysmelNonEmptyEnvironment',
+	#instVars : [
+		'loadedFiles'
+	],
 	#category : 'Sysmel-MiddleEnd-Environment',
 	#package : 'Sysmel-MiddleEnd',
 	#tag : 'Environment'
@@ -12,7 +15,8 @@ SysmelIntrinsicsEnvironment >> buildIntrinsicSymbols [
 	self importIntrinsicValues.
 	self primitiveGlobalMacros.
 	self primitiveTypes.
-	self namespaceMacro
+	self namespaceMacro.
+	self sourceFileMacros.
 ]
 
 { #category : 'as yet unclassified' }
@@ -133,4 +137,25 @@ SysmelIntrinsicsEnvironment >> primitiveTypes [
 		eachPrimitiveType := SysmelType perform: eachTypeName.
 		self addSymbol: eachTypeName valueBinding: eachPrimitiveType.
 	]
+]
+
+{ #category : 'as yet unclassified' }
+SysmelIntrinsicsEnvironment >> sourceFileMacros [
+	loadedFiles := Set new.
+	
+	self addPrimitiveGlobalMacro: #loadFileOnce:
+		type: (SysmelSimpleFunctionType withArguments: 
+		{ #context -> MacroContext .
+		  #filename -> SysmelParseTreeNode} resultType: SysmelParseTreeNode)
+		implementation: [ :macroContext :filenameNode |
+			| sourceDirectory sourceName sysmelFrontEnd|
+			sourceDirectory := macroContext sourcePosition sourceCode directory asFileReference.
+			sourceName := sourceDirectory / filenameNode value.
+			sysmelFrontEnd := macroContext environment getModule sysmelFrontEnd.
+			sysmelFrontEnd parseAndEvaluateFile: sourceName.
+			SysmelParseTreeTupleNode new
+				sourcePosition: macroContext sourcePosition;
+				elements: #();
+				yourself 
+		].
 ]
