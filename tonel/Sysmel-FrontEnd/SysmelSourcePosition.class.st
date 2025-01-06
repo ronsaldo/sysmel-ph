@@ -62,6 +62,16 @@ SysmelSourcePosition >> getTextValue [
 	^ sourceCode text copyFrom: startIndex to: endIndex - 1
 ]
 
+{ #category : 'printing' }
+SysmelSourcePosition >> printOn: aStream [
+	sourceCode printOn: aStream.
+	
+	aStream nextPut: $:;
+		print: startLine; nextPut: $.; print: startColumn;
+		nextPut: $-;
+		print: endLine; nextPut: $.; print: endColumn
+]
+
 { #category : 'accessing' }
 SysmelSourcePosition >> sourceCode [
 

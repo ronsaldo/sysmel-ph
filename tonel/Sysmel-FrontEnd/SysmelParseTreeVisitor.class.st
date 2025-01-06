@@ -9,6 +9,11 @@ Class {
 	#tag : 'Parser'
 }
 
+{ #category : 'as yet unclassified' }
+SysmelParseTreeVisitor >> error: errorMessage atSourcePosition: sourcePosition [
+	self error: sourcePosition printString, ': ', errorMessage
+]
+
 { #category : 'visiting' }
 SysmelParseTreeVisitor >> visitApplicationNode: node [
 	self subclassResponsibility

@@ -64,6 +64,12 @@ SysmelSourceCode >> name: anObject [
 	name := anObject
 ]
 
+{ #category : 'printing' }
+SysmelSourceCode >> printOn: aStream [
+	directory ifNotEmpty: [ aStream nextPutAll: directory; nextPut: $/ ].
+	aStream nextPutAll: name 
+]
+
 { #category : 'accessing' }
 SysmelSourceCode >> text [
 

@@ -278,7 +278,7 @@ SysmelParseTreeSemanticAnalyzer >> visitBinaryExpressionSequenceNode: node [
 
 { #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitBindableNameNode: node [
-	^ self error: 'A bindable name requires an initial value assignment.'
+	^ self error: 'A bindable name requires an initial value assignment.' atSourcePosition: node sourcePosition
 ]
 
 { #category : 'visiting' }
