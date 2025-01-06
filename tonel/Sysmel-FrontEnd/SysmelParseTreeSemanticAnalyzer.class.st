@@ -393,6 +393,9 @@ SysmelParseTreeSemanticAnalyzer >> visitIdentifierReferenceNode: node [
 	| symbolToFind binding |
 	symbolToFind := node name.
 	binding := environment lookupRecursively: symbolToFind.
+	binding ifNil: [
+		self error: ('Failed to find a binding for {1}.' format: symbolToFind) atSourcePosition: node sourcePosition.
+	].
 	^ binding evaluateASGIn: node sourcePosition.
 ]
 
@@ -894,6 +897,11 @@ SysmelParseTreeSemanticAnalyzer >> visitNodeWithoutTypeCoercion: aNode [
 SysmelParseTreeSemanticAnalyzer >> visitOptionalTypeExpression: aTypeExpression [
 	aTypeExpression ifNil: [ ^ nil ].
 	^ self visitTypeExpression: aTypeExpression
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitParseErrorNode: node [
+	self error: node errorMessage atSourcePosition: node sourcePosition
 ]
 
 { #category : 'visiting' }

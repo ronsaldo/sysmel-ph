@@ -154,6 +154,11 @@ SysmelType >> isGradualType [
 ]
 
 { #category : 'testing' }
+SysmelType >> isLiteralValueGraphNode [
+	^ false
+]
+
+{ #category : 'testing' }
 SysmelType >> isPointerLikeType [
 	^ false
 ]
