@@ -49,13 +49,13 @@ SysmelParseTreeSemanticAnalyzerTest >> setUp [
 { #category : 'tests' }
 SysmelParseTreeSemanticAnalyzerTest >> testApplication [ 
 	| asg region seaOfNodes applicationNode |
-	seaOfNodes := self parseAndAnalyse: 'Object()'.
+	seaOfNodes := self parseAndAnalyse: ':id(:(Integer)x :: Integer) := x. id(45)'.
 	region := seaOfNodes startingRegion.
 	applicationNode := region instructions first. 
 	
 	self assert: applicationNode isApplicationGraphNode.
-	self assert: applicationNode functional isLiteralValueGraphNode.
-	self assert: applicationNode arguments size equals: 0.
+	self assert: applicationNode functional isLambdaNode.
+	self assert: applicationNode arguments size equals: 1.
 ]
 
 { #category : 'tests' }

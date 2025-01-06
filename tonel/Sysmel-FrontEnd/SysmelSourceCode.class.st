@@ -66,8 +66,10 @@ SysmelSourceCode >> name: anObject [
 
 { #category : 'printing' }
 SysmelSourceCode >> printOn: aStream [
-	directory ifNotEmpty: [ aStream nextPutAll: directory; nextPut: $/ ].
-	aStream nextPutAll: name 
+	(directory isNotNil and:[ directory isNotEmpty]) ifTrue: [
+		aStream nextPutAll: directory; nextPut: $/ ].
+	name ifNotNil:[ aStream nextPutAll: name ]
+		ifNil:[aStream nextPutAll: '<string>']
 ]
 
 { #category : 'accessing' }
