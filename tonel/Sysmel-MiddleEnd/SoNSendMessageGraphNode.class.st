@@ -39,7 +39,7 @@ SoNSendMessageGraphNode >> evaluateWithContext: evaluationContext [
 	evalSelector := evaluationContext evaluateNodeValue: selector.
 	evalArguments := evaluationContext evaluateNodesValue: arguments.
 	
-	result := evalReceiver perform: evalSelector withArguments: evalArguments.
+	result := evalReceiver sysmelPerform: evalSelector withArguments: evalArguments.
 	^ evaluationContext setValue: result andAdvancePC: 1
 ]
 

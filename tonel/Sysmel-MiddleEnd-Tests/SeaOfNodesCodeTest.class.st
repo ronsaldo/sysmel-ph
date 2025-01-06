@@ -107,6 +107,25 @@ SeaOfNodesCodeTest >> testStruct [
 ]
 
 { #category : 'tests' }
+SeaOfNodesCodeTest >> testStructAccessing [
+	| seaOfNodes result |
+	seaOfNodes := self parseAndCompileString: 'struct: Pair with: #{
+		First: Int32.
+		Second: Int16
+	}.
+	
+	:pair := Pair#{Second: 2i16 . First: 1i32. }.
+	pair Second: 8i16.
+	pair
+'.
+	result := seaOfNodes evaluateWithArguments: #().
+	self assert: result isTuplePrimitiveTypeValue .
+	self assert: result value first equals: 1i32.
+	self assert: result value second equals: 8i16.
+
+]
+
+{ #category : 'tests' }
 SeaOfNodesCodeTest >> testStructInstance [
 	| seaOfNodes result |
 	seaOfNodes := self parseAndCompileString: 'struct: Pair with: #{

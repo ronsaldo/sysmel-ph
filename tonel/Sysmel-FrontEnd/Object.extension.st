@@ -35,3 +35,8 @@ Object >> isValidSysmelType [
 Object >> isVoidType [
 	^ false
 ]
+
+{ #category : '*Sysmel-FrontEnd' }
+Object >> sysmelPerform: selector withArguments: arguments [
+	^ self perform: selector withArguments: arguments
+]
