@@ -16,9 +16,21 @@ class: ScannerState with: #{
     || '_' = c.
 :isIdentifierMiddle(:(Character)c :: Boolean) := isIdentifierStart(c) || isDigit(c).
 
+:textSize(:(ScannerState)state :: Integer)
+    := state sourceCode text size.
+
+:atEnd(:(ScannerState)state :: Boolean) := {
+    :peekPosition := state position.
+    Stdio stdout nextPutAll: atEnd; lf
+}.
+
 :peek(:(ScannerState)state, :(Int32)offset :: Character) := {
     :peekPosition := state position + offset.
-
+    if: peekPosition <= textSize then: {
+        state sourceCode text at: peekPosition
+    } else: {
+        1 negated
+    }
 }.
 
 :advance(:(ScannerState)state :: Void) := {
@@ -49,6 +61,11 @@ public:(
             column: 1i32.
             isPreviousCR: false.
         }.
+
+        while: atEnd(state) not do: {
+            :nextToken(Token) := scanSingleToken(state).
+            tokens add: nextToken
+        }
         tokens
     }.
 
