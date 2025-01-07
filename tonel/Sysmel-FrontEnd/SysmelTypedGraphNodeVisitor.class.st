@@ -82,6 +82,16 @@ SysmelTypedGraphNodeVisitor >> visitStoreNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelTypedGraphNodeVisitor >> visitStructNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
+SysmelTypedGraphNodeVisitor >> visitTupleNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
 SysmelTypedGraphNodeVisitor >> visitWhileLoopNode: node [
 	self subclassResponsibility
 ]

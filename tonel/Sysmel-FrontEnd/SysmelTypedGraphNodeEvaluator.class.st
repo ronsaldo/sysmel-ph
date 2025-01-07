@@ -87,7 +87,7 @@ SysmelTypedGraphNodeEvaluator >> visitMessageSendNode: node [
 		^ child
 	].
 
-	^ receiver perform: selector withArguments: arguments
+	^ receiver sysmelPerform: selector withArguments: arguments
 ]
 
 { #category : 'visiting' }
@@ -107,6 +107,13 @@ SysmelTypedGraphNodeEvaluator >> visitStoreNode: node [
 	value := self visitNode: node value.
 	pointer currentValue: value.
 	^ value
+]
+
+{ #category : 'visiting' }
+SysmelTypedGraphNodeEvaluator >> visitStructNode: node [
+	| visitedElements |
+	visitedElements := node elements collect: [ :each | self visitNode: each ].
+	^ node type makePrimitiveAt: node sourcePosition constructorArguments: visitedElements
 ]
 
 { #category : 'visiting' }
