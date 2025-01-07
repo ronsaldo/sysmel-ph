@@ -32,6 +32,42 @@ SysmelParseTreeSemanticAnalyzer >> analyzeAST: ast withEnvironment: newEnvironme
 ]
 
 { #category : 'as yet unclassified' }
+SysmelParseTreeSemanticAnalyzer >> analyzeArgumentNode: node withIndex: eachArgumentIndex [
+	| name typeExpression binding |
+	self assert: node isBindableNameNode.
+	name := self evaluateOptionalSymbol: node nameExpression.
+	typeExpression := self visitOptionalTypeExpression: node typeExpression.
+	typeExpression ifNil: [  
+		typeExpression := SysmelTypedLiteralNode new
+			value: SysmelTypeGradual uniqueInstance;
+			type: SysmelTypeGradual type
+	].
+	binding := SymbolArgumentBinding new
+		sourcePosition: node sourcePosition;
+		name: name;
+		index: eachArgumentIndex;
+		typeExpression: typeExpression;
+		isImplicit: node isImplicit;
+		yourself.
+	^ SysmelTypedArgumentNode new
+		sourcePosition: node sourcePosition;
+		type: typeExpression;
+		binding: binding;
+		isImplicit: node isImplicit;
+		isExistential: node isExistential;
+		yourself
+]
+
+{ #category : 'as yet unclassified' }
+SysmelParseTreeSemanticAnalyzer >> evaluateOptionalSymbol: aNode [
+	| symbolNode |
+	aNode ifNil: [ ^ nil ].
+	
+	symbolNode := self visitNode: aNode.
+	^ symbolNode value
+]
+
+{ #category : 'as yet unclassified' }
 SysmelParseTreeSemanticAnalyzer >> processCascadeMessage: message withReceiver: receiver [
 	| selector |
 	selector := self visitAndEvaluateSymbolValue: message selector.
@@ -63,6 +99,12 @@ SysmelParseTreeSemanticAnalyzer >> processMessage: message withReceiver: receive
 		yourself
 ]
 
+{ #category : 'as yet unclassified' }
+SysmelParseTreeSemanticAnalyzer >> reducePiNode: piNode [
+	self flag: 'TODO: implement this'.
+	^ piNode
+]
+
 { #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitAndEvaluateSymbolValue: node [
 	| analyzedNode |
@@ -70,6 +112,47 @@ SysmelParseTreeSemanticAnalyzer >> visitAndEvaluateSymbolValue: node [
 	self assert: analyzedNode isLiteralNode.
 	self assert: analyzedNode value isSymbol.
 	^ analyzedNode value
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitApplicationNode: node [
+	| analyzedFunctional analyzedFunctionalType analyzedArguments application isMacro macroArguments macroResult analyzedResultType |
+	analyzedFunctional := self visitNode: node functional.
+	analyzedFunctionalType := analyzedFunctional type.
+	isMacro := analyzedFunctional value isSysmelMacro.
+	isMacro ifTrue: [
+		| macro macroContext |
+		macro := analyzedFunctional value.
+		macroContext := MacroContext new
+			sourcePosition: node sourcePosition;
+			environment: environment;
+			yourself.
+		macroArguments := node arguments.
+		macroResult := macro evaluateWithContext: macroContext andArguments: macroArguments.
+		^ self visitNode: macroResult
+	].
+
+	analyzedFunctional value isValidSysmelType ifTrue: [
+		^ self visitNode: (SysmelParseTreeInstantiateTypeNode new
+			sourcePosition: node sourcePosition;
+			type: analyzedFunctional value;
+			constructorValues: node arguments;
+			yourself
+		)
+	].
+	
+	analyzedArguments := node arguments collectWithIndex: [ :arg :index |
+		self visitNode: arg
+	].
+
+	analyzedResultType := analyzedFunctionalType computeResultTypeWithAnalyzedArguments: analyzedArguments.
+	application := SysmelTypedApplicationNode new
+		sourcePosition: node sourcePosition;
+		functional: analyzedFunctional;
+		arguments: analyzedArguments;
+		type: analyzedResultType;
+		yourself.
+	^ application
 ]
 
 { #category : 'visiting' }
@@ -125,6 +208,28 @@ SysmelParseTreeSemanticAnalyzer >> visitAssignmentNode: node [
 
 	self halt.
 	self error: 'Cannot perform this assignment' atSourcePosition: node sourcePosition
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitBinaryExpressionSequenceNode: node [
+	| receiver operator operand messageSend |
+	self assert: node elements isNotEmpty. 
+	node elements size = 1 ifTrue: [ ^ self visitNode: node elements first ].
+	
+	receiver := node elements first.
+	2 to: node elements size by: 2 do: [ :i |
+		operator := node elements at: i.
+		operand := node elements at: i + 1.
+		messageSend := SysmelParseTreeMessageSendNode new
+			sourcePosition: node sourcePosition;
+			receiver: receiver;
+			selector: operator;
+			arguments: { operand };
+			yourself.
+
+		receiver := messageSend
+	].
+	^ self visitNode: receiver
 ]
 
 { #category : 'visiting' }
@@ -187,6 +292,97 @@ SysmelParseTreeSemanticAnalyzer >> visitIdentifierReferenceNode: node [
 	].
 
 	^ binding evaluateASGIn: node sourcePosition.
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitLambdaNode: node [
+	| functionalEnvironment typedArguments typedArgument analyzedResultTypeExpression name typedPi typeUniverse fixpointBinding body bodyType lambdaValue |
+	functionalEnvironment := SysmelFunctionalAnalysisEnvironment parent: environment.
+	typedArguments := OrderedCollection new.
+	node arguments doWithIndex: [ :eachArgument :eachArgumentIndex|
+		typedArgument := 
+			self withEnvironment: functionalEnvironment
+			do: [ self analyzeArgumentNode: eachArgument withIndex: eachArgumentIndex ].
+		functionalEnvironment := functionalEnvironment withArgumentBinding: typedArgument binding.
+		typedArguments add: typedArgument
+	]. 
+	
+	" Analyze here the result type expression, so that we can introduce the fixpoint binding without poluting the environment"
+	analyzedResultTypeExpression := nil.
+	node resultType ifNotNil: [
+		analyzedResultTypeExpression := self withEnvironment: functionalEnvironment do: [ self visitTypeExpression: node resultType ]
+	].
+
+	name := self evaluateOptionalSymbol: node nameExpression.
+	
+	"Construct the dependent type without result type inference."
+	typedPi := nil.
+	(analyzedResultTypeExpression isNotNil or: [ node isFixpoint and name isNotNil ]) ifTrue: [
+		typeUniverse := SysmelTypeUniverse withIndex: 0.
+		typedPi := SysmelTypedPiNode new
+			sourcePosition: node sourcePosition;
+			name: nil;
+			type: typeUniverse;
+			arguments: typedArguments;
+			isVariadic: node isVariadic;
+			captureBindings: functionalEnvironment captureBindings;
+			body: analyzedResultTypeExpression;
+			callingConvention: node callingConvention;
+			yourself.
+		typedPi := self reducePiNode: typedPi
+	].
+	
+	"Add the fixpoint symbol"
+	fixpointBinding := nil.
+	(node isFixpoint and: [name isNotNil ]) ifTrue: [
+		fixpointBinding := SymbolFixpointBinding new
+			sourcePosition: node sourcePosition;
+			name: name;
+			typeExpression: typedPi;
+			yourself.
+		functionalEnvironment := functionalEnvironment withFixpointBinding: fixpointBinding
+	].
+	
+	typedPi ifNil: [
+		self halt
+	].
+	
+	lambdaValue := SysmelTypedLambdaNode new
+		sourcePosition: node sourcePosition;
+		name: name;
+		type: typedPi;
+		arguments: typedArguments;
+		isVariadic: node isVariadic;
+		captureBindings: functionalEnvironment captureBindings;
+		fixpointBinding: functionalEnvironment fixpointBinding;
+		closureEnvironment: environment;
+		yourself.
+		
+	"Analyze the body"
+	body := self withEnvironment: functionalEnvironment do: 
+		[ self visitNode: node body withExpectedTypeExpression: analyzedResultTypeExpression].
+
+	"Decay the references."
+	body type isReferenceLikeType ifTrue: [
+		| resultLoad |
+		resultLoad := SysmelTypedLoadNode new
+				sourcePosition: body sourcePosition;
+				pointer: body;
+				type: body type asDecayedSysmelType;
+				yourself.
+		body := resultLoad.
+	].
+	
+	"Compute the lambda type"
+	bodyType := body type.
+	typeUniverse := SysmelTypeUniverse withIndex: 0.
+
+
+	"Make the typed lambda node"	
+	^ lambdaValue
+		body: body;
+		callingConvention: node callingConvention;
+		yourself
 ]
 
 { #category : 'visiting' }
@@ -272,18 +468,55 @@ SysmelParseTreeSemanticAnalyzer >> visitMessageSendNode: messageSend [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitNode: node withExpectedTypeExpression: expectedTypeExpression [
+	| visitedNode |
+	visitedNode := self visitNode: node.
+	self flag: 'Perform the type checking'.
+	^ visitedNode
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitNodeForMacroExpansionOnly: node [
 	self flag: 'TODO: Implement this'.
 	^ node
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitOptionalTypeExpression: aTypeExpression [
+	aTypeExpression ifNil: [ ^ nil ].
+	^ self visitTypeExpression: aTypeExpression
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitSequenceNode: node [
-	| lastResult |
-	lastResult := nil.
-	node elements do: [:eachElement |
-		lastResult := self visitNode: eachElement
+	| typedSequenceElements sequenceType |
+	typedSequenceElements := node elements collect: [:eachElement |
+		self visitNode: eachElement
 	].
 
-	^ lastResult
+	sequenceType := typedSequenceElements last type.
+	^ SysmelTypedSequenceNode new
+		sourcePosition: node sourcePosition;
+		expressions: typedSequenceElements;
+		type: sequenceType;
+		yourself
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitTypeExpression: aTypeExpression [
+	| analyzedNode |
+	analyzedNode := self visitNode: aTypeExpression.
+	analyzedNode isTypeNode ifTrue: [
+		^ analyzedNode
+	].
+
+	self halt
+]
+
+{ #category : 'as yet unclassified' }
+SysmelParseTreeSemanticAnalyzer >> withEnvironment: newEnvironment do: aBlock [
+	| oldEnvironment |
+	oldEnvironment := environment.
+	environment := newEnvironment.
+	^ aBlock ensure: [ environment := oldEnvironment ]
 ]

@@ -14,9 +14,24 @@ SysmelTypedLiteralNode >> accept: visitor [
 	^ visitor visitLiteralNode: self
 ]
 
+{ #category : 'converting' }
+SysmelTypedLiteralNode >> asReducedTypeExpression [
+	^ self isTypeNode ifTrue: [value] ifFalse: [type]
+]
+
 { #category : 'testing' }
 SysmelTypedLiteralNode >> isLiteralNode [
 	^ true
+]
+
+{ #category : 'testing' }
+SysmelTypedLiteralNode >> isTypeNode [
+	^ value isValidSysmelType
+]
+
+{ #category : 'printing' }
+SysmelTypedLiteralNode >> printOn: aStream [
+	aStream nextPutAll: 'literal('; print: value; nextPut: $)
 ]
 
 { #category : 'accessing' }

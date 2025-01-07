@@ -1,5 +1,5 @@
 Class {
-	#name : 'SysmelTypedPiNode',
+	#name : 'SysmelTypedSigmaNode',
 	#superclass : 'SysmelTypedFunctionalNode',
 	#category : 'Sysmel-FrontEnd-Analysis',
 	#package : 'Sysmel-FrontEnd',
@@ -7,6 +7,6 @@ Class {
 }
 
 { #category : 'visiting' }
-SysmelTypedPiNode >> accept: visitor [
-	^ visitor visitPiNode: self
+SysmelTypedSigmaNode >> accept: visitor [
+	^ visitor visitSigmaNode: self
 ]
