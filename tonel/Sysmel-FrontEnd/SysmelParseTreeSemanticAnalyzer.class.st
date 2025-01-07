@@ -95,9 +95,24 @@ SysmelParseTreeSemanticAnalyzer >> processCascadeMessage: message withReceiver: 
 ]
 
 { #category : 'as yet unclassified' }
-SysmelParseTreeSemanticAnalyzer >> processMessage: message withReceiver: receiver selector: selector arguments: arguments [
+SysmelParseTreeSemanticAnalyzer >> processMessage: message withReceiver: uncoercedReceiver selector: selector arguments: arguments [
+	| receiver method analyzedArguments resultType |
 
-	| method analyzedArguments resultType |
+	receiver := uncoercedReceiver.
+	receiver type isReferenceLikeType ifTrue: [
+		(receiver type supportsSelector: selector) ifTrue: [
+			self halt.
+		] ifFalse: [
+			| loadedReceiver |
+			loadedReceiver := SysmelTypedLoadNode new
+				sourcePosition: message sourcePosition;
+				pointer: receiver;
+				type: receiver type asDecayedSysmelType;
+				yourself.
+			receiver := loadedReceiver
+		]
+	].
+
 	receiver isSysmelNamespace ifTrue: [
 		| namespaceChild |
 		namespaceChild := receiver lookChildNamed: selector.
@@ -654,6 +669,28 @@ SysmelParseTreeSemanticAnalyzer >> visitTypeExpression: aTypeExpression [
 	].
 
 	self halt
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitWhileLoopNode: node [ 
+	| condition body continueExpression |
+	condition := self withEnvironment: (SysmelLexicalEnvironment parent: environment) do: [ 
+		self visitNode: node condition.
+	].
+	body := self withEnvironment: (SysmelLexicalEnvironment parent: environment) do: [ 
+		self visitOptionalNode: node body.
+	].
+	continueExpression := self withEnvironment: (SysmelLexicalEnvironment parent: environment) do: [ 
+		self visitOptionalNode: node continueExpression.
+	].
+	
+	^ SysmelTypedWhileLoopNode new
+		sourcePosition: node sourcePosition;
+		condition: condition;
+		body: body;
+		continueExpression: continueExpression;
+		type: SysmelVoidType;
+		yourself
 ]
 
 { #category : 'as yet unclassified' }

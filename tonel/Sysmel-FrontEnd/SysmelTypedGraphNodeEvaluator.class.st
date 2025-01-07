@@ -65,6 +65,13 @@ SysmelTypedGraphNodeEvaluator >> visitLiteralNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelTypedGraphNodeEvaluator >> visitLoadNode: node [
+	| pointer |
+	pointer := self visitNode: node pointer.
+	^ pointer currentValue
+]
+
+{ #category : 'visiting' }
 SysmelTypedGraphNodeEvaluator >> visitMessageSendNode: node [
 	| receiver selector arguments |
 	receiver := self visitNode: node receiver.
@@ -98,6 +105,16 @@ SysmelTypedGraphNodeEvaluator >> visitStoreNode: node [
 	value := self visitNode: node value.
 	pointer currentValue: value.
 	^ value
+]
+
+{ #category : 'visiting' }
+SysmelTypedGraphNodeEvaluator >> visitWhileLoopNode: node [
+	[self visitNode: node condition] whileTrue: [ 
+		self visitOptionalNode: node body.
+		self visitOptionalNode: node continueExpression
+	].
+
+	^ SysmelVoidType uniqueInstance
 ]
 
 { #category : 'as yet unclassified' }

@@ -57,6 +57,11 @@ SysmelTypedGraphNodeVisitor >> visitNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelTypedGraphNodeVisitor >> visitOptionalNode: node [
+	^ node ifNotNil: [self visitNode: node]
+]
+
+{ #category : 'visiting' }
 SysmelTypedGraphNodeVisitor >> visitPiNode: node [
 	self subclassResponsibility
 ]
@@ -73,5 +78,10 @@ SysmelTypedGraphNodeVisitor >> visitSigmaNode: node [
 
 { #category : 'visiting' }
 SysmelTypedGraphNodeVisitor >> visitStoreNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
+SysmelTypedGraphNodeVisitor >> visitWhileLoopNode: node [
 	self subclassResponsibility
 ]

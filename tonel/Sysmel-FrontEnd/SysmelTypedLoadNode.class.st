@@ -13,3 +13,14 @@ Class {
 SysmelTypedLoadNode >> accept: visitor [
 	^ visitor visitLoadNode: self
 ]
+
+{ #category : 'accessing' }
+SysmelTypedLoadNode >> pointer [
+	^ pointer
+]
+
+{ #category : 'accessing' }
+SysmelTypedLoadNode >> pointer: anObject [
+
+	pointer := anObject
+]
