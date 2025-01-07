@@ -1,5 +1,2 @@
-:myVar := 45.
-Stdio stdout nextPutAll: "myVar"; print: myVar; lf.
-
 :square(:(Integer)x :: Integer) := x*x.
 Stdio stdout nextPutAll: "square(5) = "; print: square(5); lf.

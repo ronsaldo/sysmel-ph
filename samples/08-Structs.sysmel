@@ -1,0 +1,7 @@
+struct: Pair with: #{
+    first: Int32.
+    second: UInt16.
+}.
+
+:myPair := Pair(1i32. 5u16).
+Stdio stdout print: myPair first; nextPutAll: " "; print: myPair second; lf

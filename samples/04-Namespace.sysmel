@@ -5,7 +5,7 @@ public:(
     Stdio stdout print: square(4); lf
 }.
 
-##Testing Example.
+Testing Example.
 
 Testing Example square(5).
 Stdio stdout print: Testing Example square(6); lf.
