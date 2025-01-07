@@ -15,7 +15,7 @@ SysmelTypedStructNode >> accept: visitor [
 SysmelTypedStructNode >> hasDictionaryAsInput: hasDictionaryConstruction [
 	| dictionary |
 	hasDictionaryConstruction ifFalse: [ ^ self ].
-	self assert: elements first isDictionaryGraphNode.
+	self assert: elements first isDictionaryNode.
 	dictionary := elements first.
 	elements := type elements collect: [ :eachElement | eachElement defaultValue ].
 	dictionary elements do: [ :eachAssociation |

@@ -178,6 +178,11 @@ SysmelParseTreeSemanticAnalyzer >> visitAndEvaluateSymbolValue: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitAndEvaluateType: aNode [
+	^ self visitNode: aNode
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitApplicationNode: node [
 	| analyzedFunctional analyzedFunctionalType analyzedArguments application isMacro macroArguments macroResult analyzedResultType |
 	analyzedFunctional := self visitNode: node functional.
@@ -255,7 +260,7 @@ SysmelParseTreeSemanticAnalyzer >> visitAssignmentNode: node [
 		
 		valueType := analyzedValue type.
 		bindableName typeExpression ifNotNil: [
-			valueType = self visitAndEvaluateType: bindableName typeExpression
+			valueType := self visitAndEvaluateType: bindableName typeExpression
 		].
 	
 		bindableName isMutable ifTrue: [
@@ -308,6 +313,20 @@ SysmelParseTreeSemanticAnalyzer >> visitAssignmentNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitAssociationNode: node [
+	| analyzedKey analyzedValue association |
+	analyzedKey := self visitNode: node key.
+	analyzedValue := node value ifNotNil: [:val | self visitNode: val].
+	association := SysmelTypedAssociationNode new
+		sourcePosition: node sourcePosition;
+		key: analyzedKey;
+		value: analyzedValue;
+		yourself.
+	^ association
+	
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitBinaryExpressionSequenceNode: node [
 	| receiver operator operand messageSend |
 	self assert: node elements isNotEmpty. 
@@ -327,6 +346,17 @@ SysmelParseTreeSemanticAnalyzer >> visitBinaryExpressionSequenceNode: node [
 		receiver := messageSend
 	].
 	^ self visitNode: receiver
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitDictionaryNode: node [
+	| analyzedElements dictionary |
+	analyzedElements := node elements collect: [ :each | self visitNode: each ].
+	dictionary := SysmelTypedDictionaryNode new
+		sourcePosition: node sourcePosition;
+		elements: analyzedElements;
+		yourself.
+	^ dictionary
 ]
 
 { #category : 'visiting' }
@@ -708,9 +738,20 @@ SysmelParseTreeSemanticAnalyzer >> visitNodeForMacroExpansionOnly: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitNodeWithValueDecay: aNode [
+	self flag: 'TODO: Implement this.'.
+	^ self visitNode: aNode
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitOptionalTypeExpression: aTypeExpression [
 	aTypeExpression ifNil: [ ^ nil ].
 	^ self visitTypeExpression: aTypeExpression
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitParseErrorNode: node [
+	self error: node errorMessage atSourcePosition: node sourcePosition
 ]
 
 { #category : 'visiting' }
@@ -793,6 +834,35 @@ SysmelParseTreeSemanticAnalyzer >> visitStructNode: node [
 		sourcePosition: node sourcePosition;
 		value: structType;
 		type: (SysmelTypeUniverse withIndex: 0);
+		yourself
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitTupleNode: node [
+	| analyzedElements analyzedElementTypes tupleType |
+	analyzedElements := node elements collect: [ :each | self visitNodeWithValueDecay: each ].
+	analyzedElements size >= 1 ifTrue: [
+		(analyzedElements allSatisfy: [ :each | each isValidSysmelType ]) ifTrue: [
+			^SysmelTypedLiteralNode new
+				sourcePosition: node sourcePosition;
+				value: (SysmelTupleType new
+					sourcePosition: node sourcePosition;
+					elements: analyzedElements;
+					yourself);
+				type: (SysmelTypeUniverse withIndex: 0);
+				yourself
+		].
+	].
+	analyzedElementTypes := analyzedElements collect: [ :each | each type ].
+	tupleType := SysmelTupleType new
+			sourcePosition: node sourcePosition;
+			elements: analyzedElementTypes;
+			yourself.
+			
+	^ SysmelTypedTupleNode new
+		sourcePosition: node sourcePosition;
+		elements: analyzedElements;
+		type: tupleType;
 		yourself
 ]
 

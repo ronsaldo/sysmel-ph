@@ -31,6 +31,11 @@ SysmelTypedGraphNode >> isConstantDataNode [
 ]
 
 { #category : 'testing' }
+SysmelTypedGraphNode >> isDictionaryNode [
+	^ false
+]
+
+{ #category : 'testing' }
 SysmelTypedGraphNode >> isIfNode [
 	^ false
 ]

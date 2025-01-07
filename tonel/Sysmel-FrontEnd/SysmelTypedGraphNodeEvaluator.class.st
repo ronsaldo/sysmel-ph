@@ -117,6 +117,13 @@ SysmelTypedGraphNodeEvaluator >> visitStructNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelTypedGraphNodeEvaluator >> visitTupleNode: node [
+	| visitedElements |
+	visitedElements := node elements collect: [ :each | self visitNode: each ].
+	^ node type makePrimitiveAt: node sourcePosition constructorArguments: visitedElements
+]
+
+{ #category : 'visiting' }
 SysmelTypedGraphNodeEvaluator >> visitWhileLoopNode: node [
 	[self visitNode: node condition] whileTrue: [ 
 		self visitOptionalNode: node body.
