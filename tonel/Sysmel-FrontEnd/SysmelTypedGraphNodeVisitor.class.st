@@ -27,6 +27,11 @@ SysmelTypedGraphNodeVisitor >> visitArgumentNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelTypedGraphNodeVisitor >> visitIfNode: node [
+	self subclassResponsibility
+]
+
+{ #category : 'visiting' }
 SysmelTypedGraphNodeVisitor >> visitLambdaNode: node [
 	self subclassResponsibility
 ]

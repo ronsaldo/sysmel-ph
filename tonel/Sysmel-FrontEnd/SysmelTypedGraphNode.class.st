@@ -21,6 +21,11 @@ SysmelTypedGraphNode >> findAllExportableObjects [
 ]
 
 { #category : 'testing' }
+SysmelTypedGraphNode >> isIfNode [
+	^ false
+]
+
+{ #category : 'testing' }
 SysmelTypedGraphNode >> isLiteralNode [
 	^ false
 ]

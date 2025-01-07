@@ -46,6 +46,15 @@ SysmelTypedGraphNodeEvaluator >> visitArgumentNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelTypedGraphNodeEvaluator >> visitIfNode: ifNode [
+	| condition |
+	condition := self visitNode: ifNode condition.
+	^ condition
+		ifTrue: [ self visitNode: ifNode trueResult ]
+		ifFalse: [ self visitNode: ifNode falseResult ]
+]
+
+{ #category : 'visiting' }
 SysmelTypedGraphNodeEvaluator >> visitLambdaNode: aLambdaNode [
 	^ aLambdaNode
 ]

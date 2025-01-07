@@ -36,7 +36,9 @@ SysmelTypedLambdaNode >> fixpointBinding [
 ]
 
 { #category : 'accessing' }
-SysmelTypedLambdaNode >> fixpointBinding: anObject [
-
-	fixpointBinding := anObject
+SysmelTypedLambdaNode >> fixpointBinding: aFixpointBinding [
+	aFixpointBinding ifNotNil: [
+		fixpointBinding := aFixpointBinding.
+		fixpointBinding ownerFixpointValue: self
+	]
 ]

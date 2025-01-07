@@ -71,6 +71,14 @@ SysmelParseTreeSemanticAnalyzer >> coerceNode: aNode into: targetType [
 ]
 
 { #category : 'as yet unclassified' }
+SysmelParseTreeSemanticAnalyzer >> computeMergeTypeFor: trueResultType and: falseResultType [
+	trueResultType = falseResultType ifTrue: [ ^ trueResultType ].
+	(trueResultType isGradualType or: [ falseResultType isGradualType ])
+		ifTrue: [ ^ SysmelTypeGradual uniqueInstance ].
+	^ SysmelVoidType
+]
+
+{ #category : 'as yet unclassified' }
 SysmelParseTreeSemanticAnalyzer >> evaluateOptionalSymbol: aNode [
 	| symbolNode |
 	aNode ifNil: [ ^ nil ].
@@ -350,6 +358,24 @@ SysmelParseTreeSemanticAnalyzer >> visitIdentifierReferenceNode: node [
 	].
 
 	^ binding evaluateASGIn: node sourcePosition.
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitIfConditionNode: node [
+	| condition trueResult falseResult mergeType |
+	condition := self visitNode: node condition withExpectedTypeExpression: Boolean.
+	trueResult := self visitNode: node trueResult.
+	falseResult := self visitNode: node falseResult.
+	
+	mergeType := self computeMergeTypeFor: trueResult type and: falseResult type.
+	
+	^ SysmelTypedIfNode new
+		sourcePosition: node sourcePosition;
+		condition: condition;
+		trueResult: trueResult;
+		falseResult: falseResult;
+		type: mergeType;
+		yourself
 ]
 
 { #category : 'visiting' }
