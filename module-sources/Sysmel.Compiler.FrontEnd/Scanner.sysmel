@@ -21,7 +21,7 @@ class: ScannerState with: #{
 
 :atEnd(:(ScannerState)state :: Boolean) := {
     :peekPosition := state position.
-    Stdio stdout nextPutAll: atEnd; lf
+    peekPosition >= textSize(state)
 }.
 
 :peek(:(ScannerState)state, :(Int32)offset :: Character) := {

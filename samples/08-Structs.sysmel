@@ -4,4 +4,7 @@ struct: Pair with: #{
 }.
 
 :myPair := Pair(1i32. 5u16).
-Stdio stdout print: myPair first; nextPutAll: " "; print: myPair second; lf
+Stdio stdout print: myPair first; nextPutAll: " "; print: myPair second; lf.
+
+:secondPair := Pair#{second: 2u16. first: 1i32}.
+Stdio stdout print: secondPair first; nextPutAll: " "; print: secondPair second; lf.

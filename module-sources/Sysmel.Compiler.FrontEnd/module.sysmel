@@ -1,5 +1,5 @@
 loadFileOnce: "SourceCode.sysmel".
 loadFileOnce: "Tokens.sysmel".
 loadFileOnce: "Scanner.sysmel".
-loadFileOnce: "ParseTree.sysmel".
-loadFileOnce: "Parser.sysmel".
+##loadFileOnce: "ParseTree.sysmel".
+##loadFileOnce: "Parser.sysmel".
