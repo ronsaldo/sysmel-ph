@@ -73,6 +73,111 @@ SysmelParseTreeSemanticAnalyzer >> visitAndEvaluateSymbolValue: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitAssignmentNode: node [
+	| expandedStore |
+	expandedStore := self visitNodeForMacroExpansionOnly: node store.
+	expandedStore isFunctionalDependentTypeNode ifTrue: [
+		| lambda |
+		lambda := SysmelParseTreeFunctionNode new
+			sourcePosition: node sourcePosition;
+			nameExpression: nil;
+			functionalType: expandedStore;
+			body: node value;
+			isFixpoint: false;
+			yourself.
+		^ self visitNode: lambda
+	].
+
+	expandedStore isBindableNameNode ifTrue: [
+		| bindableName analyzedValue name valueType |
+		bindableName := expandedStore.
+		(bindableName typeExpression isNotNil and: [ bindableName typeExpression isFunctionalDependentTypeNode ]) ifTrue: [
+			| functionExpression |
+			functionExpression := SysmelParseTreeFunctionNode new
+				sourcePosition: node sourcePosition;
+				nameExpression: bindableName nameExpression;
+				functionalType: bindableName typeExpression;
+				body: node value;
+				isFixpoint: bindableName hasPostTypeExpression;
+				yourself.
+			^ self visitNode: functionExpression.
+		].
+	
+		analyzedValue := node value ifNotNil: [self visitNode: node value ].
+		name := self visitAndEvaluateSymbolValue: bindableName nameExpression.
+		name ifNil: [ ^ analyzedValue ].
+		
+		valueType := analyzedValue type.
+		bindableName typeExpression ifNotNil: [
+			valueType = self visitAndEvaluateType: bindableName typeExpression
+		].
+	
+		bindableName isMutable ifTrue: [
+			self halt
+		] ifFalse: [ 
+			environment addSymbol: name  valueBinding: analyzedValue.
+			(analyzedValue class lookupSelector: #exportableName:) ifNotNil: [ 
+				analyzedValue exportableName: name
+			]
+		].
+		^ analyzedValue
+	].
+
+	self halt.
+	self error: 'Cannot perform this assignment' atSourcePosition: node sourcePosition
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitFunctionNode: functionNode [
+	| functionalType lambda lambdaAnalyzed |
+	functionalType	:= self visitNodeForMacroExpansionOnly: functionNode functionalType.
+	functionalType isFunctionalDependentTypeNode ifFalse: [
+		self error: 'Expected a function type expression.'
+	].
+	lambda := functionalType constructLambdaWithName: functionNode nameExpression body: functionNode body isFixpoint: functionNode isFixpoint.
+	lambdaAnalyzed := self visitNode: lambda.
+	lambdaAnalyzed name ifNotNil: [
+		environment addSymbol: lambdaAnalyzed name valueBinding: lambdaAnalyzed
+	].
+	^ lambdaAnalyzed
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitFunctionalDependentNode: node [
+	| argumentsAndFlags argumentNodes isExistential isVariadic |
+	node argumentPattern ifNil: [
+		^ self visitNode: (SysmelParseTreePiNode new
+			sourcePosition: node sourcePosition;
+			arguments: #();
+			isVariadic: false;
+			body: node resultType;
+			callingConvention: node callingConvention;
+			yourself)
+	].
+
+	argumentsAndFlags := node argumentPattern parseAndUnpackArgumentsPattern.
+	argumentNodes := argumentsAndFlags first.
+	isExistential := argumentsAndFlags second.
+	isVariadic := argumentsAndFlags third.
+	
+	isExistential ifTrue: [
+		^ self visitNode: (SysmelParseTreeSigmaNode new
+			sourcePosition: node sourcePosition;
+			arguments: argumentNodes;
+			body: node resultType;
+			yourself) 
+	] ifFalse: [
+		^ self visitNode: (SysmelParseTreePiNode new
+			sourcePosition: node sourcePosition;
+			arguments: argumentNodes;
+			isVariadic: false;
+			body: node resultType;
+			callingConvention: node callingConvention;
+			yourself)
+	]
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitIdentifierReferenceNode: node [
 	| symbolToFind binding |
 	symbolToFind := node name.
@@ -164,4 +269,21 @@ SysmelParseTreeSemanticAnalyzer >> visitMessageSendNode: messageSend [
 	receiver := self visitNode: messageSend receiver.
 	selector := self visitAndEvaluateSymbolValue: messageSend selector.
 	^ self processMessage: messageSend withReceiver: receiver selector: selector arguments: messageSend arguments
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitNodeForMacroExpansionOnly: node [
+	self flag: 'TODO: Implement this'.
+	^ node
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitSequenceNode: node [
+	| lastResult |
+	lastResult := nil.
+	node elements do: [:eachElement |
+		lastResult := self visitNode: eachElement
+	].
+
+	^ lastResult
 ]
