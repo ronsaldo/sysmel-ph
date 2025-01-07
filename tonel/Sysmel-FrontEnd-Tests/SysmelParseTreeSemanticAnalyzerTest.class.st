@@ -14,13 +14,13 @@ Class {
 
 { #category : 'parsing' }
 SysmelParseTreeSemanticAnalyzerTest >> parseAndAnalyse: sourceString [
-	| ast environment asgAndRegion |
+	| ast environment typedASG |
 	ast := self parseSourceStringWithoutError: sourceString.
 	environment := module makeEnvironmentFor: ast.
 
-	asgAndRegion := SysmelParseTreeSemanticAnalyzer new
-			analyzeAST: ast withEnvironment: environment region: SoNRegionGraphNode new.
-	^ asgAndRegion
+	typedASG := SysmelParseTreeSemanticAnalyzer new
+			analyzeAST: ast withEnvironment: environment.
+	^ typedASG
 ]
 
 { #category : 'parsing' }

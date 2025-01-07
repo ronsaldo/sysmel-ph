@@ -21,13 +21,13 @@ Sysmel >> moduleNamed: aModuleName [
 
 { #category : 'parsing' }
 Sysmel >> parseAndCompileSourceCode: sourceCode [
-	| ast environment topLevelSeaOfNode |
+	| ast environment topLevelSeaOfNode asg |
 	ast := SysmelParser new parseSourceCode: sourceCode.
 	environment := module makeEnvironmentFor: ast.
 	
-	topLevelSeaOfNode := SysmelParseTreeSemanticAnalyzer new
-			analyzeAST: ast withEnvironment: environment region: (SoNRegionGraphNode new name: #entry; yourself).
-	^ topLevelSeaOfNode scheduleInstructions
+	asg := SysmelParseTreeSemanticAnalyzer new
+			analyzeAST: ast withEnvironment: environment.
+	^ asg
 ]
 
 { #category : 'parsing' }
@@ -61,13 +61,14 @@ Sysmel >> parseAndEvaluateModule: aFileReference [
 
 { #category : 'parsing' }
 Sysmel >> parseAndEvaluateSourceCode: sourceCode [
-	| ast environment topLevelSeaOfNode |
+	| ast environment typedASG |
 	ast := SysmelParser new parseSourceCode: sourceCode.
 	environment := module makeEnvironmentFor: ast.
 	
-	topLevelSeaOfNode := SysmelParseTreeSemanticAnalyzer new
-			analyzeAST: ast withEnvironment: environment region: (SoNRegionGraphNode new name: #entry; yourself).
-	^ topLevelSeaOfNode scheduleAndEvaluate
+	typedASG := SysmelParseTreeSemanticAnalyzer new
+			analyzeAST: ast withEnvironment: environment.
+	^ SysmelTypedGraphNodeEvaluator new
+		evaluateASG: typedASG
 ]
 
 { #category : 'parsing' }
