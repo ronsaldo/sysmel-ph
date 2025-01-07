@@ -122,11 +122,6 @@ SoNGraphNode >> isLoadValueGraphNode [
 ]
 
 { #category : 'testing' }
-SoNGraphNode >> isNamespace [
-	^ false
-]
-
-{ #category : 'testing' }
 SoNGraphNode >> isNamespaceLike [
 	^ false
 ]
@@ -163,6 +158,11 @@ SoNGraphNode >> isSigmaNode [
 
 { #category : 'testing' }
 SoNGraphNode >> isStoreValueGraphNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SoNGraphNode >> isSysmelNamespace [
 	^ false
 ]
 

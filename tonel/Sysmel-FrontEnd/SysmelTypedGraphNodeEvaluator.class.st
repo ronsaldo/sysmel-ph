@@ -2,7 +2,8 @@ Class {
 	#name : 'SysmelTypedGraphNodeEvaluator',
 	#superclass : 'SysmelTypedGraphNodeVisitor',
 	#instVars : [
-		'environment'
+		'environment',
+		'allocaBoxCache'
 	],
 	#category : 'Sysmel-FrontEnd-Analysis',
 	#package : 'Sysmel-FrontEnd',
@@ -12,6 +13,21 @@ Class {
 { #category : 'as yet unclassified' }
 SysmelTypedGraphNodeEvaluator >> evaluateASG: asg [
 	^ self visitNode: asg
+]
+
+{ #category : 'initialization' }
+SysmelTypedGraphNodeEvaluator >> initialize [
+	super initialize.
+	allocaBoxCache := Dictionary new.
+]
+
+{ #category : 'visiting' }
+SysmelTypedGraphNodeEvaluator >> visitAllocaNode: node [
+	^ allocaBoxCache at: node ifAbsentPut: (SysmelAllocaBox new
+		sourcePosition: node sourcePosition;
+		valueType: node valueType;
+		type: node type;
+		yourself)
 ]
 
 { #category : 'visiting' }
@@ -45,6 +61,14 @@ SysmelTypedGraphNodeEvaluator >> visitMessageSendNode: node [
 	receiver := self visitNode: node receiver.
 	selector := node selector.
 	arguments := node arguments collect: [ :eachArg | self visitNode: eachArg ].
+	
+	(receiver isSysmelNamespace and: [arguments isEmpty]) ifTrue: [
+		| child |
+		child := receiver lookChildNamed: selector.
+		child ifNil: [ self error: ('Failed to find namespace child named {1}' format: {selector}) atSourcePosition: node sourcePosition ].
+		^ child
+	].
+
 	^ receiver perform: selector withArguments: arguments
 ]
 
@@ -56,6 +80,15 @@ SysmelTypedGraphNodeEvaluator >> visitSequenceNode: node [
 		result := self visitNode: eachExpression
 	].
 	^ result
+]
+
+{ #category : 'visiting' }
+SysmelTypedGraphNodeEvaluator >> visitStoreNode: node [
+	| pointer value |
+	pointer := self visitNode: node pointer.
+	value := self visitNode: node value.
+	pointer currentValue: value.
+	^ value
 ]
 
 { #category : 'as yet unclassified' }

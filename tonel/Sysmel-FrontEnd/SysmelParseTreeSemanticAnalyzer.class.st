@@ -59,6 +59,18 @@ SysmelParseTreeSemanticAnalyzer >> analyzeArgumentNode: node withIndex: eachArgu
 ]
 
 { #category : 'as yet unclassified' }
+SysmelParseTreeSemanticAnalyzer >> coerceNode: aNode into: targetType [
+	targetType ifNil: [ ^ aNode ].
+	aNode type = targetType ifTrue: [ ^ aNode ].
+	(aNode type isGradualType or: [ targetType isGradualType ]) ifTrue: [ ^ aNode ].
+	
+	targetType isVoid ifTrue: [ ^ aNode ].
+	self error: ('{1} Cannot coerce from {2} into {3}' format: {
+		aNode sourcePosition printString . aNode type printString. targetType printString
+	})
+]
+
+{ #category : 'as yet unclassified' }
 SysmelParseTreeSemanticAnalyzer >> evaluateOptionalSymbol: aNode [
 	| symbolNode |
 	aNode ifNil: [ ^ nil ].
@@ -78,6 +90,18 @@ SysmelParseTreeSemanticAnalyzer >> processCascadeMessage: message withReceiver: 
 SysmelParseTreeSemanticAnalyzer >> processMessage: message withReceiver: receiver selector: selector arguments: arguments [
 
 	| method analyzedArguments resultType |
+	receiver isSysmelNamespace ifTrue: [
+		| namespaceChild |
+		namespaceChild := receiver lookChildNamed: selector.
+		namespaceChild ifNil: [
+			self error: ('Failed to find {1} in namespace-like {2} ' format: {selector, receiver name})
+		].
+		^ SysmelTypedLiteralNode new
+			sourcePosition: message sourcePosition;
+			value: namespaceChild;
+			type: namespaceChild type;
+			yourself
+	].
 	method := receiver type lookupSelector: selector.
 	self flag: 'Use the method typeinfo'.
 	analyzedArguments := arguments collect: [ :each | self visitNode: each ].
@@ -157,7 +181,7 @@ SysmelParseTreeSemanticAnalyzer >> visitApplicationNode: node [
 
 { #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitAssignmentNode: node [
-	| expandedStore |
+	| expandedStore alloca initialStore analyzedStore analyzedValue baseType coercedValue |
 	expandedStore := self visitNodeForMacroExpansionOnly: node store.
 	expandedStore isFunctionalDependentTypeNode ifTrue: [
 		| lambda |
@@ -196,9 +220,32 @@ SysmelParseTreeSemanticAnalyzer >> visitAssignmentNode: node [
 		].
 	
 		bindableName isMutable ifTrue: [
-			self halt
+			alloca := SysmelTypedAllocaNode new
+				sourcePosition: bindableName sourcePosition;
+				valueType: valueType;
+				type: (SysmelReferenceType withBaseType: valueType);
+				exportableName: name;
+				yourself.
+			
+			analyzedValue ifNotNil: [
+				initialStore := SysmelTypedStoreNode new
+					sourcePosition: node sourcePosition;
+					pointer: alloca;
+					value: analyzedValue;
+					yourself
+			].
+			environment addSymbol: name valueBinding: alloca.
+			
+			initialStore 
+				ifNil: [ ^ alloca ]
+				ifNotNil: [ ^ SysmelTypedSequenceNode new
+						sourcePosition: node sourcePosition;
+						expressions: { alloca . initialStore . alloca};
+						type: alloca type;
+						yourself
+			]
 		] ifFalse: [ 
-			environment addSymbol: name  valueBinding: analyzedValue.
+			environment addSymbol: name valueBinding: analyzedValue.
 			(analyzedValue class lookupSelector: #exportableName:) ifNotNil: [ 
 				analyzedValue exportableName: name
 			]
@@ -206,7 +253,18 @@ SysmelParseTreeSemanticAnalyzer >> visitAssignmentNode: node [
 		^ analyzedValue
 	].
 
-	self halt.
+	analyzedStore := self visitNode: expandedStore.
+	analyzedValue := node value ifNotNil: [self visitNode: node value ].
+	analyzedStore type isReferenceLikeType ifTrue: [
+		baseType := analyzedStore type asDecayedSysmelType.
+		coercedValue := self coerceNode: analyzedValue into: baseType.
+		^ SysmelTypedStoreNode new
+			sourcePosition: node sourcePosition;
+			pointer: analyzedStore;
+			value: coercedValue;
+			yourself
+	].
+
 	self error: 'Cannot perform this assignment' atSourcePosition: node sourcePosition
 ]
 
@@ -386,6 +444,20 @@ SysmelParseTreeSemanticAnalyzer >> visitLambdaNode: node [
 ]
 
 { #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitLexicalBlockNode: node [
+	| childEnvironment oldEnvironment |
+	childEnvironment := (SysmelLexicalEnvironment parent: environment)
+		sourcePosition: node sourcePosition;
+		yourself.
+	oldEnvironment := environment.
+	environment := childEnvironment.
+	
+	^ [
+		self visitNode: node body
+	] ensure: [ environment := oldEnvironment ]
+]
+
+{ #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitLiteralCharacterNode: node [
 	^ SysmelTypedLiteralNode new
 		sourcePosition: node sourcePosition;
@@ -403,6 +475,15 @@ SysmelParseTreeSemanticAnalyzer >> visitLiteralFloatNode: node [
 		type: Float;
 		yourself
 	
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitLiteralFunctionNode: node [
+	^ SysmelTypedLiteralNode new
+		sourcePosition: node sourcePosition;
+		value: node value;
+		type: node value type;
+		yourself
 ]
 
 { #category : 'visiting' }
@@ -457,14 +538,37 @@ SysmelParseTreeSemanticAnalyzer >> visitMessageCascadeNode: cascadeNode [
 
 { #category : 'visiting' }
 SysmelParseTreeSemanticAnalyzer >> visitMessageSendNode: messageSend [
-	| receiver selector |
+	| receiver selector  |
 	messageSend receiver ifNil: [
-		self halt.
+		| functionBinding application |
+		selector := self visitAndEvaluateSymbolValue: messageSend selector.
+		functionBinding := environment lookupRecursively: selector.
+		functionBinding ifNil: [ self error: 'Failed to find global function or macro named: ' , selector printString atSourcePosition: messageSend sourcePosition ].
+		application := SysmelParseTreeApplicationNode new
+			sourcePosition: messageSend sourcePosition;
+			functional: (SysmelParseTreeLiteralFunction new
+				sourcePosition: messageSend sourcePosition;
+				value: functionBinding value);
+			arguments: messageSend arguments;
+			yourself.
+		^ self visitNode: application 
 	].
 
 	receiver := self visitNode: messageSend receiver.
 	selector := self visitAndEvaluateSymbolValue: messageSend selector.
 	^ self processMessage: messageSend withReceiver: receiver selector: selector arguments: messageSend arguments
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitNamespaceNode: node [
+	| parentNamespace childNamespace namespaceEnvironment definitionEnvironment |
+	parentNamespace := environment getNamespace.
+	childNamespace := parentNamespace getOrCreateSubnamespaceNamed: node name.
+	namespaceEnvironment := (SysmelNamespaceEnvironment parent: environment)
+									namespace: childNamespace;
+									yourself.
+	definitionEnvironment := SysmelLexicalEnvironment parent: namespaceEnvironment.
+	^ self withEnvironment: definitionEnvironment do: [ self visitNode: node body ]
 ]
 
 { #category : 'visiting' }
@@ -485,6 +589,19 @@ SysmelParseTreeSemanticAnalyzer >> visitNodeForMacroExpansionOnly: node [
 SysmelParseTreeSemanticAnalyzer >> visitOptionalTypeExpression: aTypeExpression [
 	aTypeExpression ifNil: [ ^ nil ].
 	^ self visitTypeExpression: aTypeExpression
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitPublicNode: node [
+	| ownerNamespace exportedObject rawExportedObject |
+	ownerNamespace := environment getNamespace.
+	rawExportedObject := self visitNode: node exportedObject.
+	exportedObject := rawExportedObject findAllExportableObjects.
+	exportedObject ifEmpty: [ ^ rawExportedObject ].
+	exportedObject do: [ :eachObject |
+		ownerNamespace exportChild: eachObject withName: eachObject exportableName.
+	].
+	^ exportedObject last
 ]
 
 { #category : 'visiting' }

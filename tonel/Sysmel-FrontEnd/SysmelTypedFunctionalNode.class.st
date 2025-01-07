@@ -81,6 +81,11 @@ SysmelTypedFunctionalNode >> closureEnvironment: anObject [
 ]
 
 { #category : 'accessing' }
+SysmelTypedFunctionalNode >> exportableName [
+	^ name
+]
+
+{ #category : 'accessing' }
 SysmelTypedFunctionalNode >> isVariadic [
 
 	^ isVariadic

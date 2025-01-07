@@ -11,6 +11,7 @@ Class {
 
 { #category : 'as yet unclassified' }
 SymbolValueBinding >> evaluateASGIn: evalSourcePosition [
+	value isSysmelGraphNode ifTrue: [ ^ value ].
 	^ SysmelTypedLiteralNode new
 		sourcePosition: evalSourcePosition;
 		value: value;

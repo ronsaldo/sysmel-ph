@@ -23,13 +23,13 @@ SysmelPrimitiveTypeValue >> asSysmelType [
 ]
 
 { #category : 'testing' }
-SysmelPrimitiveTypeValue >> isNamespace [
-	^ false
+SysmelPrimitiveTypeValue >> isPrimitiveTypeValue [
+	^ true
 ]
 
 { #category : 'testing' }
-SysmelPrimitiveTypeValue >> isPrimitiveTypeValue [
-	^ true
+SysmelPrimitiveTypeValue >> isSysmelNamespace [
+	^ false
 ]
 
 { #category : 'accessing' }

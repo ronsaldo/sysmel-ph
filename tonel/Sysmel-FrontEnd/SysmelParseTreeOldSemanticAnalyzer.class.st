@@ -756,7 +756,7 @@ SysmelParseTreeOldSemanticAnalyzer >> visitMessageSendNode: node [
 		namespaceChild ifNil: [
 			self error: ('Failed to find {1} in namespace-like {2} ' format: {selector, receiver name})
 		].
-		namespaceChild isNamespace ifFalse: [
+		namespaceChild isSysmelNamespace ifFalse: [
 			^ SoNLiteralValueGraphNode new
 				sourcePosition: node sourcePosition;
 				value: namespaceChild;

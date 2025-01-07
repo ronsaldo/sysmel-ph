@@ -15,8 +15,23 @@ SysmelTypedGraphNode >> accept: visitor [
 	self subclassResponsibility
 ]
 
+{ #category : 'as yet unclassified' }
+SysmelTypedGraphNode >> findAllExportableObjects [
+	^ #()
+]
+
 { #category : 'testing' }
 SysmelTypedGraphNode >> isLiteralNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SysmelTypedGraphNode >> isSysmelGraphNode [
+	^ true
+]
+
+{ #category : 'testing' }
+SysmelTypedGraphNode >> isSysmelNamespace [
 	^ false
 ]
 

@@ -27,6 +27,16 @@ Object >> isReferenceLikeType [
 ]
 
 { #category : '*Sysmel-FrontEnd' }
+Object >> isSysmelGraphNode [
+	^ false
+]
+
+{ #category : '*Sysmel-FrontEnd' }
+Object >> isSysmelNamespace [
+	^ false
+]
+
+{ #category : '*Sysmel-FrontEnd' }
 Object >> isValidSysmelType [
 	^ false
 ]

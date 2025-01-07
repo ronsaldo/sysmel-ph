@@ -2,7 +2,8 @@ Class {
 	#name : 'SysmelTypedLambdaNode',
 	#superclass : 'SysmelTypedFunctionalNode',
 	#instVars : [
-		'fixpointBinding'
+		'fixpointBinding',
+		'exportableName'
 	],
 	#category : 'Sysmel-FrontEnd-Analysis',
 	#package : 'Sysmel-FrontEnd',
@@ -21,6 +22,11 @@ SysmelTypedLambdaNode >> evaluateWithArguments: arguments [
 	functionalEnvironment argumentValues: arguments.
 	^ SysmelTypedGraphNodeEvaluator new withActivationEnvironment: functionalEnvironment
 		visitNode: self body
+]
+
+{ #category : 'as yet unclassified' }
+SysmelTypedLambdaNode >> findAllExportableObjects [
+	^ { self }
 ]
 
 { #category : 'accessing' }

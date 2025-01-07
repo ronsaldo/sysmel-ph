@@ -6,6 +6,16 @@ Class {
 	#tag : 'Analysis'
 }
 
+{ #category : 'as yet unclassified' }
+SysmelTypedGraphNodeVisitor >> error: errorMessage atSourcePosition: sourcePosition [
+	self error: sourcePosition printString, ': ', errorMessage
+]
+
+{ #category : 'visiting' }
+SysmelTypedGraphNodeVisitor >> visitAllocaNode: node [
+	self subclassResponsibility
+]
+
 { #category : 'visiting' }
 SysmelTypedGraphNodeVisitor >> visitApplicationNode: node [
 	self subclassResponsibility

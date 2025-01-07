@@ -25,3 +25,13 @@ SysmelTypedSequenceNode >> expressions: anObject [
 
 	expressions := anObject
 ]
+
+{ #category : 'as yet unclassified' }
+SysmelTypedSequenceNode >> findAllExportableObjects [
+	| foundObjects |
+	foundObjects := OrderedCollection new.
+	expressions do: [ :each |
+		foundObjects addAll: each findAllExportableObjects
+	].
+	^ foundObjects
+]
