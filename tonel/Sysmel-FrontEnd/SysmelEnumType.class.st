@@ -41,7 +41,7 @@ SysmelEnumType >> evaluateASGIn: sourcePosition [
 ]
 
 { #category : 'testing' }
-SysmelEnumType >> isNamespaceLike [
+SysmelEnumType >> isSysmelNamespaceLike [
 	^ true
 ]
 

@@ -15,9 +15,19 @@ SysmelTypedGraphNode >> accept: visitor [
 	self subclassResponsibility
 ]
 
+{ #category : 'testing' }
+SysmelTypedGraphNode >> asConstantValueForPureEvaluation [
+	^ self error: 'Not a constant value.'
+]
+
 { #category : 'as yet unclassified' }
 SysmelTypedGraphNode >> findAllExportableObjects [
 	^ #()
+]
+
+{ #category : 'testing' }
+SysmelTypedGraphNode >> isConstantDataNode [
+	^ false
 ]
 
 { #category : 'testing' }
@@ -27,6 +37,11 @@ SysmelTypedGraphNode >> isIfNode [
 
 { #category : 'testing' }
 SysmelTypedGraphNode >> isLiteralNode [
+	^ false
+]
+
+{ #category : 'testing' }
+SysmelTypedGraphNode >> isNamespaceLike [
 	^ false
 ]
 

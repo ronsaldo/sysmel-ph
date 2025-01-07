@@ -294,51 +294,6 @@ SysmelParseTreeOldSemanticAnalyzer >> visitDictionaryNode: node [
 ]
 
 { #category : 'visiting' }
-SysmelParseTreeOldSemanticAnalyzer >> visitEnumElements: dictionary withBaseType: baseType [
-	| extractedElements nextElementValue |
-	self assert: dictionary isDictionaryNode.
-	extractedElements := OrderedCollection new.
-	nextElementValue := baseType zero.
-	dictionary elements doWithIndex: [:association :index |
-		| elementName elementValue |
-		elementName := self visitAndEvaluateSymbolValue: association key.
-		association value ifNil: [
-			elementValue := nextElementValue.
-		] ifNotNil: [
-			| visitedValue |
-			visitedValue := self visitNode: association value.
-			self assert: visitedValue isLiteralValueGraphNode.
-			elementValue := visitedValue value.
-		].
-		
-		nextElementValue := elementValue increment.
-		extractedElements add: elementName -> elementValue
-	].
-	^ extractedElements
-]
-
-{ #category : 'visiting' }
-SysmelParseTreeOldSemanticAnalyzer >> visitEnumNode: node [
-	| parentNamespace baseType parsedElement enumType |
-	parentNamespace := environment getNamespace.
-	baseType := (self visitTypeExpression: node baseType) value.
-	parsedElement := self visitEnumElements: node elements withBaseType: baseType.
-	self assert: node name isSymbol.
-	
-	enumType := SysmelEnumType new
-		optionalName: node name;
-		baseType: baseType;
-		elements: parsedElement;
-		yourself.
-	parentNamespace exportChild: enumType withName: enumType optionalName.
-	^SoNLiteralValueGraphNode new
-		sourcePosition: node sourcePosition;
-		value: enumType;
-		type: (SysmelTypeUniverse withIndex: 0);
-		yourself
-]
-
-{ #category : 'visiting' }
 SysmelParseTreeOldSemanticAnalyzer >> visitFunctionNode: functionNode [
 	| functionalType lambda lambdaAnalyzed |
 	functionalType	:= self visitNodeForMacroExpansionOnly: functionNode functionalType.

@@ -14,9 +14,19 @@ SysmelTypedLiteralNode >> accept: visitor [
 	^ visitor visitLiteralNode: self
 ]
 
+{ #category : 'testing' }
+SysmelTypedLiteralNode >> asConstantValueForPureEvaluation [
+	^ value
+]
+
 { #category : 'converting' }
 SysmelTypedLiteralNode >> asReducedTypeExpression [
 	^ self isTypeNode ifTrue: [value] ifFalse: [type]
+]
+
+{ #category : 'testing' }
+SysmelTypedLiteralNode >> isConstantDataNode [
+	^ true
 ]
 
 { #category : 'testing' }

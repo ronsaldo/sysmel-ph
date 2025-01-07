@@ -37,6 +37,11 @@ Object >> isSysmelNamespace [
 ]
 
 { #category : '*Sysmel-FrontEnd' }
+Object >> isSysmelNamespaceLike [
+	^ false
+]
+
+{ #category : '*Sysmel-FrontEnd' }
 Object >> isValidSysmelType [
 	^ false
 ]

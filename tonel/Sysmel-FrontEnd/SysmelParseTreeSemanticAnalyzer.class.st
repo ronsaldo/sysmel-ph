@@ -137,6 +137,22 @@ SysmelParseTreeSemanticAnalyzer >> processMessage: message withReceiver: uncoerc
 		foundType ifNotNil: [ resultType := foundType ]
 	].
 
+	(method isNotNil
+		and: [(method hasPragmaNamed: #pure)
+		and: [receiver isConstantDataNode
+		and: [arguments allSatisfy: [:each | each isConstantDataNode]]]]) ifTrue: [
+		| receiverValue argumentsValues resultValue |
+		receiverValue := receiver asConstantValueForPureEvaluation.
+		argumentsValues := arguments collect: [ :eachArg | eachArg asConstantValueForPureEvaluation ].
+		resultValue := receiverValue perform: selector withArguments: argumentsValues.
+
+		^ SysmelTypedLiteralNode new
+			sourcePosition: message sourcePosition;
+			value: resultValue;
+			type: resultValue type;
+			yourself
+	].
+
 	^ SysmelTypedMessageSendNode new
 		sourcePosition: message sourcePosition;
 		receiver: receiver;
@@ -311,6 +327,53 @@ SysmelParseTreeSemanticAnalyzer >> visitBinaryExpressionSequenceNode: node [
 		receiver := messageSend
 	].
 	^ self visitNode: receiver
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitEnumElements: dictionary withBaseType: baseType [
+	| extractedElements nextElementValue |
+	self assert: dictionary isDictionaryNode.
+	extractedElements := OrderedCollection new.
+	nextElementValue := baseType zero.
+
+	dictionary elements doWithIndex: [:association :index |
+		| elementName elementValue |
+		elementName := self visitAndEvaluateSymbolValue: association key.
+		association value ifNil: [
+			elementValue := nextElementValue.
+		] ifNotNil: [
+			| visitedValue |
+			visitedValue := self visitNode: association value.
+			self assert: visitedValue isLiteralNode.
+			elementValue := visitedValue value.
+		].
+		
+		nextElementValue := elementValue increment.
+		extractedElements add: elementName -> elementValue
+	].
+	^ extractedElements
+]
+
+{ #category : 'visiting' }
+SysmelParseTreeSemanticAnalyzer >> visitEnumNode: node [
+	| parentNamespace baseType parsedElement enumType |
+	parentNamespace := environment getNamespace.
+	baseType := (self visitTypeExpression: node baseType) value.
+	parsedElement := self visitEnumElements: node elements withBaseType: baseType.
+	self assert: node name isSymbol.
+	
+	enumType := SysmelEnumType new
+		optionalName: node name;
+		baseType: baseType;
+		elements: parsedElement;
+		yourself.
+	parentNamespace exportChild: enumType withName: enumType optionalName.
+	^ SysmelTypedLiteralNode new
+		sourcePosition: node sourcePosition;
+		value: enumType;
+		type: (SysmelTypeUniverse withIndex: 0);
+		yourself
+
 ]
 
 { #category : 'visiting' }
@@ -650,6 +713,13 @@ SysmelParseTreeSemanticAnalyzer >> visitSequenceNode: node [
 	| typedSequenceElements sequenceType |
 	typedSequenceElements := node elements collect: [:eachElement |
 		self visitNode: eachElement
+	].
+	typedSequenceElements ifEmpty: [
+		^ SysmelTypedLiteralNode new
+			sourcePosition: node sourcePosition;
+			value: SysmelVoidType uniqueInstance;
+			type: SysmelVoidType;
+			yourself
 	].
 
 	sequenceType := typedSequenceElements last type.

@@ -46,12 +46,12 @@ SysmelNamespace >> initialize [
 ]
 
 { #category : 'testing' }
-SysmelNamespace >> isNamespaceLike [
+SysmelNamespace >> isSysmelNamespace [
 	^ true
 ]
 
 { #category : 'testing' }
-SysmelNamespace >> isSysmelNamespace [
+SysmelNamespace >> isSysmelNamespaceLike [
 	^ true
 ]
 

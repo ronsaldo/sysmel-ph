@@ -74,11 +74,13 @@ SysmelTypedGraphNodeEvaluator >> visitLoadNode: node [
 { #category : 'visiting' }
 SysmelTypedGraphNodeEvaluator >> visitMessageSendNode: node [
 	| receiver selector arguments |
-	receiver := self visitNode: node receiver.
+	receiver := node receiver isSysmelNamespaceLike
+		ifTrue: [node receiver]
+		ifFalse: [self visitNode: node receiver].
 	selector := node selector.
 	arguments := node arguments collect: [ :eachArg | self visitNode: eachArg ].
 	
-	(receiver isSysmelNamespace and: [arguments isEmpty]) ifTrue: [
+	(receiver isSysmelNamespaceLike and: [arguments isEmpty]) ifTrue: [
 		| child |
 		child := receiver lookChildNamed: selector.
 		child ifNil: [ self error: ('Failed to find namespace child named {1}' format: {selector}) atSourcePosition: node sourcePosition ].
